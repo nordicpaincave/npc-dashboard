@@ -182,7 +182,182 @@
           "hrv": 54,
           "ht": "up"
         }
-      ]
+      ],
+      "plan": {
+        "goal": {
+          "name": "Duatlon Curitiba",
+          "date": "2026-04-12",
+          "type": "Duatlon 5km/20km/2.5km",
+          "target": "Sub-56min (PR: 58:49)",
+          "location": "Curitiba, PR",
+          "priority": "A"
+        },
+        "phases": [
+          {
+            "name": "Taper",
+            "start": "2026-04-06",
+            "end": "2026-04-11"
+          },
+          {
+            "name": "Prova",
+            "start": "2026-04-12",
+            "end": "2026-04-12"
+          },
+          {
+            "name": "Base Aeróbia",
+            "start": "2026-04-13",
+            "end": "2026-06-28"
+          },
+          {
+            "name": "Construção",
+            "start": "2026-06-29",
+            "end": "2026-08-30"
+          },
+          {
+            "name": "Taper 2",
+            "start": "2026-08-31",
+            "end": "2026-09-13"
+          }
+        ],
+        "race_date": "2026-04-12",
+        "weeks": {
+          "2026-04-06": {
+            "label": "Semana Taper — Duatlon sábado",
+            "phase": "Taper",
+            "tss_target": 128,
+            "days": {
+              "2026-04-06": [
+                {
+                  "sport": "swim",
+                  "title": "OWS Z1 — Água Aberta Leve 1.4km",
+                  "dur_h": 0.67,
+                  "tss": 18,
+                  "completed": false
+                },
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 Leve — Pós-OWS 5.5km",
+                  "dur_h": 0.5,
+                  "tss": 17,
+                  "completed": false
+                }
+              ],
+              "2026-04-07": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 + Strides Leves 7.6km",
+                  "dur_h": 0.65,
+                  "tss": 37,
+                  "completed": true
+                },
+                {
+                  "sport": "strength",
+                  "title": "Força Preventiva — Joelho Pré-Prova",
+                  "dur_h": 0.33,
+                  "tss": 8,
+                  "completed": false
+                }
+              ],
+              "2026-04-08": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Ativação — Taper (4×2min Z2)",
+                  "dur_h": 0.6,
+                  "tss": 20,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Técnica — Taper 1.000m",
+                  "dur_h": 0.5,
+                  "tss": 10,
+                  "completed": false
+                }
+              ],
+              "2026-04-09": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Ativação + Strides Pace Prova",
+                  "dur_h": 0.43,
+                  "tss": 18,
+                  "completed": false
+                }
+              ],
+              "2026-04-12": [
+                {
+                  "sport": "run",
+                  "title": "🏁 DUATLON — 5km / 20km bike / 2.5km (meta sub-56)",
+                  "dur_h": 0.93,
+                  "tss": 100,
+                  "completed": false
+                }
+              ]
+            }
+          },
+          "2026-04-13": {
+            "label": "Semana Pós-Prova — Recuperação",
+            "phase": "Base Aeróbia",
+            "tss_target": 200,
+            "days": {
+              "2026-04-13": [],
+              "2026-04-14": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Recuperação Ativa 1.500m",
+                  "dur_h": 0.75,
+                  "tss": 38,
+                  "completed": false
+                }
+              ],
+              "2026-04-15": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 30min muito leve",
+                  "dur_h": 0.5,
+                  "tss": 20,
+                  "completed": false
+                }
+              ],
+              "2026-04-16": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 45min recuperação",
+                  "dur_h": 0.75,
+                  "tss": 26,
+                  "completed": false
+                }
+              ],
+              "2026-04-17": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 2.000m",
+                  "dur_h": 1.0,
+                  "tss": 50,
+                  "completed": false
+                }
+              ],
+              "2026-04-18": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 45min",
+                  "dur_h": 0.75,
+                  "tss": 30,
+                  "completed": false
+                }
+              ],
+              "2026-04-19": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 60min Grupo NPC",
+                  "dur_h": 1.0,
+                  "tss": 35,
+                  "completed": false
+                }
+              ]
+            }
+          }
+        }
+      }
     },
     "jean": {
       "name": "Jean Romano",
@@ -428,7 +603,426 @@
           "hrv": 63,
           "ht": "nt"
         }
-      ]
+      ],
+      "plan": {
+        "goal": {
+          "name": "70.3 Buenos Aires",
+          "date": "2026-10-04",
+          "type": "Triathlon 70.3",
+          "target": "Top 5 M40-44",
+          "distance": "1.9km / 90km / 21km",
+          "location": "Buenos Aires, Argentina",
+          "priority": "A"
+        },
+        "phases": [
+          {
+            "name": "Base Aeróbia",
+            "start": "2026-03-18",
+            "end": "2026-06-14"
+          },
+          {
+            "name": "Construção",
+            "start": "2026-06-15",
+            "end": "2026-08-09"
+          },
+          {
+            "name": "Específico",
+            "start": "2026-08-10",
+            "end": "2026-09-13"
+          },
+          {
+            "name": "Taper",
+            "start": "2026-09-14",
+            "end": "2026-10-03"
+          },
+          {
+            "name": "Prova",
+            "start": "2026-10-04",
+            "end": "2026-10-04"
+          }
+        ],
+        "race_date": "2026-10-04",
+        "weeks": {
+          "2026-04-06": {
+            "label": "Semana 3 — Base Aeróbia",
+            "phase": "Base Aeróbia",
+            "tss_target": 748,
+            "days": {
+              "2026-04-06": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 4.100m",
+                  "dur_h": 1.12,
+                  "tss": 95,
+                  "completed": true
+                },
+                {
+                  "sport": "run",
+                  "title": "Treadmill Running 2km (aquecimento)",
+                  "dur_h": 0.17,
+                  "tss": 10,
+                  "completed": true
+                }
+              ],
+              "2026-04-07": [
+                {
+                  "sport": "strength",
+                  "title": "Musculação — Quad + Glúteos + Mobilidade",
+                  "dur_h": 1.03,
+                  "tss": 32,
+                  "completed": true
+                },
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Base Aeróbia 65.9km",
+                  "dur_h": 2.15,
+                  "tss": 60,
+                  "completed": true
+                },
+                {
+                  "sport": "strength",
+                  "title": "Musculação — Manguito + Core",
+                  "dur_h": 0.93,
+                  "tss": 30,
+                  "completed": true
+                }
+              ],
+              "2026-04-08": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Base Aeróbia 11.6km",
+                  "dur_h": 0.93,
+                  "tss": 44,
+                  "completed": true
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 4.100m",
+                  "dur_h": 1.14,
+                  "tss": 92,
+                  "completed": true
+                }
+              ],
+              "2026-04-09": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1+Z2 — 3×8min LT1",
+                  "dur_h": 1.46,
+                  "tss": 78,
+                  "completed": true
+                },
+                {
+                  "sport": "strength",
+                  "title": "Musculação — Escapular + Funcional",
+                  "dur_h": 1.0,
+                  "tss": 38,
+                  "completed": false
+                }
+              ],
+              "2026-04-10": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 2.200m",
+                  "dur_h": 1.25,
+                  "tss": 62,
+                  "completed": false
+                },
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Base Aeróbia 55min",
+                  "dur_h": 0.92,
+                  "tss": 37,
+                  "completed": false
+                }
+              ],
+              "2026-04-11": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Longo 3h Grupo NPC ⭐",
+                  "dur_h": 3.0,
+                  "tss": 105,
+                  "completed": false
+                }
+              ],
+              "2026-04-12": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Longa 100min Grupo NPC",
+                  "dur_h": 1.67,
+                  "tss": 67,
+                  "completed": false
+                }
+              ]
+            }
+          },
+          "2026-04-13": {
+            "label": "Semana 4 — Base Aeróbia",
+            "phase": "Base Aeróbia",
+            "tss_target": 780,
+            "days": {
+              "2026-04-13": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.000m",
+                  "dur_h": 1.0,
+                  "tss": 50,
+                  "completed": false
+                }
+              ],
+              "2026-04-14": [
+                {
+                  "sport": "strength",
+                  "title": "Musculação — Quad + Glúteos",
+                  "dur_h": 1.0,
+                  "tss": 32,
+                  "completed": false
+                },
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Base 90min",
+                  "dur_h": 1.5,
+                  "tss": 53,
+                  "completed": false
+                }
+              ],
+              "2026-04-15": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 55min FC<144bpm",
+                  "dur_h": 0.92,
+                  "tss": 37,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 2.300m",
+                  "dur_h": 1.17,
+                  "tss": 59,
+                  "completed": false
+                }
+              ],
+              "2026-04-16": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1+Z2 — 4×8min LT1",
+                  "dur_h": 1.5,
+                  "tss": 82,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Musculação — Manguito + Core",
+                  "dur_h": 1.0,
+                  "tss": 30,
+                  "completed": false
+                }
+              ],
+              "2026-04-17": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.200m",
+                  "dur_h": 1.17,
+                  "tss": 59,
+                  "completed": false
+                },
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 55min",
+                  "dur_h": 0.92,
+                  "tss": 37,
+                  "completed": false
+                }
+              ],
+              "2026-04-18": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Longo 3h Grupo NPC ⭐",
+                  "dur_h": 3.0,
+                  "tss": 105,
+                  "completed": false
+                }
+              ],
+              "2026-04-19": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Longa 100min",
+                  "dur_h": 1.67,
+                  "tss": 67,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Recuperação 1.500m",
+                  "dur_h": 0.75,
+                  "tss": 38,
+                  "completed": false
+                }
+              ]
+            }
+          },
+          "2026-04-20": {
+            "label": "Semana 5 — Base Aeróbia",
+            "phase": "Base Aeróbia",
+            "tss_target": 820,
+            "days": {
+              "2026-04-20": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 2.200m",
+                  "dur_h": 1.17,
+                  "tss": 59,
+                  "completed": false
+                }
+              ],
+              "2026-04-21": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Base 2h",
+                  "dur_h": 2.0,
+                  "tss": 70,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Musculação — Força Funcional",
+                  "dur_h": 1.0,
+                  "tss": 32,
+                  "completed": false
+                }
+              ],
+              "2026-04-22": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 60min",
+                  "dur_h": 1.0,
+                  "tss": 40,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.400m",
+                  "dur_h": 1.25,
+                  "tss": 63,
+                  "completed": false
+                }
+              ],
+              "2026-04-23": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1+Z2 — 5×8min LT1",
+                  "dur_h": 1.67,
+                  "tss": 92,
+                  "completed": false
+                }
+              ],
+              "2026-04-24": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 2.200m",
+                  "dur_h": 1.17,
+                  "tss": 59,
+                  "completed": false
+                },
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 60min",
+                  "dur_h": 1.0,
+                  "tss": 40,
+                  "completed": false
+                }
+              ],
+              "2026-04-25": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Longo 3h30 ⭐",
+                  "dur_h": 3.5,
+                  "tss": 123,
+                  "completed": false
+                }
+              ],
+              "2026-04-26": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Longa 110min",
+                  "dur_h": 1.83,
+                  "tss": 73,
+                  "completed": false
+                }
+              ]
+            }
+          },
+          "2026-04-27": {
+            "label": "Semana 6 — Descarga ♻️",
+            "phase": "Base Aeróbia",
+            "tss_target": 450,
+            "days": {
+              "2026-04-27": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Recuperação 1.500m",
+                  "dur_h": 0.75,
+                  "tss": 38,
+                  "completed": false
+                }
+              ],
+              "2026-04-28": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 60min leve",
+                  "dur_h": 1.0,
+                  "tss": 35,
+                  "completed": false
+                }
+              ],
+              "2026-04-29": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 40min leve",
+                  "dur_h": 0.67,
+                  "tss": 27,
+                  "completed": false
+                }
+              ],
+              "2026-04-30": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 1.800m",
+                  "dur_h": 0.92,
+                  "tss": 46,
+                  "completed": false
+                }
+              ],
+              "2026-05-01": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 75min",
+                  "dur_h": 1.25,
+                  "tss": 44,
+                  "completed": false
+                }
+              ],
+              "2026-05-02": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 2h Grupo NPC",
+                  "dur_h": 2.0,
+                  "tss": 70,
+                  "completed": false
+                }
+              ],
+              "2026-05-03": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 60min",
+                  "dur_h": 1.0,
+                  "tss": 40,
+                  "completed": false
+                }
+              ]
+            }
+          }
+        }
+      }
     },
     "bruno": {
       "name": "Bruno Trevisan",
@@ -664,7 +1258,285 @@
           "hrv": 38,
           "ht": "dn"
         }
-      ]
+      ],
+      "plan": {
+        "goal": {
+          "name": "Ironman 70.3 (a definir)",
+          "date": "2026-11-01",
+          "type": "Triathlon 70.3",
+          "target": "Completar / sub-5h",
+          "distance": "1.9km / 90km / 21km",
+          "priority": "A"
+        },
+        "phases": [
+          {
+            "name": "Base Aeróbia",
+            "start": "2026-03-18",
+            "end": "2026-06-28"
+          },
+          {
+            "name": "Construção",
+            "start": "2026-06-29",
+            "end": "2026-08-30"
+          },
+          {
+            "name": "Específico",
+            "start": "2026-08-31",
+            "end": "2026-10-04"
+          },
+          {
+            "name": "Taper",
+            "start": "2026-10-05",
+            "end": "2026-10-31"
+          },
+          {
+            "name": "Prova",
+            "start": "2026-11-01",
+            "end": "2026-11-01"
+          }
+        ],
+        "race_date": "2026-11-01",
+        "weeks": {
+          "2026-04-06": {
+            "label": "Semana 3 — Base Aeróbia",
+            "phase": "Base Aeróbia",
+            "tss_target": 590,
+            "days": {
+              "2026-04-06": [
+                {
+                  "sport": "strength",
+                  "title": "Força Sess.1 — Fase 1 4×5 Carga Alta",
+                  "dur_h": 1.28,
+                  "tss": 39,
+                  "completed": true
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 3.400m",
+                  "dur_h": 0.86,
+                  "tss": 69,
+                  "completed": true
+                }
+              ],
+              "2026-04-07": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Aeróbio Base 49.6km",
+                  "dur_h": 1.45,
+                  "tss": 72,
+                  "completed": true
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 3.400m",
+                  "dur_h": 0.84,
+                  "tss": 74,
+                  "completed": true
+                }
+              ],
+              "2026-04-08": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Leve 6.7km (joelho ok)",
+                  "dur_h": 0.59,
+                  "tss": 31,
+                  "completed": true
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.400m",
+                  "dur_h": 1.0,
+                  "tss": 60,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Força Sess.2 — Fase 1 4×5",
+                  "dur_h": 1.15,
+                  "tss": 36,
+                  "completed": true
+                }
+              ],
+              "2026-04-09": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Aeróbio Base 41.6km",
+                  "dur_h": 1.34,
+                  "tss": 66,
+                  "completed": true
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 3.000m",
+                  "dur_h": 0.77,
+                  "tss": 60,
+                  "completed": true
+                }
+              ],
+              "2026-04-10": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Leve 35min",
+                  "dur_h": 0.58,
+                  "tss": 27,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.600m",
+                  "dur_h": 1.0,
+                  "tss": 60,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Força Sess.3 — Fase 1 4×5 (baseline)",
+                  "dur_h": 1.5,
+                  "tss": 32,
+                  "completed": false
+                }
+              ],
+              "2026-04-11": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 90min Grupo NPC ⏱️",
+                  "dur_h": 1.5,
+                  "tss": 78,
+                  "completed": false
+                }
+              ],
+              "2026-04-12": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Longa 55min",
+                  "dur_h": 0.92,
+                  "tss": 42,
+                  "completed": false
+                }
+              ]
+            }
+          },
+          "2026-04-13": {
+            "label": "Semana 4 — Base Aeróbia",
+            "phase": "Base Aeróbia",
+            "tss_target": 620,
+            "days": {
+              "2026-04-13": [
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 3.200m",
+                  "dur_h": 0.92,
+                  "tss": 74,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Força — Fase 2 Iniciada",
+                  "dur_h": 1.5,
+                  "tss": 38,
+                  "completed": false
+                }
+              ],
+              "2026-04-14": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Base 75min",
+                  "dur_h": 1.25,
+                  "tss": 62,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 3.200m",
+                  "dur_h": 0.83,
+                  "tss": 67,
+                  "completed": false
+                }
+              ],
+              "2026-04-15": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 40min (joelho monitorar)",
+                  "dur_h": 0.67,
+                  "tss": 31,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.400m",
+                  "dur_h": 1.0,
+                  "tss": 60,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Força — Fase 2",
+                  "dur_h": 1.5,
+                  "tss": 38,
+                  "completed": false
+                }
+              ],
+              "2026-04-16": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — Base 80min",
+                  "dur_h": 1.33,
+                  "tss": 66,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Técnica 2.800m",
+                  "dur_h": 0.83,
+                  "tss": 67,
+                  "completed": false
+                }
+              ],
+              "2026-04-17": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — 40min",
+                  "dur_h": 0.67,
+                  "tss": 31,
+                  "completed": false
+                },
+                {
+                  "sport": "swim",
+                  "title": "Natação Z1 — Volume 2.600m",
+                  "dur_h": 1.0,
+                  "tss": 60,
+                  "completed": false
+                },
+                {
+                  "sport": "strength",
+                  "title": "Força — Fase 2",
+                  "dur_h": 1.5,
+                  "tss": 38,
+                  "completed": false
+                }
+              ],
+              "2026-04-18": [
+                {
+                  "sport": "bike",
+                  "title": "Ciclismo Z1 — 90min Grupo NPC",
+                  "dur_h": 1.5,
+                  "tss": 78,
+                  "completed": false
+                }
+              ],
+              "2026-04-19": [
+                {
+                  "sport": "run",
+                  "title": "Corrida Z1 — Longa 60min",
+                  "dur_h": 1.0,
+                  "tss": 46,
+                  "completed": false
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
