@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPC Endurance — Dashboard de Treinos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --bg2: #171b24;
+      --bg3: #1e2333;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #eef0f5;
+      --text2: #8b90a0;
+      --text3: #565c70;
+      --blue: #4a9eff;
+      --blue-dim: rgba(74,158,255,0.12);
+      --orange: #ff7c3a;
+      --orange-dim: rgba(255,124,58,0.12);
+      --green: #4db87a;
+      --green-dim: rgba(77,184,122,0.12);
+      --purple: #9b8fff;
+      --purple-dim: rgba(155,143,255,0.12);
+      --amber: #f5a623;
+      --amber-dim: rgba(245,166,35,0.12);
+      --red: #ff5252;
+      --red-dim: rgba(255,82,82,0.12);
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
+
+    /* ── Header ── */
+    .hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      padding-bottom: 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; }
+    .logo-badge {
+      font-size: 11px; font-weight: 700; letter-spacing: .12em;
+      background: var(--orange); color: #fff;
+      padding: 4px 8px; border-radius: 6px;
+    }
+    .logo-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .logo-sub { font-size: 12px; color: var(--text2); }
+
+    .ctrls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .tab-group {
+      display: flex; border: 0.5px solid var(--border2);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .tab-btn {
+      font-size: 12px; font-weight: 500; padding: 7px 16px;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text2); transition: background .15s, color .15s;
+    }
+    .tab-btn.active { background: var(--bg3); color: var(--text); }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,.04); }
+
+    select {
+      font-size: 12px; color: var(--text); background: var(--bg2);
+      border: 0.5px solid var(--border2); border-radius: var(--radius);
+      padding: 7px 10px; height: 34px; cursor: pointer; outline: none;
+      transition: border-color .15s;
+    }
+    select:hover { border-color: rgba(255,255,255,.25); }
+    select option { background: var(--bg2); }
+
+    /* ── Alerts ── */
+    .alerts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .alert-pill {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 500; padding: 6px 12px;
+      border-radius: var(--radius); border: 0.5px solid;
+    }
+    .alert-icon { font-size: 11px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; }
+    .a-danger { background: var(--red-dim); color: #ff8080; border-color: rgba(255,82,82,.3); }
+    .a-danger .alert-icon { background: rgba(255,82,82,.2); color: var(--red); }
+    .a-warn   { background: var(--amber-dim); color: #f5c060; border-color: rgba(245,166,35,.3); }
+    .a-warn   .alert-icon { background: rgba(245,166,35,.2); color: var(--amber); }
+    .a-ok     { background: var(--green-dim); color: #6fcf97; border-color: rgba(77,184,122,.3); }
+    .a-ok     .alert-icon { background: rgba(77,184,122,.2); color: var(--green); }
+    .a-info   { background: var(--blue-dim); color: #7bbdff; border-color: rgba(74,158,255,.3); }
+    .a-info   .alert-icon { background: rgba(74,158,255,.2); color: var(--blue); }
+
+    /* ── KPI grid ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-bottom: 1.25rem; }
+    .kpi {
+      background: var(--bg2); border: 0.5px solid var(--border);
+      border-radius: var(--radius); padding: .875rem 1rem;
+    }
+    .kpi.hl { border-color: var(--border2); background: var(--bg3); }
+    .kpi-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .kpi-value { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-delta { font-size: 11px; margin-top: 5px; }
+    .kpi-sub { font-size: 10px; color: var(--text2); margin-top: 5px; line-height: 1.5; }
+    .up { color: var(--green); }
+    .dn { color: var(--red); }
+    .nt { color: var(--text3); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg2); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+    }
+    .card-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .875rem; }
+    .card-title-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: .875rem; }
+    .card-title-row .card-title { margin-bottom: 0; }
+
+    .row1 { margin-bottom: 1.25rem; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+
+    /* ── Legend ── */
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; font-size: 11px; color: var(--text2); }
+    .legend span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+    /* ── Adherence ── */
+    .adh-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .adh-label { font-size: 11px; color: var(--text2); width: 60px; flex-shrink: 0; }
+    .adh-track { flex: 1; height: 7px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+    .adh-fill { height: 100%; border-radius: 4px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .adh-pct { font-size: 11px; font-weight: 600; width: 34px; text-align: right; flex-shrink: 0; }
+    .adh-detail { font-size: 10px; color: var(--text3); width: 90px; flex-shrink: 0; text-align: right; }
+
+    /* ── Sessions table ── */
+    .stbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .stbl th {
+      text-align: left; font-size: 10px; font-weight: 600;
+      color: var(--text3); text-transform: uppercase; letter-spacing: .07em;
+      padding: 0 10px 10px 0; border-bottom: 0.5px solid var(--border);
+    }
+    .stbl td { padding: 9px 10px 9px 0; border-bottom: 0.5px solid var(--border); color: var(--text); vertical-align: middle; }
+    .stbl tr:last-child td { border-bottom: none; }
+    .stbl tr:hover td { background: rgba(255,255,255,.025); }
+
+    .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 5px; }
+    .b-swim     { background: rgba(74,158,255,.18); color: #7bbdff; }
+    .b-bike     { background: rgba(245,166,35,.18); color: #f5c060; }
+    .b-run      { background: rgba(77,184,122,.18); color: #6fcf97; }
+    .b-strength { background: rgba(155,143,255,.18); color: #c4bbff; }
+
+    /* ── Comparativo ── */
+    .cmp-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 1.25rem; }
+    .cmp-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+    .cmp-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: .625rem; padding-bottom: .625rem; border-bottom: 0.5px solid var(--border); padding-left: 10px; }
+    .cmp-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 12px; border-bottom: 0.5px solid var(--border); }
+    .cmp-row:last-child { border-bottom: none; }
+    .cmp-k { color: var(--text2); }
+    .cmp-v { font-weight: 600; color: var(--text); }
+
+    /* ── Section label ── */
+    .section-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin: 0 0 .875rem; }
+
+    /* ── Footer ── */
+    .footer { margin-top: 3rem; padding-top: 1rem; border-top: 0.5px solid var(--border); text-align: center; font-size: 11px; color: var(--text3); }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .row3 { grid-template-columns: 1fr 1fr; }
+      .cmp-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .row2, .row3, .cmp-grid { grid-template-columns: 1fr; }
+      .hdr { flex-direction: column; align-items: flex-start; }
+      .adh-detail { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="logo-wrap">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <span class="logo-badge">NPC</span>
+          <span class="logo-title">Endurance</span>
+        </div>
+        <div class="logo-sub">Dashboard de Análise de Treinos · Dados fictícios</div>
+      </div>
+    </div>
+    <div class="ctrls">
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
+        <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
+      </div>
+      <select id="sel-athlete" onchange="updateDash()">
+        <option value="bruno">Bruno Trevisan</option>
+        <option value="jean">Jean Romano</option>
+        <option value="gabriel">Gabriel</option>
+      </select>
+      <select id="sel-sport" onchange="updateDash()">
+        <option value="all">Todos os esportes</option>
+        <option value="swim">Natação</option>
+        <option value="bike">Ciclismo</option>
+        <option value="run">Corrida</option>
+        <option value="strength">Força</option>
+      </select>
+      <select id="sel-week" onchange="updateDash()">
+        <option value="w4">Semana atual (7–13 Abr)</option>
+        <option value="w3">Semana passada (31 Mar–6 Abr)</option>
+        <option value="w2">2 semanas atrás</option>
+        <option value="w1">3 semanas atrás</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Individual view -->
+  <div id="view-individual">
+    <div id="alerts-bar" class="alerts"></div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <div class="card row1">
+      <div class="card-title">Tendência de carga — CTL / ATL / TSB (últimas 8 semanas)</div>
+      <div class="legend" id="pmc-legend"></div>
+      <div style="position:relative;height:200px"><canvas id="pmc-chart"></canvas></div>
+    </div>
+
+    <div class="row3">
+      <div class="card">
+        <div class="card-title">Distribuição de zonas (%)</div>
+        <div class="legend" id="zone-legend"></div>
+        <div style="position:relative;height:160px"><canvas id="zone-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title-row">
+          <span class="card-title">Volume semanal</span>
+          <span id="vol-total" style="font-size:13px;font-weight:600;color:var(--text)"></span>
+        </div>
+        <div class="legend" id="vol-legend"></div>
+        <div style="position:relative;height:160px"><canvas id="vol-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Tendência de HRV (14 dias)</div>
+        <div class="legend" id="hrv-legend"></div>
+        <div style="position:relative;height:160px"><canvas id="hrv-chart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card row1">
+      <div class="card-title-row">
+        <span class="card-title">Aderência ao plano — executado vs prescrito</span>
+        <span id="adh-overall" style="font-size:13px;font-weight:600"></span>
+      </div>
+      <div id="adh-bars"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Sessões da semana</div>
+      <table class="stbl">
+        <thead>
+          <tr>
+            <th>Dia</th><th>Modalidade</th><th>Descrição</th>
+            <th>Duração</th><th>TSS</th><th>Zonas</th><th>HRV</th>
+          </tr>
+        </thead>
+        <tbody id="sessions-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Comparativo view -->
+  <div id="view-comparativo" style="display:none">
+    <div class="section-label">Métricas de carga</div>
+    <div class="cmp-grid" id="cmp-load"></div>
+
+    <div class="row2">
+      <div class="card">
+        <div class="card-title">CTL — evolução comparativa (8 semanas)</div>
+        <div class="legend" id="cmp-ctl-legend"></div>
+        <div style="position:relative;height:190px"><canvas id="cmp-ctl-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">HRV — evolução comparativa (14 dias)</div>
+        <div class="legend" id="cmp-hrv-legend"></div>
+        <div style="position:relative;height:190px"><canvas id="cmp-hrv-chart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-label">Aderência ao plano</div>
+    <div class="cmp-grid" id="cmp-adh"></div>
+
+    <div class="section-label">Volume semanal por disciplina (horas)</div>
+    <div class="card">
+      <div class="legend" id="cmp-vol-legend"></div>
+      <div style="position:relative;height:220px"><canvas id="cmp-vol-chart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="footer">NPC Endurance · Método Norueguês · Dados fictícios para validação de protótipo</div>
+</div>
+
+<script>
+const ATHLETES = ['bruno','jean','gabriel'];
+const NAMES    = { bruno:'Bruno', jean:'Jean', gabriel:'Gabriel' };
+const COLORS   = { bruno:'#4a9eff', jean:'#ff7c3a', gabriel:'#4db87a' };
+
+const DB = {
+  bruno: {
+    kpis: { ctl:72, atl:68, tsb:4, tss_week:412 },
+    kpi_delta: { ctl:'+3', atl:'+8', tsb:'-4', tss_week:'+31' },
+    pmc: { labels:['S1','S2','S3','S4','S5','S6','S7','S8'], ctl:[58,61,65,68,70,74,73,72], atl:[62,70,75,72,65,78,74,68], tsb:[-4,-9,-10,-4,5,-4,-1,4] },
+    zones: { labels:['Natação','Bike','Corrida'], z1:[72,68,65], z2:[22,25,28], z3:[6,7,7] },
+    vol: { swim:2.1, bike:5.8, run:3.2, strength:1.0 },
+    hrv: { labels:['1/4','2/4','3/4','4/4','5/4','6/4','7/4','8/4','9/4','10/4','11/4','12/4','13/4','14/4'], vals:[56,54,57,59,55,53,58,60,57,54,55,58,59,60], baseline:57 },
+    adherence: [
+      { label:'Natação',  done:2.1, target:2.5, color:'#4a9eff' },
+      { label:'Bike',     done:5.8, target:6.0, color:'#f5a623' },
+      { label:'Corrida',  done:3.2, target:3.5, color:'#4db87a' },
+      { label:'Força',    done:1.0, target:1.0, color:'#9b8fff' },
+    ],
+    alerts: [
+      { type:'ok',   msg:'Forma positiva — TSB +4, bom momento para treinos de qualidade' },
+      { type:'info', msg:'ATL elevada — monitorar recuperação nos próximos 3 dias' },
+    ],
+    sessions: [
+      { day:'Seg', sport:'run',      desc:'Limiar duplo — 3×10min Z2 + 2×8min Z3',          dur:'1h15',  tss:82,  zones:'60/30/10', hrv:58, ht:'up' },
+      { day:'Seg', sport:'strength', desc:'Força — Alfredson + squat unilateral',             dur:'45min', tss:35,  zones:'—',       hrv:58, ht:'up' },
+      { day:'Ter', sport:'swim',     desc:'Volume Z1 — 3.200m aeróbico',                      dur:'1h05',  tss:48,  zones:'80/18/2', hrv:55, ht:'dn' },
+      { day:'Qua', sport:'bike',     desc:'Endurance Z1 — 90min fundo',                       dur:'1h30',  tss:65,  zones:'75/22/3', hrv:54, ht:'nt' },
+      { day:'Qui', sport:'run',      desc:'Limiar duplo — 4×6min Z2 + 3×5min Z3',             dur:'1h10',  tss:78,  zones:'55/32/13',hrv:56, ht:'up' },
+      { day:'Sex', sport:'swim',     desc:'CSS — 8×100m no limiar',                           dur:'55min', tss:55,  zones:'40/42/18',hrv:57, ht:'up' },
+      { day:'Sáb', sport:'bike',     desc:'Longa Z1 — 3h base aeróbica',                      dur:'3h00',  tss:95,  zones:'80/18/2', hrv:59, ht:'up' },
+    ]
+  },
+  jean: {
+    kpis: { ctl:85, atl:79, tsb:6, tss_week:498 },
+    kpi_delta: { ctl:'+5', atl:'+6', tsb:'+2', tss_week:'+44' },
+    pmc: { labels:['S1','S2','S3','S4','S5','S6','S7','S8'], ctl:[68,72,76,79,82,85,84,85], atl:[70,78,82,80,76,88,82,79], tsb:[-2,-6,-6,-1,6,-3,2,6] },
+    zones: { labels:['Natação','Bike','Corrida'], z1:[70,65,60], z2:[24,28,32], z3:[6,7,8] },
+    vol: { swim:2.8, bike:7.2, run:4.5, strength:1.0 },
+    hrv: { labels:['1/4','2/4','3/4','4/4','5/4','6/4','7/4','8/4','9/4','10/4','11/4','12/4','13/4','14/4'], vals:[60,62,61,58,60,63,64,62,59,61,63,64,63,65], baseline:62 },
+    adherence: [
+      { label:'Natação', done:2.8, target:3.0, color:'#4a9eff' },
+      { label:'Bike',    done:7.2, target:7.0, color:'#f5a623' },
+      { label:'Corrida', done:4.5, target:4.5, color:'#4db87a' },
+      { label:'Força',   done:1.0, target:1.0, color:'#9b8fff' },
+    ],
+    alerts: [
+      { type:'ok',   msg:'Excelente aderência — 97% do plano executado esta semana' },
+      { type:'info', msg:'Buenos Aires (70.3) em 25 semanas — momento de base aeróbica' },
+    ],
+    sessions: [
+      { day:'Seg', sport:'bike',     desc:'Limiar duplo — 5×8min Z2 + 3×6min Z3',  dur:'1h30', tss:95,  zones:'50/36/14', hrv:62, ht:'up' },
+      { day:'Ter', sport:'swim',     desc:'Técnica + CSS — 3.600m',                 dur:'1h10', tss:58,  zones:'65/28/7',  hrv:60, ht:'nt' },
+      { day:'Qua', sport:'run',      desc:'Volume Z1 — 12km fácil',                 dur:'1h15', tss:62,  zones:'78/20/2',  hrv:61, ht:'up' },
+      { day:'Qua', sport:'strength', desc:'Força funcional + mobilidade',            dur:'45min',tss:30,  zones:'—',        hrv:61, ht:'up' },
+      { day:'Qui', sport:'bike',     desc:'Limiar duplo — FTP intervals',            dur:'1h20', tss:88,  zones:'45/38/17', hrv:59, ht:'dn' },
+      { day:'Sex', sport:'swim',     desc:'Endurance — 4.000m Z1/Z2',               dur:'1h20', tss:65,  zones:'70/26/4',  hrv:62, ht:'up' },
+      { day:'Sáb', sport:'run',      desc:'Longa Z1/Z2 — 18km progressivo',         dur:'1h45', tss:100, zones:'65/28/7',  hrv:64, ht:'up' },
+    ]
+  },
+  gabriel: {
+    kpis: { ctl:58, atl:72, tsb:-14, tss_week:380 },
+    kpi_delta: { ctl:'+2', atl:'+14', tsb:'-12', tss_week:'+55' },
+    pmc: { labels:['S1','S2','S3','S4','S5','S6','S7','S8'], ctl:[46,49,52,54,56,58,57,58], atl:[50,55,60,58,52,65,70,72], tsb:[-4,-6,-8,-4,4,-7,-13,-14] },
+    zones: { labels:['Bike','Corrida','Força'], z1:[60,58,55], z2:[28,30,30], z3:[12,12,15] },
+    vol: { swim:0, bike:5.5, run:4.2, strength:1.5 },
+    hrv: { labels:['1/4','2/4','3/4','4/4','5/4','6/4','7/4','8/4','9/4','10/4','11/4','12/4','13/4','14/4'], vals:[58,56,54,52,55,53,51,50,52,51,53,54,55,53], baseline:55 },
+    adherence: [
+      { label:'Bike',    done:5.5, target:5.0, color:'#f5a623' },
+      { label:'Corrida', done:4.2, target:4.0, color:'#4db87a' },
+      { label:'Força',   done:1.5, target:1.5, color:'#9b8fff' },
+    ],
+    alerts: [
+      { type:'danger', msg:'Risco de overtraining — TSB −14, ATL 24% acima da CTL' },
+      { type:'warn',   msg:'Duatlon em 3 dias — taper insuficiente, reduzir volume imediatamente' },
+      { type:'warn',   msg:'HRV em queda há 7 dias — priorizar sono e recuperação' },
+    ],
+    sessions: [
+      { day:'Seg', sport:'run',      desc:'Limiar — 3×10min Z2 pré-duatlon',                      dur:'1h00',  tss:70,  zones:'55/33/12', hrv:52, ht:'dn' },
+      { day:'Ter', sport:'bike',     desc:'Específico duatlon — 3×8min Z3',                        dur:'1h10',  tss:85,  zones:'40/38/22', hrv:50, ht:'dn' },
+      { day:'Qua', sport:'strength', desc:'Alfredson + estabilização joelho',                      dur:'40min', tss:25,  zones:'—',        hrv:51, ht:'nt' },
+      { day:'Qui', sport:'run',      desc:'Taper ativo — 6km Z1 leve',                             dur:'40min', tss:35,  zones:'85/13/2',  hrv:54, ht:'up' },
+      { day:'Sex', sport:'bike',     desc:'Ativação pré-prova — 30min Z1 + strides',               dur:'30min', tss:22,  zones:'80/15/5',  hrv:55, ht:'up' },
+      { day:'Sáb', sport:'run',      desc:'PROVA — Duatlon 5/20/2.5km (meta sub-56)',              dur:'~56min',tss:110, zones:'20/35/45', hrv:53, ht:'nt' },
+    ]
+  }
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────
+const charts = {};
+let currentView = 'individual';
+
+function fmtH(h) {
+  const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+  return mm > 0 ? `${hh}h${String(mm).padStart(2,'0')}` : `${hh}h`;
+}
+function totalH(vol) { return Object.values(vol).reduce((a,b) => a+b, 0); }
+function getA()  { return document.getElementById('sel-athlete').value; }
+function getSp() { return document.getElementById('sel-sport').value; }
+function dc(id)  { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+const gridColor = 'rgba(255,255,255,0.06)';
+const tickFont  = { size: 11, family: 'system-ui' };
+
+// ── View toggle ───────────────────────────────────────────────────────
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-individual').style.display  = v === 'individual'  ? 'block' : 'none';
+  document.getElementById('view-comparativo').style.display = v === 'comparativo' ? 'block' : 'none';
+  document.getElementById('sel-athlete').disabled = v === 'comparativo';
+  document.getElementById('sel-sport').disabled   = v === 'comparativo';
+  if (v === 'comparativo') renderComparativo();
+}
+
+// ── Main update ───────────────────────────────────────────────────────
+function updateDash() {
+  if (currentView === 'comparativo') { renderComparativo(); return; }
+  const d = DB[getA()];
+  renderAlerts(d);
+  renderKPIs(d);
+  renderPMC(d);
+  renderZone(d);
+  renderVol(d);
+  renderHRV(d);
+  renderAdherence(d);
+  renderSessions(d);
+}
+
+// ── Alerts ────────────────────────────────────────────────────────────
+function renderAlerts(d) {
+  const icons = { danger:'⚠', warn:'!', ok:'✓', info:'i' };
+  const cls   = { danger:'a-danger', warn:'a-warn', ok:'a-ok', info:'a-info' };
+  document.getElementById('alerts-bar').innerHTML = d.alerts.map(a =>
+    `<div class="alert-pill ${cls[a.type]}">
+       <span class="alert-icon">${icons[a.type]}</span>${a.msg}
+     </div>`
+  ).join('');
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────
+function renderKPIs(d) {
+  const total = totalH(d.vol);
+  const parts = [
+    d.vol.swim     > 0 ? `Nat ${fmtH(d.vol.swim)}`     : '',
+    d.vol.bike     > 0 ? `Bike ${fmtH(d.vol.bike)}`    : '',
+    d.vol.run      > 0 ? `Corr ${fmtH(d.vol.run)}`     : '',
+    d.vol.strength > 0 ? `Força ${fmtH(d.vol.strength)}`: '',
+  ].filter(Boolean).join(' · ');
+
+  const defs = [
+    { key:'ctl',      label:'CTL — Fitness' },
+    { key:'atl',      label:'ATL — Fadiga'  },
+    { key:'tsb',      label:'TSB — Form'    },
+    { key:'tss_week', label:'TSS Semanal'   },
+  ];
+  document.getElementById('kpi-grid').innerHTML =
+    defs.map(def => {
+      const val = d.kpis[def.key], delta = d.kpi_delta[def.key];
+      const dir = delta.startsWith('+') ? 'up' : delta.startsWith('-') ? 'dn' : 'nt';
+      const arr = dir === 'up' ? '↑' : dir === 'dn' ? '↓' : '→';
+      return `<div class="kpi">
+        <div class="kpi-label">${def.label}</div>
+        <div class="kpi-value">${val}</div>
+        <div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div>
+      </div>`;
+    }).join('') +
+    `<div class="kpi hl">
+       <div class="kpi-label">Total de horas</div>
+       <div class="kpi-value">${fmtH(total)}</div>
+       <div class="kpi-sub">${parts}</div>
+     </div>`;
+}
+
+// ── PMC ───────────────────────────────────────────────────────────────
+function renderPMC(d) {
+  dc('pmc');
+  document.getElementById('pmc-legend').innerHTML = `
+    <span><span class="dot" style="background:#4a9eff"></span>CTL</span>
+    <span><span class="dot" style="background:#ff7c3a"></span>ATL</span>
+    <span><span class="dot" style="background:#4db87a"></span>TSB</span>`;
+  charts['pmc'] = new Chart(document.getElementById('pmc-chart'), {
+    type: 'line',
+    data: { labels: d.pmc.labels, datasets: [
+      { label:'CTL', data:d.pmc.ctl, borderColor:'#4a9eff', backgroundColor:'rgba(74,158,255,.07)', tension:.4, pointRadius:3, borderWidth:2, fill:true },
+      { label:'ATL', data:d.pmc.atl, borderColor:'#ff7c3a', backgroundColor:'rgba(255,124,58,.07)', tension:.4, pointRadius:3, borderWidth:2, fill:true },
+      { label:'TSB', data:d.pmc.tsb, borderColor:'#4db87a', borderDash:[5,3], tension:.4, pointRadius:3, borderWidth:2 },
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+      scales: { x:{ grid:{color:gridColor}, ticks:{color:'#565c70',font:tickFont} }, y:{ grid:{color:gridColor}, ticks:{color:'#565c70',font:tickFont} } } }
+  });
+}
+
+// ── Zones ─────────────────────────────────────────────────────────────
+function renderZone(d) {
+  dc('zone');
+  document.getElementById('zone-legend').innerHTML = `
+    <span><span class="dot" style="background:#2a5080"></span>Z1</span>
+    <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
+    <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;
+  charts['zone'] = new Chart(document.getElementById('zone-chart'), {
+    type: 'bar',
+    data: { labels: d.zones.labels, datasets: [
+      { label:'Z1', data:d.zones.z1, backgroundColor:'#2a5080', borderRadius:3 },
+      { label:'Z2', data:d.zones.z2, backgroundColor:'#4a9eff', borderRadius:3 },
+      { label:'Z3', data:d.zones.z3, backgroundColor:'#ff7c3a', borderRadius:3 },
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}} },
+      scales: {
+        x:{ stacked:true, grid:{display:false}, ticks:{color:'#565c70',font:tickFont} },
+        y:{ stacked:true, max:100, ticks:{color:'#565c70',font:tickFont,callback:v=>v+'%'}, grid:{color:gridColor} }
+      }
+    }
+  });
+}
+
+// ── Volume ────────────────────────────────────────────────────────────
+function renderVol(d) {
+  dc('vol');
+  const map = { swim:['Natação','#4a9eff'], bike:['Bike','#f5a623'], run:['Corrida','#4db87a'], strength:['Força','#9b8fff'] };
+  const labels=[], vals=[], colors=[];
+  for (const [k,[l,c]] of Object.entries(map)) { if (d.vol[k]>0) { labels.push(l); vals.push(d.vol[k]); colors.push(c); } }
+  document.getElementById('vol-total').textContent = fmtH(totalH(d.vol)) + ' total';
+  document.getElementById('vol-legend').innerHTML = labels.map((l,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${l}</span>`).join('');
+  charts['vol'] = new Chart(document.getElementById('vol-chart'), {
+    type: 'bar',
+    data: { labels, datasets:[{ data:vals, backgroundColor:colors, borderRadius:5 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw.toFixed(1)}h`}} },
+      scales: { x:{ grid:{display:false}, ticks:{color:'#565c70',font:tickFont} }, y:{ ticks:{color:'#565c70',font:tickFont,callback:v=>v+'h'}, grid:{color:gridColor} } }
+    }
+  });
+}
+
+// ── HRV ───────────────────────────────────────────────────────────────
+function renderHRV(d) {
+  dc('hrv');
+  const baseline = d.hrv.baseline;
+  document.getElementById('hrv-legend').innerHTML = `
+    <span><span class="dot" style="background:#9b8fff"></span>HRV diário</span>
+    <span><span class="dot" style="background:#3a3f52;border:0.5px solid #565c70"></span>Baseline</span>`;
+  charts['hrv'] = new Chart(document.getElementById('hrv-chart'), {
+    type: 'line',
+    data: { labels: d.hrv.labels, datasets: [
+      { label:'HRV', data:d.hrv.vals, borderColor:'#9b8fff', backgroundColor:'rgba(155,143,255,.1)', tension:.3, pointRadius:3, borderWidth:2, fill:true },
+      { label:'Baseline', data:Array(14).fill(baseline), borderColor:'#3a3f52', borderDash:[5,3], pointRadius:0, borderWidth:1.5 },
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+      scales: {
+        x:{ grid:{color:gridColor}, ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7} },
+        y:{ grid:{color:gridColor}, ticks:{color:'#565c70',font:tickFont}, suggestedMin:baseline-15, suggestedMax:baseline+15 }
+      }
+    }
+  });
+}
+
+// ── Adherence ─────────────────────────────────────────────────────────
+function renderAdherence(d) {
+  const overall = Math.round(d.adherence.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/d.adherence.length*100);
+  const oc = overall>=90 ? '#4db87a' : overall>=70 ? '#f5a623' : '#ff7c3a';
+  document.getElementById('adh-overall').innerHTML = `<span style="color:${oc}">${overall}% aderência</span>`;
+  document.getElementById('adh-bars').innerHTML = d.adherence.map(r => {
+    const pct = Math.min(Math.round(r.done/r.target*100), 100);
+    const over = r.done > r.target;
+    const bc = over ? '#4db87a' : pct>=85 ? r.color : '#ff7c3a';
+    const label = over ? `${r.done.toFixed(1)}h / ${r.target.toFixed(1)}h ↑` : `${r.done.toFixed(1)}h / ${r.target.toFixed(1)}h`;
+    return `<div class="adh-row">
+      <span class="adh-label">${r.label}</span>
+      <div class="adh-track"><div class="adh-fill" style="width:${pct}%;background:${bc}"></div></div>
+      <span class="adh-pct" style="color:${bc}">${pct}%</span>
+      <span class="adh-detail">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Sessions ──────────────────────────────────────────────────────────
+function renderSessions(d) {
+  const sLabel = { swim:'Natação', bike:'Bike', run:'Corrida', strength:'Força' };
+  const sel = getSp();
+  const rows = d.sessions.filter(s => sel==='all' || s.sport===sel);
+  const arr = { up:'↑', dn:'↓', nt:'→' };
+  const hc  = { up:'#4db87a', dn:'#ff7c3a', nt:'#565c70' };
+  document.getElementById('sessions-body').innerHTML = rows.map(s => `
+    <tr>
+      <td style="font-weight:600">${s.day}</td>
+      <td><span class="badge b-${s.sport}">${sLabel[s.sport]}</span></td>
+      <td style="color:#8b90a0">${s.desc}</td>
+      <td>${s.dur}</td>
+      <td style="font-weight:600">${s.tss}</td>
+      <td style="color:#565c70">${s.zones}</td>
+      <td style="color:${hc[s.ht]}">${s.hrv} ${arr[s.ht]}</td>
+    </tr>`).join('');
+}
+
+// ── Comparativo ───────────────────────────────────────────────────────
+function renderComparativo() {
+  const loadMap = [
+    { key:'ctl', label:'CTL' }, { key:'atl', label:'ATL' },
+    { key:'tsb', label:'TSB' }, { key:'tss_week', label:'TSS semana' },
+  ];
+  document.getElementById('cmp-load').innerHTML = ATHLETES.map(id => {
+    const d = DB[id], tsb = d.kpis.tsb;
+    const tc = tsb>5 ? '#4db87a' : tsb<-10 ? '#ff7c3a' : '#8b90a0';
+    return `<div class="cmp-card">
+      <div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>
+      ${loadMap.map(m=>`<div class="cmp-row"><span class="cmp-k">${m.label}</span><span class="cmp-v" style="${m.key==='tsb'?`color:${tc}`:''}"> ${d.kpis[m.key]}</span></div>`).join('')}
+      <div class="cmp-row"><span class="cmp-k">Horas totais</span><span class="cmp-v">${fmtH(totalH(d.vol))}</span></div>
+    </div>`;
+  }).join('');
+
+  dc('cmp-ctl');
+  document.getElementById('cmp-ctl-legend').innerHTML = ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  charts['cmp-ctl'] = new Chart(document.getElementById('cmp-ctl-chart'), {
+    type:'line',
+    data:{ labels:DB.bruno.pmc.labels, datasets:ATHLETES.map(id=>({ label:NAMES[id], data:DB[id].pmc.ctl, borderColor:COLORS[id], tension:.4, pointRadius:3, borderWidth:2, backgroundColor:'transparent' })) },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:{color:gridColor},ticks:{color:'#565c70',font:tickFont}}, y:{grid:{color:gridColor},ticks:{color:'#565c70',font:tickFont}} } }
+  });
+
+  dc('cmp-hrv');
+  document.getElementById('cmp-hrv-legend').innerHTML = ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  charts['cmp-hrv'] = new Chart(document.getElementById('cmp-hrv-chart'), {
+    type:'line',
+    data:{ labels:DB.bruno.hrv.labels, datasets:ATHLETES.map(id=>({ label:NAMES[id], data:DB[id].hrv.vals, borderColor:COLORS[id], tension:.3, pointRadius:3, borderWidth:2, backgroundColor:'transparent' })) },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:{color:gridColor},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}}, y:{grid:{color:gridColor},ticks:{color:'#565c70',font:tickFont}} } }
+  });
+
+  document.getElementById('cmp-adh').innerHTML = ATHLETES.map(id => {
+    const adh = DB[id].adherence;
+    const overall = Math.round(adh.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/adh.length*100);
+    const oc = overall>=90?'#4db87a':overall>=70?'#f5a623':'#ff7c3a';
+    return `<div class="cmp-card">
+      <div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>
+      ${adh.map(r=>{
+        const pct=Math.min(Math.round(r.done/r.target*100),100);
+        const bc=r.done>r.target?'#4db87a':pct>=85?r.color:'#ff7c3a';
+        return `<div class="adh-row" style="margin-bottom:9px">
+          <span class="adh-label">${r.label}</span>
+          <div class="adh-track"><div class="adh-fill" style="width:${pct}%;background:${bc}"></div></div>
+          <span class="adh-pct" style="color:${bc}">${pct}%</span>
+        </div>`;
+      }).join('')}
+      <div style="font-size:12px;font-weight:600;color:${oc};margin-top:6px">Aderência geral: ${overall}%</div>
+    </div>`;
+  }).join('');
+
+  dc('cmp-vol');
+  const vLabels=['Natação','Bike','Corrida','Força'];
+  const vKeys  =['swim','bike','run','strength'];
+  document.getElementById('cmp-vol-legend').innerHTML = ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  charts['cmp-vol'] = new Chart(document.getElementById('cmp-vol-chart'), {
+    type:'bar',
+    data:{ labels:vLabels, datasets:ATHLETES.map(id=>({ label:NAMES[id], data:vKeys.map(k=>DB[id].vol[k]||0), backgroundColor:COLORS[id], borderRadius:4 })) },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${NAMES[ATHLETES[c.datasetIndex]]}: ${c.raw.toFixed(1)}h`}} },
+      scales:{ x:{grid:{display:false},ticks:{color:'#565c70',font:tickFont}}, y:{ticks:{color:'#565c70',font:tickFont,callback:v=>v+'h'},grid:{color:gridColor}} } }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+updateDash();
+</script>
+</body>
+</html>
