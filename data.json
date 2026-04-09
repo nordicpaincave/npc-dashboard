@@ -612,7 +612,8 @@
           "target": "Top 5 M40-44",
           "distance": "1.9km / 90km / 21km",
           "location": "Buenos Aires, Argentina",
-          "priority": "A"
+          "priority": "A",
+          "ctl_target": 120
         },
         "phases": [
           {
@@ -643,10 +644,67 @@
         ],
         "race_date": "2026-10-04",
         "weeks": {
+          "2026-03-16": {
+            "label": "Semana 1 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Adaptação — tolerância de carga",
+            "volume": "Baixo",
+            "tss_target": 250,
+            "ctl_target": 20,
+            "is_discharge": false,
+            "key_sessions": [
+              "Swim técnica Z1",
+              "Bike Z1 60min",
+              "Run suave 30min",
+              "Força 3×"
+            ],
+            "days": {}
+          },
+          "2026-03-23": {
+            "label": "Semana 2 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Construção gradual de volume Z1",
+            "volume": "Médio-",
+            "tss_target": 420,
+            "ctl_target": 28,
+            "is_discharge": false,
+            "key_sessions": [
+              "Swim volume crescendo",
+              "Bike Z1 90min",
+              "Run 40min",
+              "Força 3×"
+            ],
+            "days": {}
+          },
+          "2026-03-30": {
+            "label": "Semana 3 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Volume Z1 estabelecendo — primeiras longas",
+            "volume": "Médio",
+            "tss_target": 510,
+            "ctl_target": 36,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo Z1 (grupo NPC)",
+              "OWS primeiro contato",
+              "Força 3×"
+            ],
+            "days": {}
+          },
           "2026-04-06": {
-            "label": "Semana 3 — Base Aeróbia",
-            "phase": "Base Aeróbia",
-            "tss_target": 748,
+            "label": "Semana 4 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Volume Z1 crescendo — base sólida",
+            "volume": "Médio+",
+            "tss_target": 640,
+            "ctl_target": 46,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo 2h30",
+              "Swim 4×/sem",
+              "Run cauteloso",
+              "Força 3×"
+            ],
             "days": {
               "2026-04-06": [
                 {
@@ -756,9 +814,19 @@
             }
           },
           "2026-04-13": {
-            "label": "Semana 4 — Base Aeróbia",
-            "phase": "Base Aeróbia",
-            "tss_target": 780,
+            "label": "Semana 5 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Pico de fase — maior semana até agora",
+            "volume": "Alto-",
+            "tss_target": 720,
+            "ctl_target": 55,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo 3h",
+              "CSS testado",
+              "Run 55min",
+              "Força 3×"
+            ],
             "days": {
               "2026-04-13": [
                 {
@@ -861,9 +929,19 @@
             }
           },
           "2026-04-20": {
-            "label": "Semana 5 — Base Aeróbia",
-            "phase": "Base Aeróbia",
-            "tss_target": 820,
+            "label": "Semana 6 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Consolidação — preparar 1ª descarga",
+            "volume": "Alto-",
+            "tss_target": 760,
+            "ctl_target": 63,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo 3h",
+              "Swim 4×/sem",
+              "Run 55min",
+              "Força 2×"
+            ],
             "days": {
               "2026-04-20": [
                 {
@@ -952,9 +1030,19 @@
             }
           },
           "2026-04-27": {
-            "label": "Semana 6 — Descarga ♻️",
-            "phase": "Base Aeróbia",
-            "tss_target": 450,
+            "label": "Semana 7 — ♻️ Descarga",
+            "phase": "Descarga 1",
+            "focus": "Recuperação ativa — absorção de carga",
+            "volume": "Baixo",
+            "tss_target": 400,
+            "ctl_target": 67,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Sem threshold",
+              "Força 1×",
+              "Sono e nutrição prioridade"
+            ],
             "days": {
               "2026-04-27": [
                 {
@@ -1020,6 +1108,347 @@
                 }
               ]
             }
+          },
+          "2026-05-04": {
+            "label": "Semana 8 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "★ Primeiro duplo limiar — baixo volume",
+            "volume": "Médio",
+            "tss_target": 660,
+            "ctl_target": 73,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run: 2×10min Z2",
+              "Bike: 3×8min Z2",
+              "Swim CSS intro",
+              "Força 2×",
+              "⚗️ Ergo Bruno 04/05"
+            ],
+            "days": {}
+          },
+          "2026-05-11": {
+            "label": "Semana 9 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Limiar progressivo — qualidade > volume",
+            "volume": "Médio",
+            "tss_target": 700,
+            "ctl_target": 78,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run: 2×12min Z2",
+              "Bike: 3×10min Z2",
+              "Brick intro 30+20min",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-05-18": {
+            "label": "Semana 10 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Brick semanal instaurado",
+            "volume": "Médio+",
+            "tss_target": 740,
+            "ctl_target": 83,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run Z2+Z3 combo",
+              "Bike limiar",
+              "1 Brick/semana",
+              "CSS integrado"
+            ],
+            "days": {}
+          },
+          "2026-05-25": {
+            "label": "Semana 11 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Pico do bloco — maior volume com limiar",
+            "volume": "Alto-",
+            "tss_target": 790,
+            "ctl_target": 88,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run 2×14min Z2",
+              "Bike 3×12min Z2",
+              "Brick 45+30min",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-06-01": {
+            "label": "Semana 12 — ♻️ Descarga",
+            "phase": "Descarga 2",
+            "focus": "Recuperação — check-in de forma",
+            "volume": "Baixo",
+            "tss_target": 430,
+            "ctl_target": 90,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "1 sessão Z2 leve",
+              "Avaliação subjetiva completa"
+            ],
+            "days": {}
+          },
+          "2026-06-08": {
+            "label": "Semana 13 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Relançamento pós-descarga",
+            "volume": "Médio+",
+            "tss_target": 770,
+            "ctl_target": 94,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run Z2+Z3",
+              "Bike long intervals",
+              "Brick semanal",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-06-15": {
+            "label": "Semana 14 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Fechamento bloco 1 — pico de eficiência",
+            "volume": "Alto",
+            "tss_target": 820,
+            "ctl_target": 98,
+            "is_discharge": false,
+            "key_sessions": [
+              "Sessões de qualidade alta",
+              "Brick 60+40min",
+              "CSS semana forte"
+            ],
+            "days": {}
+          },
+          "2026-06-22": {
+            "label": "Semana 15 — ♻️ Descarga",
+            "phase": "Descarga 3",
+            "focus": "Descanso antes do novo patamar",
+            "volume": "Baixo",
+            "tss_target": 440,
+            "ctl_target": 100,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Força 1×",
+              "Nutrição de recuperação",
+              "Avaliação"
+            ],
+            "days": {}
+          },
+          "2026-06-29": {
+            "label": "Semana 16 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "★ Volume 2 — threshold 3×/semana",
+            "volume": "Alto",
+            "tss_target": 820,
+            "ctl_target": 104,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run 3×10min Z2+Z3",
+              "Bike 4×10min Z2",
+              "Brick 60+45min",
+              "Força 1×"
+            ],
+            "days": {}
+          },
+          "2026-07-06": {
+            "label": "Semana 17 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Volume crescente — novo patamar",
+            "volume": "Alto",
+            "tss_target": 860,
+            "ctl_target": 107,
+            "is_discharge": false,
+            "key_sessions": [
+              "Sessões Z2 mais longas",
+              "OWS semanal",
+              "Brick 2×/semana",
+              "Força 1×"
+            ],
+            "days": {}
+          },
+          "2026-07-13": {
+            "label": "Semana 18 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Brick race-distance — próximo da prova",
+            "volume": "Alto+",
+            "tss_target": 890,
+            "ctl_target": 110,
+            "is_discharge": false,
+            "key_sessions": [
+              "Brick 90km+21km pace prova",
+              "CSS 3.800m",
+              "Run LT2 específico"
+            ],
+            "days": {}
+          },
+          "2026-07-20": {
+            "label": "Semana 19 — ♻️ Descarga",
+            "phase": "Descarga 4",
+            "focus": "Recuperação crítica antes do bloco final",
+            "volume": "Baixo",
+            "tss_target": 460,
+            "ctl_target": 112,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Intensidade mantida",
+              "Revisão de zonas"
+            ],
+            "days": {}
+          },
+          "2026-07-27": {
+            "label": "Semana 20 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Volume pico aproximando-se",
+            "volume": "Alto+",
+            "tss_target": 910,
+            "ctl_target": 115,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run LT2 race-specific",
+              "Bike potência de prova",
+              "Brick longo",
+              "OWS"
+            ],
+            "days": {}
+          },
+          "2026-08-03": {
+            "label": "Semana 21 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Pico de volume da fase limiar",
+            "volume": "Muito Alto",
+            "tss_target": 950,
+            "ctl_target": 117,
+            "is_discharge": false,
+            "key_sessions": [
+              "Semana mais pesada do ciclo",
+              "Brick race-distance completo",
+              "CSS+OWS"
+            ],
+            "days": {}
+          },
+          "2026-08-10": {
+            "label": "Semana 22 — Específico",
+            "phase": "Específico",
+            "focus": "★ Início específico — simulações parciais",
+            "volume": "Alto+",
+            "tss_target": 930,
+            "ctl_target": 119,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run LT2 pace prova",
+              "Bike potência prova",
+              "Brick 60+30 a pace prova"
+            ],
+            "days": {}
+          },
+          "2026-08-17": {
+            "label": "Semana 23 — ♻️ Descarga",
+            "phase": "Descarga 5",
+            "focus": "Recuperação pré-pico",
+            "volume": "Baixo",
+            "tss_target": 490,
+            "ctl_target": 120,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Intensidade mantida",
+              "Foco em qualidade"
+            ],
+            "days": {}
+          },
+          "2026-08-24": {
+            "label": "Semana 24 — 🔥 Pico",
+            "phase": "Pico",
+            "focus": "★ SIMULAÇÃO 1 — distância de prova",
+            "volume": "Muito Alto",
+            "tss_target": 970,
+            "ctl_target": 120,
+            "is_discharge": false,
+            "key_sessions": [
+              "Swim 1.9km OWS",
+              "Bike 90km pace prova",
+              "Run 21km LT2 (dias separados)",
+              "Nutrição de prova testada"
+            ],
+            "days": {}
+          },
+          "2026-08-31": {
+            "label": "Semana 25 — 🔥 Pico",
+            "phase": "Pico",
+            "focus": "★ SIMULAÇÃO 2 — sessão de pico",
+            "volume": "Muito Alto",
+            "tss_target": 960,
+            "ctl_target": 119,
+            "is_discharge": false,
+            "key_sessions": [
+              "Brick completo simulação",
+              "Nutrição de prova testada",
+              "Derradeiro pico do ciclo"
+            ],
+            "days": {}
+          },
+          "2026-09-07": {
+            "label": "Semana 26 — Taper",
+            "phase": "Taper",
+            "focus": "Descarga 1 — volume cai, intensidade mantida",
+            "volume": "Médio",
+            "tss_target": 680,
+            "ctl_target": 115,
+            "is_discharge": false,
+            "key_sessions": [
+              "Volume −30%",
+              "Qualidade mantida",
+              "Força suspensa"
+            ],
+            "days": {}
+          },
+          "2026-09-14": {
+            "label": "Semana 27 — Taper",
+            "phase": "Taper",
+            "focus": "Descarga 2 — frescor em construção",
+            "volume": "Médio-",
+            "tss_target": 500,
+            "ctl_target": 109,
+            "is_discharge": false,
+            "key_sessions": [
+              "Volume −45%",
+              "Z2 preservado",
+              "Brick curto de ativação"
+            ],
+            "days": {}
+          },
+          "2026-09-21": {
+            "label": "Semana 28 — Taper",
+            "phase": "Taper",
+            "focus": "Descarga 3 — afiação final",
+            "volume": "Baixo",
+            "tss_target": 340,
+            "ctl_target": 103,
+            "is_discharge": false,
+            "key_sessions": [
+              "Volume −60%",
+              "Apenas strides e ativações",
+              "Visualização de prova"
+            ],
+            "days": {}
+          },
+          "2026-09-28": {
+            "label": "Semana 29 — 🏁 Pré-Prova",
+            "phase": "Pré-Prova",
+            "focus": "Chegada em Buenos Aires — ativação",
+            "volume": "Muito Baixo",
+            "tss_target": 200,
+            "ctl_target": 98,
+            "is_discharge": false,
+            "key_sessions": [
+              "Ativações leves apenas",
+              "Reconhecimento do percurso",
+              "Descanso ativo"
+            ],
+            "days": {}
           }
         }
       }
@@ -1266,7 +1695,9 @@
           "type": "Triathlon 70.3",
           "target": "Completar / sub-5h",
           "distance": "1.9km / 90km / 21km",
-          "priority": "A"
+          "priority": "A",
+          "ctl_target": 102,
+          "notes": "Ergoespirometria ICE Lab: 04/05/2026 — zonas LT1/LT2 confirmadas antes do duplo limiar"
         },
         "phases": [
           {
@@ -1297,10 +1728,67 @@
         ],
         "race_date": "2026-11-01",
         "weeks": {
+          "2026-03-16": {
+            "label": "Semana 1 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Adaptação — tolerância de carga",
+            "volume": "Baixo",
+            "tss_target": 210,
+            "ctl_target": 15,
+            "is_discharge": false,
+            "key_sessions": [
+              "Swim técnica Z1",
+              "Bike Z1 60min",
+              "Run suave 30min",
+              "Força 3×"
+            ],
+            "days": {}
+          },
+          "2026-03-23": {
+            "label": "Semana 2 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Construção gradual de volume Z1",
+            "volume": "Médio-",
+            "tss_target": 370,
+            "ctl_target": 22,
+            "is_discharge": false,
+            "key_sessions": [
+              "Swim volume crescendo",
+              "Bike Z1 90min",
+              "Run 40min",
+              "Força 3×"
+            ],
+            "days": {}
+          },
+          "2026-03-30": {
+            "label": "Semana 3 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Volume Z1 estabelecendo — primeiras longas",
+            "volume": "Médio",
+            "tss_target": 450,
+            "ctl_target": 30,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo Z1 (grupo NPC)",
+              "OWS primeiro contato",
+              "Força 3×"
+            ],
+            "days": {}
+          },
           "2026-04-06": {
-            "label": "Semana 3 — Base Aeróbia",
-            "phase": "Base Aeróbia",
+            "label": "Semana 4 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Volume Z1 crescendo — base sólida",
+            "volume": "Médio+",
             "tss_target": 590,
+            "ctl_target": 38,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo 2h30",
+              "Swim 4×/sem",
+              "Run cauteloso",
+              "Força 3×"
+            ],
             "days": {
               "2026-04-06": [
                 {
@@ -1417,9 +1905,19 @@
             }
           },
           "2026-04-13": {
-            "label": "Semana 4 — Base Aeróbia",
-            "phase": "Base Aeróbia",
-            "tss_target": 620,
+            "label": "Semana 5 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Pico de fase — maior semana até agora",
+            "volume": "Alto-",
+            "tss_target": 640,
+            "ctl_target": 46,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo 3h",
+              "CSS testado",
+              "Run 55min",
+              "Força 3×"
+            ],
             "days": {
               "2026-04-13": [
                 {
@@ -1534,6 +2032,379 @@
                 }
               ]
             }
+          },
+          "2026-04-20": {
+            "label": "Semana 6 — Fundação Aeróbia",
+            "phase": "Fundação Aeróbia",
+            "focus": "Consolidação — preparar 1ª descarga",
+            "volume": "Alto-",
+            "tss_target": 680,
+            "ctl_target": 53,
+            "is_discharge": false,
+            "key_sessions": [
+              "Bike longo 3h",
+              "Swim 4×/sem",
+              "Run 55min",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-04-27": {
+            "label": "Semana 7 — ♻️ Descarga",
+            "phase": "Descarga 1",
+            "focus": "Recuperação ativa — absorção de carga",
+            "volume": "Baixo",
+            "tss_target": 360,
+            "ctl_target": 56,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Sem threshold",
+              "Força 1×",
+              "Sono e nutrição prioridade"
+            ],
+            "days": {}
+          },
+          "2026-05-04": {
+            "label": "Semana 8 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "★ Primeiro duplo limiar — baixo volume",
+            "volume": "Médio",
+            "tss_target": 590,
+            "ctl_target": 61,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run: 2×10min Z2",
+              "Bike: 3×8min Z2",
+              "Swim CSS intro",
+              "Força 2×",
+              "⚗️ Ergo Bruno 04/05"
+            ],
+            "days": {}
+          },
+          "2026-05-11": {
+            "label": "Semana 9 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Limiar progressivo — qualidade > volume",
+            "volume": "Médio",
+            "tss_target": 630,
+            "ctl_target": 66,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run: 2×12min Z2",
+              "Bike: 3×10min Z2",
+              "Brick intro 30+20min",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-05-18": {
+            "label": "Semana 10 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Brick semanal instaurado",
+            "volume": "Médio+",
+            "tss_target": 670,
+            "ctl_target": 70,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run Z2+Z3 combo",
+              "Bike limiar",
+              "1 Brick/semana",
+              "CSS integrado"
+            ],
+            "days": {}
+          },
+          "2026-05-25": {
+            "label": "Semana 11 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Pico do bloco — maior volume com limiar",
+            "volume": "Alto-",
+            "tss_target": 710,
+            "ctl_target": 74,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run 2×14min Z2",
+              "Bike 3×12min Z2",
+              "Brick 45+30min",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-06-01": {
+            "label": "Semana 12 — ♻️ Descarga",
+            "phase": "Descarga 2",
+            "focus": "Recuperação — check-in de forma",
+            "volume": "Baixo",
+            "tss_target": 390,
+            "ctl_target": 76,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "1 sessão Z2 leve",
+              "Avaliação subjetiva completa"
+            ],
+            "days": {}
+          },
+          "2026-06-08": {
+            "label": "Semana 13 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Relançamento pós-descarga",
+            "volume": "Médio+",
+            "tss_target": 690,
+            "ctl_target": 79,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run Z2+Z3",
+              "Bike long intervals",
+              "Brick semanal",
+              "Força 2×"
+            ],
+            "days": {}
+          },
+          "2026-06-15": {
+            "label": "Semana 14 — Duplo Limiar I",
+            "phase": "Duplo Limiar I",
+            "focus": "Fechamento bloco 1 — pico de eficiência",
+            "volume": "Alto",
+            "tss_target": 740,
+            "ctl_target": 82,
+            "is_discharge": false,
+            "key_sessions": [
+              "Sessões de qualidade alta",
+              "Brick 60+40min",
+              "CSS semana forte"
+            ],
+            "days": {}
+          },
+          "2026-06-22": {
+            "label": "Semana 15 — ♻️ Descarga",
+            "phase": "Descarga 3",
+            "focus": "Descanso antes do novo patamar",
+            "volume": "Baixo",
+            "tss_target": 400,
+            "ctl_target": 84,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Força 1×",
+              "Nutrição de recuperação",
+              "Avaliação"
+            ],
+            "days": {}
+          },
+          "2026-06-29": {
+            "label": "Semana 16 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "★ Volume 2 — threshold 3×/semana",
+            "volume": "Alto",
+            "tss_target": 750,
+            "ctl_target": 87,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run 3×10min Z2+Z3",
+              "Bike 4×10min Z2",
+              "Brick 60+45min",
+              "Força 1×"
+            ],
+            "days": {}
+          },
+          "2026-07-06": {
+            "label": "Semana 17 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Volume crescente — novo patamar",
+            "volume": "Alto",
+            "tss_target": 780,
+            "ctl_target": 90,
+            "is_discharge": false,
+            "key_sessions": [
+              "Sessões Z2 mais longas",
+              "OWS semanal",
+              "Brick 2×/semana",
+              "Força 1×"
+            ],
+            "days": {}
+          },
+          "2026-07-13": {
+            "label": "Semana 18 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Brick race-distance — próximo da prova",
+            "volume": "Alto+",
+            "tss_target": 810,
+            "ctl_target": 93,
+            "is_discharge": false,
+            "key_sessions": [
+              "Brick 90km+21km pace prova",
+              "CSS 3.800m",
+              "Run LT2 específico"
+            ],
+            "days": {}
+          },
+          "2026-07-20": {
+            "label": "Semana 19 — ♻️ Descarga",
+            "phase": "Descarga 4",
+            "focus": "Recuperação crítica antes do bloco final",
+            "volume": "Baixo",
+            "tss_target": 420,
+            "ctl_target": 95,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Intensidade mantida",
+              "Revisão de zonas"
+            ],
+            "days": {}
+          },
+          "2026-07-27": {
+            "label": "Semana 20 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Volume pico aproximando-se",
+            "volume": "Alto+",
+            "tss_target": 830,
+            "ctl_target": 97,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run LT2 race-specific",
+              "Bike potência de prova",
+              "Brick longo",
+              "OWS"
+            ],
+            "days": {}
+          },
+          "2026-08-03": {
+            "label": "Semana 21 — Duplo Limiar II",
+            "phase": "Duplo Limiar II",
+            "focus": "Pico de volume da fase limiar",
+            "volume": "Muito Alto",
+            "tss_target": 860,
+            "ctl_target": 99,
+            "is_discharge": false,
+            "key_sessions": [
+              "Semana mais pesada do ciclo",
+              "Brick race-distance completo",
+              "CSS+OWS"
+            ],
+            "days": {}
+          },
+          "2026-08-10": {
+            "label": "Semana 22 — Específico",
+            "phase": "Específico",
+            "focus": "★ Início específico — simulações parciais",
+            "volume": "Alto+",
+            "tss_target": 850,
+            "ctl_target": 101,
+            "is_discharge": false,
+            "key_sessions": [
+              "Run LT2 pace prova",
+              "Bike potência prova",
+              "Brick 60+30 a pace prova"
+            ],
+            "days": {}
+          },
+          "2026-08-17": {
+            "label": "Semana 23 — ♻️ Descarga",
+            "phase": "Descarga 5",
+            "focus": "Recuperação pré-pico",
+            "volume": "Baixo",
+            "tss_target": 450,
+            "ctl_target": 102,
+            "is_discharge": true,
+            "key_sessions": [
+              "Volume −50%",
+              "Intensidade mantida",
+              "Foco em qualidade"
+            ],
+            "days": {}
+          },
+          "2026-08-24": {
+            "label": "Semana 24 — 🔥 Pico",
+            "phase": "Pico",
+            "focus": "★ SIMULAÇÃO 1 — distância de prova",
+            "volume": "Muito Alto",
+            "tss_target": 880,
+            "ctl_target": 102,
+            "is_discharge": false,
+            "key_sessions": [
+              "Swim 1.9km OWS",
+              "Bike 90km pace prova",
+              "Run 21km LT2 (dias separados)",
+              "Nutrição de prova testada"
+            ],
+            "days": {}
+          },
+          "2026-08-31": {
+            "label": "Semana 25 — 🔥 Pico",
+            "phase": "Pico",
+            "focus": "★ SIMULAÇÃO 2 — sessão de pico",
+            "volume": "Muito Alto",
+            "tss_target": 870,
+            "ctl_target": 101,
+            "is_discharge": false,
+            "key_sessions": [
+              "Brick completo simulação",
+              "Nutrição de prova testada",
+              "Derradeiro pico do ciclo"
+            ],
+            "days": {}
+          },
+          "2026-09-07": {
+            "label": "Semana 26 — Taper",
+            "phase": "Taper",
+            "focus": "Descarga 1 — volume cai, intensidade mantida",
+            "volume": "Médio",
+            "tss_target": 620,
+            "ctl_target": 98,
+            "is_discharge": false,
+            "key_sessions": [
+              "Volume −30%",
+              "Qualidade mantida",
+              "Força suspensa"
+            ],
+            "days": {}
+          },
+          "2026-09-14": {
+            "label": "Semana 27 — Taper",
+            "phase": "Taper",
+            "focus": "Descarga 2 — frescor em construção",
+            "volume": "Médio-",
+            "tss_target": 460,
+            "ctl_target": 93,
+            "is_discharge": false,
+            "key_sessions": [
+              "Volume −45%",
+              "Z2 preservado",
+              "Brick curto de ativação"
+            ],
+            "days": {}
+          },
+          "2026-09-21": {
+            "label": "Semana 28 — Taper",
+            "phase": "Taper",
+            "focus": "Descarga 3 — afiação final",
+            "volume": "Baixo",
+            "tss_target": 310,
+            "ctl_target": 88,
+            "is_discharge": false,
+            "key_sessions": [
+              "Volume −60%",
+              "Apenas strides e ativações",
+              "Visualização de prova"
+            ],
+            "days": {}
+          },
+          "2026-09-28": {
+            "label": "Semana 29 — 🏁 Pré-Prova",
+            "phase": "Pré-Prova",
+            "focus": "Chegada em Buenos Aires — ativação",
+            "volume": "Muito Baixo",
+            "tss_target": 185,
+            "ctl_target": 84,
+            "is_discharge": false,
+            "key_sessions": [
+              "Ativações leves apenas",
+              "Reconhecimento do percurso",
+              "Descanso ativo"
+            ],
+            "days": {}
           }
         }
       }

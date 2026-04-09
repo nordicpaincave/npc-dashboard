@@ -668,10 +668,30 @@ function renderWeekNav(weeks, curWeekKey, phases){
       ${phase?`<div><span class="week-stat-val" style="color:${phaseColor}">${phase}</span>Fase atual</div>`:''}
     </div>`:'';
 
-  const noDataHTML=!weekData?`<div class="no-prescription">
+  // Macro view: show focus + key sessions when no daily sessions exist
+  const hasDailySessions = weekData && weekData.days && Object.values(weekData.days).some(d=>d.length>0);
+  const macroHTML = weekData ? `
+    <div style="padding:1rem 0">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:1rem;line-height:1.6">
+        <span style="color:${phaseColor};font-weight:500">Foco: </span>${weekData.focus||''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        ${(weekData.key_sessions||[]).map(s=>`
+          <div style="background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px">
+            <span style="color:${phaseColor};font-size:14px">›</span>${s}
+          </div>`).join('')}
+      </div>
+      ${weekData.is_discharge?`<div style="margin-top:12px;padding:8px 12px;background:rgba(62,207,122,0.08);border:0.5px solid rgba(62,207,122,0.2);border-radius:8px;font-size:11px;color:#6ee7a0">
+        ♻️ Semana de descarga — volume reduzido ~50% para absorção do estímulo acumulado
+      </div>`:''}
+      <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text3)">
+        📋 Prescrição diária disponível a partir do domingo anterior à semana
+      </div>
+    </div>` : `<div class="no-prescription">
     <div class="no-prescription-icon">📅</div>
-    <div class="no-prescription-text">Prescrição não disponível para esta semana.<br><span style="font-size:11px;color:var(--text3)">O treinador atualiza todo domingo via dashboard skill.</span></div>
-  </div>`:dayColumns;
+    <div class="no-prescription-text">Semana fora do ciclo planejado.</div>
+  </div>`;
+  const noDataHTML = !hasDailySessions ? macroHTML : dayColumns;
 
   return `<div class="week-nav-card">
     <div class="week-nav-header">
@@ -681,12 +701,13 @@ function renderWeekNav(weeks, curWeekKey, phases){
       </div>
       <div class="week-nav-controls">
         ${phase?`<span class="week-phase-tag" style="background:${phaseColor}20;color:${phaseColor};border:0.5px solid ${phaseColor}40;">${phase}</span>`:''}
+        ${weekData&&weekData.ctl_target?`<span style="font-size:11px;color:var(--text3);padding:3px 8px;background:var(--bg3);border:0.5px solid var(--border);border-radius:6px">CTL alvo <span style="color:var(--text)">${weekData.ctl_target}</span></span>`:''}
         <button class="week-nav-btn" onclick="navWeek(-1)" ${prevDisabled?'disabled':''}>←</button>
         <button class="week-nav-today" onclick="navWeek(0)">Hoje</button>
         <button class="week-nav-btn" onclick="navWeek(1)" ${nextDisabled?'disabled':''}>→</button>
       </div>
     </div>
-    ${weekData?`<div class="day-grid">${dayColumns}</div>${weekStatsHTML}`:noDataHTML}
+    ${hasDailySessions?`<div class="day-grid">${dayColumns}</div>${weekStatsHTML}`:noDataHTML}
   </div>`;
 }
 
