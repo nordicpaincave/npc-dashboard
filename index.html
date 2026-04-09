@@ -409,7 +409,7 @@ async function boot() {
     const payload = await res.json();
     DB=payload.athletes; ATHLETES=Object.keys(DB); NAMES=Object.fromEntries(ATHLETES.map(id=>[id,DB[id].name||id])); WEEKS=payload.weeks||[];
     const selAth=document.getElementById('sel-athlete');
-    ATHLETES.forEach(id=>{ const o=document.createElement('option'); o.value=id; o.textContent=NAMES[id]; selAth.appendChild(o); });
+    ATHLETES.forEach(id=>{ const o=document.createElement('option'); o.value=id; o.textContent=DB[id].name||id; selAth.appendChild(o); });
     const selWeek=document.getElementById('sel-week');
     WEEKS.forEach((w,i)=>{ const o=document.createElement('option'); o.value=w.key; o.textContent=w.label; if(i===0)o.selected=true; selWeek.appendChild(o); });
     if(payload.last_updated) document.getElementById('last-updated').textContent='Atualizado: '+payload.last_updated;
@@ -562,18 +562,28 @@ function renderPhaseTimeline(phases, today, raceDate){
   let currentPhase='';
   let nowPct=Math.max(0,Math.min(100,(today-totalStart)/((totalEnd-totalStart))*100));
 
-  const segments=phases.map(p=>{
+  // Compute raw widths and normalize to exactly 100% (accounting for forced minimums)
+  const rawWidths = phases.map(p=>{
     const pStart=new Date(p.start+'T00:00:00');
     const pEnd=new Date(p.end+'T00:00:00');
-    const w=Math.max(2,(pEnd-pStart)/(totalEnd-totalStart)*100);
+    return Math.max(1.5,(pEnd-pStart)/(totalEnd-totalStart)*100);
+  });
+  const rawSum = rawWidths.reduce((a,b)=>a+b,0);
+  const normWidths = rawWidths.map(w=>w/rawSum*100);
+
+  const segments=phases.map((p,i)=>{
+    const pStart=new Date(p.start+'T00:00:00');
+    const pEnd=new Date(p.end+'T00:00:00');
+    const w=normWidths[i];
     const isPast=pEnd<today, isActive=pStart<=today&&today<=pEnd, isFuture=pStart>today;
     if(isActive) currentPhase=p.name;
     const cls=isPast?'past':isActive?'active':'future';
     const color=PHASE_COLORS[p.name]||'#4a5168';
-    const showLabel=w>10;
+    // Always show label; very narrow segments get smaller font
+    const labelStyle=w<8?'font-size:8px;':'';
     return `<div class="phase-segment ${cls}" style="width:${w}%;background:${color}20;border:0.5px solid ${color}40;"
       title="${p.name}: ${p.start} → ${p.end}">
-      ${showLabel?`<span class="phase-label" style="color:${color}">${p.name}</span>`:''}
+      <span class="phase-label" style="color:${color};${labelStyle}">${p.name}</span>
     </div>`;
   }).join('');
 
