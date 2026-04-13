@@ -65,7 +65,127 @@ select option { background:var(--bg2); }
 .a-info .alert-icon { background:rgba(74,158,255,.18); color:var(--blue); }
 
 /* ════════════════════════════════════════════
-   ATHLETE METRIC CARDS (nova seção principal)
+   ATHLETE HERO CARD (individual view)
+════════════════════════════════════════════ */
+.ath-hero {
+  background: var(--bg2);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+.ath-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.ath-jean   .ath-hero::before { background: linear-gradient(90deg, var(--c-jean), transparent); }
+.ath-bruno  .ath-hero::before { background: linear-gradient(90deg, var(--c-bruno), transparent); }
+.ath-gabriel .ath-hero::before { background: linear-gradient(90deg, var(--c-gabriel), transparent); }
+
+.ath-hero-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+}
+.ath-hero-id {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-right: 1.25rem;
+  border-right: 0.5px solid var(--border);
+  min-width: 140px;
+}
+.ath-hero-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+}
+.ath-jean   .ath-hero-name { color: var(--c-jean); }
+.ath-bruno  .ath-hero-name { color: var(--c-bruno); }
+.ath-gabriel .ath-hero-name { color: var(--c-gabriel); }
+
+.ath-hero-status {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+.ath-hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.ath-hero-metric {
+  padding: .5rem 1rem;
+  border-right: 0.5px solid var(--border);
+  text-align: center;
+}
+.ath-hero-metric:last-child { border-right: none; }
+.ath-hero-metric-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: 5px;
+}
+.ath-hero-metric-val {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.ath-hero-metric-delta {
+  font-size: 10px;
+  margin-top: 4px;
+}
+.ath-hero-spark {
+  width: 120px;
+  padding-left: 1rem;
+  border-left: 0.5px solid var(--border);
+}
+.ath-hero-spark-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 4px;
+}
+
+/* Mobile: hero em coluna */
+@media (max-width: 639px) {
+  .ath-hero-inner {
+    grid-template-columns: 1fr;
+    gap: .75rem;
+    padding: .875rem;
+  }
+  .ath-hero-id {
+    border-right: none;
+    border-bottom: 0.5px solid var(--border);
+    padding-right: 0;
+    padding-bottom: .75rem;
+    min-width: unset;
+  }
+  .ath-hero-metrics { grid-template-columns: repeat(2, 1fr); }
+  .ath-hero-metric:nth-child(2) { border-right: none; }
+  .ath-hero-metric:nth-child(3), .ath-hero-metric:nth-child(4) {
+    border-top: 0.5px solid var(--border);
+  }
+  .ath-hero-metric-val { font-size: 24px; }
+  .ath-hero-spark { width: 100%; border-left: none; border-top: 0.5px solid var(--border); padding-left: 0; padding-top: .75rem; }
+}
+
+@media (min-width: 640px) and (max-width: 899px) {
+  .ath-hero-inner { grid-template-columns: auto 1fr; }
+  .ath-hero-spark { display: none; }
+  .ath-hero-metrics { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ════════════════════════════════════════════
+   ATHLETE METRIC CARDS (comparativo)
 ════════════════════════════════════════════ */
 .athlete-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1rem; }
 
@@ -377,8 +497,8 @@ select option { background:var(--bg2); }
 
   <!-- ══ INDIVIDUAL VIEW ══ -->
   <div id="view-individual">
-    <!-- Athlete metric cards (sempre visíveis no topo) -->
-    <div class="athlete-cards" id="ath-cards-bar"></div>
+    <!-- Card de destaque do atleta selecionado -->
+    <div id="ath-hero-card" style="margin-bottom:1rem"></div>
 
     <div id="alerts-bar" class="alerts"></div>
     <div class="kpi-grid" id="kpi-grid"></div>
@@ -528,7 +648,82 @@ function getData(){
 }
 const gridColor='rgba(255,255,255,0.05)',tickFont={size:10,family:'DM Mono'};
 
-// ── Athlete metric cards ──────────────────────────────────────────────────────
+// ── Athlete hero card (individual view) ──────────────────────────────────────
+function renderAthHero(){
+  const id=getA(), d=DB[id];
+  const tsb=d.kpis.tsb;
+  const tsbCls=tsb>5?'tsb-pos':tsb>-10?'tsb-mid':'tsb-neg';
+  const statusMsg=tsb>5?'Forma positiva ↑':tsb>-10?'Fadiga moderada':tsb>-20?'Fadiga alta':'⚠ Overreaching';
+  const statusColor=tsb>5?'var(--green)':tsb>-10?'var(--amber)':'var(--red)';
+  const color=COLORS[id];
+
+  const metrics=[
+    {label:'CTL — Fitness',   val:d.kpis.ctl,      delta:d.kpi_delta.ctl,  color:'var(--blue)'},
+    {label:'ATL — Fadiga',    val:d.kpis.atl,       delta:d.kpi_delta.atl,  color:'var(--orange)'},
+    {label:'TSB — Forma',     val:d.kpis.tsb,       delta:d.kpi_delta.tsb,  color:tsb>5?'var(--green)':tsb>-10?'var(--amber)':'var(--red)'},
+    {label:'TSS Semana',      val:d.kpis.tss_week,  delta:d.kpi_delta.tss_week, color:'var(--text)'},
+  ];
+
+  const sparkId='hero-spark-'+id;
+
+  document.getElementById('ath-hero-card').innerHTML=`
+    <div class="ath-hero ath-${id}">
+      <div class="ath-hero-inner">
+        <div class="ath-hero-id">
+          <div class="ath-hero-name">${NAMES[id]}</div>
+          <div class="ath-hero-status">
+            <span style="color:${statusColor}">${statusMsg}</span>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px">
+            ${fmtH(totalH(d.vol))} · ${d.adherence.length} modalidades
+          </div>
+        </div>
+        <div class="ath-hero-metrics">
+          ${metrics.map(m=>{
+            const delta=String(m.delta);
+            const dir=delta.startsWith('+')?'up':delta.startsWith('-')?'dn':'nt';
+            const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
+            return `<div class="ath-hero-metric">
+              <div class="ath-hero-metric-label">${m.label}</div>
+              <div class="ath-hero-metric-val" style="color:${m.color}">${m.val}</div>
+              <div class="ath-hero-metric-delta ${dir}">${arr} ${delta}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="ath-hero-spark">
+          <div class="ath-hero-spark-label">CTL 8 semanas</div>
+          <div style="position:relative;height:48px"><canvas id="${sparkId}"></canvas></div>
+        </div>
+      </div>
+    </div>`;
+
+  // Sparkline
+  if(sparkCharts['hero']){sparkCharts['hero'].destroy();delete sparkCharts['hero'];}
+  requestAnimationFrame(()=>{
+    const canvas=document.getElementById(sparkId);
+    if(!canvas) return;
+    sparkCharts['hero']=new Chart(canvas,{
+      type:'line',
+      data:{
+        labels:d.pmc.labels,
+        datasets:[{
+          data:d.pmc.ctl,
+          borderColor:color,
+          backgroundColor:color.replace('rgb(','rgba(').replace(')',',0.1)'),
+          tension:.4,pointRadius:2,borderWidth:2,fill:true
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{enabled:false}},
+        scales:{x:{display:false},y:{display:false,suggestedMin:0}},
+        animation:{duration:500}
+      }
+    });
+  });
+}
+
+// ── Athlete metric cards (comparativo) ───────────────────────────────────────
 function renderAthCards(containerId){
   const container=document.getElementById(containerId);
   if(!container) return;
@@ -659,7 +854,7 @@ function updateDash(){
   if(currentView==='comparativo'){renderComparativo();return;}
   if(currentView==='plano'){renderPlano();return;}
   const d=getData();
-  renderAthCards('ath-cards-bar');
+  renderAthHero();
   renderAlerts(d);renderKPIs(d);renderPMC(d);renderZone(d);renderVol(d);renderHRV(d);renderAdherence(d);renderSessions(d);
 }
 
