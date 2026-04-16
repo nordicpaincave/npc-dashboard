@@ -86,16 +86,37 @@ def get_wellness(athlete_id, days=14):
 
 
 # ── Mapeamento de esportes ─────────────────────────────────────────────
+# Mapeamento de IDs numéricos do TP → esporte NPC
+SPORT_ID_MAP = {
+    1:  "swim",   # Swim
+    2:  "bike",   # Bike
+    3:  "run",    # Run
+    4:  "run",    # Run (trail)
+    5:  "strength",# Strength
+    6:  "strength",# Weight Training
+    7:  "strength",# Core
+    10: "bike",   # Virtual Ride
+    13: None,     # Other — ignorado
+    20: "swim",   # Open Water
+}
+
 SPORT_KEYS = {
-    "swim": ["swim", "natacao", "natação", "pool", "openwater"],
-    "bike": ["bike", "cycling", "cycle", "ciclismo", "ride", "virtualride"],
-    "run":  ["run", "corrida", "trail", "treadmill"],
-    "strength": ["strength", "forca", "força", "weight", "gym", "core"],
+    "swim": ["swim", "natacao", "natação", "pool", "openwater", "open water"],
+    "bike": ["bike", "cycling", "cycle", "ciclismo", "ride", "virtualride", "virtual"],
+    "run":  ["run", "corrida", "trail", "treadmill", "atletismo"],
+    "strength": ["strength", "forca", "força", "weight", "gym", "core", "muscula"],
 }
 
 
-def map_sport(raw):
-    raw = (raw or "").lower().replace(" ", "")
+def map_sport(raw_type_id, raw_name=""):
+    # Tenta pelo ID numérico primeiro
+    if isinstance(raw_type_id, int) or (isinstance(raw_type_id, str) and raw_type_id.isdigit()):
+        sport = SPORT_ID_MAP.get(int(raw_type_id))
+        if sport:
+            return sport
+
+    # Fallback pelo nome
+    raw = (raw_name or "").lower().replace(" ", "")
     for key, keywords in SPORT_KEYS.items():
         if any(k in raw for k in keywords):
             return key
@@ -111,62 +132,73 @@ DAYS_PT     = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 def process_workouts(raw):
     sessions = []
     vol      = {"swim": 0.0, "bike": 0.0, "run": 0.0, "strength": 0.0}
-    zones    = {}  # sport → [z1_secs, z2_secs, z3_secs]
+    zones    = {}
 
     for w in (raw or []):
-        sport_raw = (
-            w.get("athleteWorkoutTypeName")
-            or w.get("workoutTypeName")
-            or w.get("type", "")
-        )
-        sport = map_sport(sport_raw)
+        # Sport: ID numérico + nome como fallback
+        type_id   = w.get("workoutTypeValueId") or w.get("workoutSubTypeId")
+        type_name = w.get("athleteWorkoutTypeName") or w.get("workoutTypeName") or w.get("title", "")
+        sport     = map_sport(type_id, type_name)
         if not sport:
             continue
 
-        # Duração
-        dur_secs = float(w.get("totalTime") or w.get("movingTime") or 0)
-        dur_h    = dur_secs / 3600
+        # Duração — totalTime vem em DIAS no TP
+        total_time_days = float(w.get("totalTime") or 0)
+        dur_h = total_time_days * 24          # converte para horas
+        if dur_h < 0.05:                      # ignora sessões < 3min
+            continue
         hh, mm   = int(dur_h), int((dur_h % 1) * 60)
         dur_str  = f"{hh}h{mm:02d}" if hh > 0 else f"{mm}min"
 
-        # TSS
-        tss = round(float(w.get("tss") or w.get("totalTrainingStressScore") or 0))
+        # TSS — campo correto é tssActual
+        tss = round(float(w.get("tssActual") or w.get("tss") or
+                          w.get("totalTrainingStressScore") or 0))
 
-        # Dia da semana
+        # Dia da semana — workoutDay pode ter formato "2026-04-02T00:00:00"
         try:
             dt      = datetime.strptime(str(w.get("workoutDay", ""))[:10], "%Y-%m-%d")
             day_str = DAYS_PT[dt.weekday()]
         except Exception:
             day_str = "?"
 
-        # Zonas de FC (TP usa 5 zonas — mapeamos para 3 NPC)
-        hz = [float(w.get(f"hrZone{i}Duration") or 0) for i in range(1, 6)]
-        z1 = hz[0] + hz[1]          # Z1+Z2 TP → Z1 NPC (aeróbico)
-        z2 = hz[2] + hz[3]          # Z3+Z4 TP → Z2 NPC (limiar)
-        z3 = hz[4]                   # Z5 TP    → Z3 NPC (VO2max)
-        total_z = z1 + z2 + z3
+        # Zonas — tenta campos HR zone; se não tiver, deixa "—"
+        # TP não retorna hrZoneXDuration diretamente no resumo do workout
+        z1 = float(w.get("hrZone1Duration") or w.get("heartRateZone1Duration") or 0)
+        z2 = float(w.get("hrZone2Duration") or w.get("heartRateZone2Duration") or 0) + \
+             float(w.get("hrZone3Duration") or w.get("heartRateZone3Duration") or 0)
+        z3 = float(w.get("hrZone4Duration") or w.get("heartRateZone4Duration") or 0) + \
+             float(w.get("hrZone5Duration") or w.get("heartRateZone5Duration") or 0)
+        total_z   = z1 + z2 + z3
         zones_str = (
             f"{round(z1/total_z*100)}/{round(z2/total_z*100)}/{round(z3/total_z*100)}"
             if total_z > 0 else "—"
         )
 
-        # Acumula volumes e zonas
+        # Volume acumulado
         vol[sport] = round(vol[sport] + dur_h, 2)
-        if sport not in zones:
-            zones[sport] = [0.0, 0.0, 0.0]
-        zones[sport][0] += z1
-        zones[sport][1] += z2
-        zones[sport][2] += z3
+
+        # Zonas por esporte (para gráfico)
+        if total_z > 0:
+            if sport not in zones:
+                zones[sport] = [0.0, 0.0, 0.0]
+            zones[sport][0] += z1
+            zones[sport][1] += z2
+            zones[sport][2] += z3
+
+        # Título limpo
+        title = w.get("title") or type_name or "Treino"
+        if title.lower() in ("other", ""):
+            title = SPORT_LABEL.get(sport, "Treino")
 
         sessions.append({
-            "day":    day_str,
-            "sport":  sport,
-            "desc":   w.get("title") or sport_raw or "Treino",
-            "dur":    dur_str,
-            "tss":    tss,
-            "zones":  zones_str,
-            "hrv":    0,
-            "ht":     "nt",
+            "day":   day_str,
+            "sport": sport,
+            "desc":  title,
+            "dur":   dur_str,
+            "tss":   tss,
+            "zones": zones_str,
+            "hrv":   0,
+            "ht":    "nt",
         })
 
     # Distribuição de zonas por esporte
@@ -484,7 +516,7 @@ def build_db():
             adherence = compute_adherence(vol, sessions)
             alerts    = compute_alerts(kpis, hrv)
 
-            # Se os dados reais estiverem vazios, usa protótipo como fallback
+            # Fallback: usa protótipo se dados reais estiverem vazios
             dados_ok = len(sessions) > 0 or sum(vol.values()) > 0
             if not dados_ok:
                 print(f"    dados reais vazios — usando protótipo como fallback visual")
