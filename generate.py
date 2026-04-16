@@ -1,165 +1,405 @@
 """
 NPC Endurance — Dashboard Generator
-Busca dados do TrainingPeaks via cookie de sessão e gera o index.html
-via Claude API.
+Busca dados do TrainingPeaks via cookie de sessão e injeta no template HTML.
+Sem custo adicional — nenhuma API externa paga.
 
 Variáveis de ambiente necessárias:
-  TP_COOKIE        — cookie de autenticação do TrainingPeaks
-  ANTHROPIC_API_KEY — chave da API do Claude
+  TP_COOKIE  — valor do cookie Production_tpAuth do TrainingPeaks
 """
 
 import os
 import json
-import requests
-import anthropic
+import re
 from datetime import datetime, timedelta
 
-# ── Configurações ──────────────────────────────────────────────────────
+import requests
+
+# ── Configuração dos atletas ──────────────────────────────────────────
 ATHLETES = {
-    "Bruno":   5285028,
-    "Jean":    6286348,
-    "Gabriel": 5775491,
+    "bruno":   {"id": 6285028, "name": "Bruno Trevisan"},
+    "jean":    {"id": 6286348, "name": "Jean Romano"},
+    "gabriel": {"id": 5775491, "name": "Gabriel"},
 }
 
-TP_BASE  = "https://tpapi.trainingpeaks.com"
-TP_COOKIE = os.environ["TP_COOKIE"]
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+TP_BASE = "https://tpapi.trainingpeaks.com"
 
-HEADERS = {
-    "Cookie": f"Production_tpAuth={TP_COOKIE}",
-    "Accept": "application/json",
-    "User-Agent": "Mozilla/5.0",
-}
 
-# ── Funções de busca ──────────────────────────────────────────────────
+# ── Autenticação ──────────────────────────────────────────────────────
+def headers():
+    cookie = os.environ["TP_COOKIE"]
+    return {
+        "Cookie":     f"Production_tpAuth={cookie}",
+        "Accept":     "application/json",
+        "User-Agent": "Mozilla/5.0",
+    }
 
-def get_workouts(athlete_id: int, days: int = 14) -> list:
-    """Busca os treinos realizados dos últimos N dias."""
+
+def tp_get(path):
+    url  = f"{TP_BASE}{path}"
+    resp = requests.get(url, headers=headers(), timeout=20)
+    resp.raise_for_status()
+    return resp.json()
+
+
+# ── Busca de dados ────────────────────────────────────────────────────
+def get_workouts(athlete_id, days=14):
     end   = datetime.utcnow()
     start = end - timedelta(days=days)
-    url = (
-        f"{TP_BASE}/fitness/v6/athletes/{athlete_id}/workouts"
+    return tp_get(
+        f"/fitness/v6/athletes/{athlete_id}/workouts"
         f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
     )
-    resp = requests.get(url, headers=HEADERS, timeout=15)
-    resp.raise_for_status()
-    return resp.json()
 
 
-def get_fitness(athlete_id: int) -> dict:
-    """Busca CTL, ATL e TSB (PMC) do atleta."""
+def get_fitness(athlete_id, weeks=8):
     end   = datetime.utcnow()
-    start = end - timedelta(days=56)  # 8 semanas
-    url = (
-        f"{TP_BASE}/fitness/v6/athletes/{athlete_id}/fitness"
+    start = end - timedelta(weeks=weeks)
+    return tp_get(
+        f"/fitness/v6/athletes/{athlete_id}/fitness"
         f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
     )
-    resp = requests.get(url, headers=HEADERS, timeout=15)
-    resp.raise_for_status()
-    return resp.json()
 
 
-def collect_all_data() -> dict:
-    """Coleta dados de todos os atletas e retorna dict estruturado."""
-    data = {}
-    for name, athlete_id in ATHLETES.items():
-        print(f"  Buscando dados de {name} (id={athlete_id})...")
-        try:
-            workouts = get_workouts(athlete_id, days=14)
-            fitness  = get_fitness(athlete_id)
-            data[name] = {
-                "athlete_id": athlete_id,
-                "workouts":   workouts,
-                "fitness":    fitness,
-            }
-        except Exception as e:
-            print(f"  ERRO ao buscar {name}: {e}")
-            data[name] = {"athlete_id": athlete_id, "error": str(e)}
-    return data
-
-
-# ── Geração do HTML via Claude ─────────────────────────────────────────
-
-SYSTEM_PROMPT = """
-Você é um gerador de dashboards HTML para o NPC Endurance (método norueguês de triathlon).
-Receberá dados brutos do TrainingPeaks (treinos realizados, CTL/ATL/TSB) de 3 atletas:
-Bruno (M40-44, FTP ~281W), Jean (M40-44, FTP 304W) e Gabriel (M18-24).
-
-Sua tarefa é gerar um arquivo HTML completo e autocontido (sem dependências externas além
-do Chart.js via CDN) com o dashboard de análise de treinos.
-
-O dashboard deve incluir:
-1. Seletor de atleta, modalidade e semana
-2. KPIs: CTL, ATL, TSB, TSS semanal, total de horas
-3. Gráfico PMC (CTL/ATL/TSB — 8 semanas)
-4. Distribuição de zonas Z1/Z2/Z3 por disciplina
-5. Volume semanal por disciplina (natação, bike, corrida, força)
-6. Tendência de HRV (14 dias) se disponível nos dados
-7. Aderência ao plano (executado vs prescrito, se disponível)
-8. Alertas automáticos de overtraining (TSB < -15), taper inadequado, HRV em queda
-9. Aba comparativa entre os 3 atletas
-10. Tabela de sessões da semana
-
-Design: tema escuro, profissional, cores NPC (azul #4a9eff, laranja #ff7c3a, verde #4db87a).
-Use Chart.js 4.4.1 via CDN. Retorne APENAS o HTML completo, sem explicações.
-
-Inclua no rodapé a data de geração e que os dados vêm do TrainingPeaks.
-"""
-
-
-def generate_html(raw_data: dict) -> str:
-    """Envia os dados ao Claude e recebe o HTML gerado."""
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-
-    user_message = f"""
-Gere o dashboard NPC Endurance com os seguintes dados do TrainingPeaks:
-
-{json.dumps(raw_data, ensure_ascii=False, indent=2)}
-
-Data de referência: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC
-
-Retorne apenas o HTML completo.
-"""
-
-    print("  Chamando Claude API para gerar o dashboard...")
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=8192,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}],
+def get_wellness(athlete_id, days=14):
+    end   = datetime.utcnow()
+    start = end - timedelta(days=days)
+    return tp_get(
+        f"/wellness/v6/athletes/{athlete_id}"
+        f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
     )
 
-    html = message.content[0].text.strip()
 
-    # Remove blocos de markdown caso o modelo os adicione
-    if html.startswith("```html"):
-        html = html[7:]
-    if html.startswith("```"):
-        html = html[3:]
-    if html.endswith("```"):
-        html = html[:-3]
-
-    return html.strip()
+# ── Mapeamento de esportes ─────────────────────────────────────────────
+SPORT_KEYS = {
+    "swim": ["swim", "natacao", "natação", "pool", "openwater"],
+    "bike": ["bike", "cycling", "cycle", "ciclismo", "ride", "virtualride"],
+    "run":  ["run", "corrida", "trail", "treadmill"],
+    "strength": ["strength", "forca", "força", "weight", "gym", "core"],
+}
 
 
-# ── Main ───────────────────────────────────────────────────────────────
+def map_sport(raw):
+    raw = (raw or "").lower().replace(" ", "")
+    for key, keywords in SPORT_KEYS.items():
+        if any(k in raw for k in keywords):
+            return key
+    return None
 
+
+SPORT_LABEL = {"swim": "Natação", "bike": "Bike", "run": "Corrida", "strength": "Força"}
+SPORT_COLOR = {"swim": "#4a9eff", "bike": "#f5a623", "run": "#4db87a", "strength": "#9b8fff"}
+DAYS_PT     = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+
+
+# ── Processamento de workouts ─────────────────────────────────────────
+def process_workouts(raw):
+    sessions = []
+    vol      = {"swim": 0.0, "bike": 0.0, "run": 0.0, "strength": 0.0}
+    zones    = {}  # sport → [z1_secs, z2_secs, z3_secs]
+
+    for w in (raw or []):
+        sport_raw = (
+            w.get("athleteWorkoutTypeName")
+            or w.get("workoutTypeName")
+            or w.get("type", "")
+        )
+        sport = map_sport(sport_raw)
+        if not sport:
+            continue
+
+        # Duração
+        dur_secs = float(w.get("totalTime") or w.get("movingTime") or 0)
+        dur_h    = dur_secs / 3600
+        hh, mm   = int(dur_h), int((dur_h % 1) * 60)
+        dur_str  = f"{hh}h{mm:02d}" if hh > 0 else f"{mm}min"
+
+        # TSS
+        tss = round(float(w.get("tss") or w.get("totalTrainingStressScore") or 0))
+
+        # Dia da semana
+        try:
+            dt      = datetime.strptime(str(w.get("workoutDay", ""))[:10], "%Y-%m-%d")
+            day_str = DAYS_PT[dt.weekday()]
+        except Exception:
+            day_str = "?"
+
+        # Zonas de FC (TP usa 5 zonas — mapeamos para 3 NPC)
+        hz = [float(w.get(f"hrZone{i}Duration") or 0) for i in range(1, 6)]
+        z1 = hz[0] + hz[1]          # Z1+Z2 TP → Z1 NPC (aeróbico)
+        z2 = hz[2] + hz[3]          # Z3+Z4 TP → Z2 NPC (limiar)
+        z3 = hz[4]                   # Z5 TP    → Z3 NPC (VO2max)
+        total_z = z1 + z2 + z3
+        zones_str = (
+            f"{round(z1/total_z*100)}/{round(z2/total_z*100)}/{round(z3/total_z*100)}"
+            if total_z > 0 else "—"
+        )
+
+        # Acumula volumes e zonas
+        vol[sport] = round(vol[sport] + dur_h, 2)
+        if sport not in zones:
+            zones[sport] = [0.0, 0.0, 0.0]
+        zones[sport][0] += z1
+        zones[sport][1] += z2
+        zones[sport][2] += z3
+
+        sessions.append({
+            "day":    day_str,
+            "sport":  sport,
+            "desc":   w.get("title") or sport_raw or "Treino",
+            "dur":    dur_str,
+            "tss":    tss,
+            "zones":  zones_str,
+            "hrv":    0,
+            "ht":     "nt",
+        })
+
+    # Distribuição de zonas por esporte
+    zone_labels, z1_list, z2_list, z3_list = [], [], [], []
+    for sport in ["swim", "bike", "run"]:
+        if sport in zones:
+            z1, z2, z3 = zones[sport]
+            total = z1 + z2 + z3
+            if total > 0:
+                zone_labels.append(SPORT_LABEL[sport])
+                z1_list.append(round(z1 / total * 100))
+                z2_list.append(round(z2 / total * 100))
+                z3_list.append(round(z3 / total * 100))
+
+    return (
+        sessions,
+        {k: round(v, 1) for k, v in vol.items()},
+        {"labels": zone_labels, "z1": z1_list, "z2": z2_list, "z3": z3_list},
+    )
+
+
+# ── Processamento de PMC (fitness) ────────────────────────────────────
+def process_fitness(raw):
+    if not raw:
+        return {"labels": [], "ctl": [], "atl": [], "tsb": []}
+
+    records = sorted(raw, key=lambda x: x.get("date", ""))
+
+    # Amostragem semanal (8 pontos)
+    n      = len(records)
+    step   = max(1, n // 8)
+    sample = records[::step][-8:]
+
+    labels, ctl_l, atl_l, tsb_l = [], [], [], []
+    for r in sample:
+        try:
+            dt = datetime.strptime(str(r["date"])[:10], "%Y-%m-%d")
+            labels.append(f"S{dt.strftime('%d/%m')}")
+        except Exception:
+            labels.append("?")
+        ctl_l.append(round(float(r.get("ctl") or 0)))
+        atl_l.append(round(float(r.get("atl") or 0)))
+        tsb_l.append(round(float(r.get("tsb") or 0)))
+
+    return {"labels": labels, "ctl": ctl_l, "atl": atl_l, "tsb": tsb_l}
+
+
+def current_kpis(raw_fitness, raw_workouts):
+    if not raw_fitness:
+        return {"ctl": 0, "atl": 0, "tsb": 0, "tss_week": 0}
+
+    records = sorted(raw_fitness, key=lambda x: x.get("date", ""))
+    latest  = records[-1]
+
+    week_ago  = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
+    tss_week  = sum(
+        round(float(r.get("tss") or 0))
+        for r in records
+        if str(r.get("date", ""))[:10] >= week_ago
+    )
+
+    return {
+        "ctl":      round(float(latest.get("ctl") or 0)),
+        "atl":      round(float(latest.get("atl") or 0)),
+        "tsb":      round(float(latest.get("tsb") or 0)),
+        "tss_week": tss_week,
+    }
+
+
+def kpi_deltas(raw_fitness):
+    if not raw_fitness or len(raw_fitness) < 8:
+        return {"ctl": "—", "atl": "—", "tsb": "—", "tss_week": "—"}
+
+    records = sorted(raw_fitness, key=lambda x: x.get("date", ""))
+    curr    = records[-1]
+    prev    = records[-8]
+
+    def fmt(a, b):
+        d = round(float(a or 0) - float(b or 0))
+        return f"+{d}" if d >= 0 else str(d)
+
+    return {
+        "ctl":      fmt(curr.get("ctl"),  prev.get("ctl")),
+        "atl":      fmt(curr.get("atl"),  prev.get("atl")),
+        "tsb":      fmt(curr.get("tsb"),  prev.get("tsb")),
+        "tss_week": "—",
+    }
+
+
+# ── Processamento de HRV / wellness ──────────────────────────────────
+def process_wellness(raw):
+    if not raw:
+        return {"labels": [], "vals": [], "baseline": 0}
+
+    records = sorted(raw, key=lambda x: x.get("date", ""))[-14:]
+
+    labels, vals = [], []
+    for r in records:
+        try:
+            dt = datetime.strptime(str(r["date"])[:10], "%Y-%m-%d")
+            labels.append(dt.strftime("%d/%m"))
+        except Exception:
+            labels.append("?")
+        hrv = float(r.get("hrv") or r.get("rmssd") or r.get("hrvScore") or 0)
+        vals.append(round(hrv))
+
+    valid    = [v for v in vals if v > 0]
+    baseline = round(sum(valid) / len(valid)) if valid else 0
+
+    return {"labels": labels, "vals": vals, "baseline": baseline}
+
+
+# ── Aderência ─────────────────────────────────────────────────────────
+def compute_adherence(vol, sessions):
+    """
+    Sem acesso a treinos planejados via cookie (requer OAuth),
+    estimamos a meta com base no volume atual + 10% como referência.
+    """
+    result = []
+    for sport in ["swim", "bike", "run", "strength"]:
+        done = vol.get(sport, 0)
+        if done > 0:
+            target = round(done * 1.1, 1)   # meta estimada
+            result.append({
+                "label":  SPORT_LABEL[sport],
+                "done":   done,
+                "target": target,
+                "color":  SPORT_COLOR[sport],
+            })
+    return result
+
+
+# ── Alertas automáticos ───────────────────────────────────────────────
+def compute_alerts(kpis, hrv_data):
+    alerts = []
+    tsb = kpis.get("tsb", 0)
+    atl = kpis.get("atl", 0)
+    ctl = kpis.get("ctl", 1) or 1
+
+    # Overtraining
+    if tsb < -15:
+        excess = round((atl / ctl - 1) * 100)
+        alerts.append({"type": "danger",
+                        "msg": f"Risco de overtraining — TSB {tsb}, ATL {excess}% acima da CTL"})
+    elif tsb < -5:
+        alerts.append({"type": "warn",
+                        "msg": f"Fadiga acumulada — TSB {tsb}, monitorar recuperação"})
+    elif tsb > 10:
+        alerts.append({"type": "ok",
+                        "msg": f"Forma positiva — TSB +{tsb}, bom momento para treinos de qualidade"})
+    else:
+        alerts.append({"type": "ok",
+                        "msg": f"Carga equilibrada — TSB {tsb}"})
+
+    # HRV
+    vals = [v for v in hrv_data.get("vals", []) if v > 0]
+    if len(vals) >= 7:
+        recent = vals[-7:]
+        older  = vals[-14:-7] if len(vals) >= 14 else []
+        if older:
+            avg_r = sum(recent) / len(recent)
+            avg_o = sum(older)  / len(older)
+            if avg_r < avg_o * 0.93:
+                alerts.append({"type": "warn",
+                                "msg": "HRV em queda nos últimos 7 dias — priorizar sono e recuperação"})
+
+    return alerts
+
+
+# ── Montagem final do objeto DB ───────────────────────────────────────
+def build_db():
+    db = {}
+    for key, cfg in ATHLETES.items():
+        print(f"  [{key}] Buscando dados (id={cfg['id']})...")
+        try:
+            raw_w = get_workouts(cfg["id"], days=14)
+            raw_f = get_fitness(cfg["id"],  weeks=8)
+            raw_we = []
+            try:
+                raw_we = get_wellness(cfg["id"], days=14)
+            except Exception as e:
+                print(f"    HRV indisponível: {e}")
+
+            sessions, vol, zones = process_workouts(raw_w)
+            pmc       = process_fitness(raw_f)
+            kpis      = current_kpis(raw_f, raw_w)
+            kpi_delta = kpi_deltas(raw_f)
+            hrv       = process_wellness(raw_we)
+            adherence = compute_adherence(vol, sessions)
+            alerts    = compute_alerts(kpis, hrv)
+
+            db[key] = {
+                "kpis":       kpis,
+                "kpi_delta":  kpi_delta,
+                "pmc":        pmc,
+                "zones":      zones,
+                "vol":        vol,
+                "hrv":        hrv,
+                "adherence":  adherence,
+                "alerts":     alerts,
+                "sessions":   sessions,
+            }
+            print(f"    CTL={kpis['ctl']} ATL={kpis['atl']} TSB={kpis['tsb']} sessions={len(sessions)}")
+
+        except Exception as e:
+            print(f"    ERRO: {e}")
+            db[key] = {
+                "kpis": {"ctl": 0, "atl": 0, "tsb": 0, "tss_week": 0},
+                "kpi_delta": {"ctl": "—", "atl": "—", "tsb": "—", "tss_week": "—"},
+                "pmc": {"labels": [], "ctl": [], "atl": [], "tsb": []},
+                "zones": {"labels": [], "z1": [], "z2": [], "z3": []},
+                "vol": {"swim": 0, "bike": 0, "run": 0, "strength": 0},
+                "hrv": {"labels": [], "vals": [], "baseline": 0},
+                "adherence": [],
+                "alerts": [{"type": "warn", "msg": f"Erro ao buscar dados: {e}"}],
+                "sessions": [],
+            }
+
+    return db
+
+
+# ── Injeção no template ───────────────────────────────────────────────
+def inject(db):
+    with open("template.html", encoding="utf-8") as f:
+        html = f.read()
+
+    data_js  = json.dumps(db, ensure_ascii=False, indent=2)
+    now_str  = datetime.utcnow().strftime("%d/%m/%Y %H:%M") + " UTC"
+    html     = html.replace("__NPC_DATA__",  data_js)
+    html     = html.replace("__GENERATED__", now_str)
+
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print(f"  index.html gerado ({len(html)//1024} KB)")
+
+
+# ── Main ──────────────────────────────────────────────────────────────
 def main():
     print("=== NPC Dashboard Generator ===")
     print(f"Data: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC\n")
 
     print("[1/3] Buscando dados do TrainingPeaks...")
-    raw_data = collect_all_data()
+    db = build_db()
 
-    print("\n[2/3] Gerando HTML via Claude API...")
-    html = generate_html(raw_data)
+    print("\n[2/3] Injetando dados no template...")
+    inject(db)
 
-    print("\n[3/3] Salvando index.html...")
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(html)
-
-    size_kb = len(html.encode()) // 1024
-    print(f"\nConcluído! index.html gerado ({size_kb} KB)")
+    print("\n[3/3] Concluído.")
 
 
 if __name__ == "__main__":
