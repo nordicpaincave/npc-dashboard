@@ -181,7 +181,7 @@
   </div>
 
   <div class="footer">
-    NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 16/04/2026 23:23 UTC
+    NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 16/04/2026 23:37 UTC
   </div>
 </div>
 
@@ -189,15 +189,15 @@
 const DB = {
   "bruno": {
     "kpis": {
-      "ctl": 3,
-      "atl": 0,
-      "tsb": 3,
-      "tss_week": 0
+      "ctl": 50,
+      "atl": 97,
+      "tsb": -47,
+      "tss_week": 780
     },
     "kpi_delta": {
-      "ctl": "-1",
-      "atl": "+0",
-      "tsb": "-1",
+      "ctl": "+18",
+      "atl": "+8",
+      "tsb": "+10",
       "tss_week": "—"
     },
     "pmc": {
@@ -218,8 +218,8 @@ const DB = {
         18,
         13,
         9,
-        6,
-        5
+        10,
+        36
       ],
       "atl": [
         38,
@@ -228,8 +228,8 @@ const DB = {
         0,
         0,
         0,
-        0,
-        0
+        18,
+        95
       ],
       "tsb": [
         10,
@@ -238,8 +238,8 @@ const DB = {
         17,
         13,
         9,
-        6,
-        5
+        -8,
+        -59
       ]
     },
     "zones": {
@@ -265,21 +265,46 @@ const DB = {
       ]
     },
     "vol": {
-      "swim": 0.0,
-      "bike": 0.0,
-      "run": 0.0,
-      "strength": 0.0
+      "swim": 56.0,
+      "bike": 48.0,
+      "run": 48.0,
+      "strength": 8.0
     },
     "hrv": {
       "labels": [],
       "vals": [],
       "baseline": 0
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 56.0,
+        "target": 61.6,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 48.0,
+        "target": 52.8,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 48.0,
+        "target": 52.8,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 8.0,
+        "target": 8.8,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
       {
-        "type": "ok",
-        "msg": "Carga equilibrada — TSB 3"
+        "type": "danger",
+        "msg": "Risco de overtraining — TSB -47, ATL 94% acima da CTL"
       }
     ],
     "sessions": [
@@ -289,9 +314,7 @@ const DB = {
         "desc": "Corrida Z1 — Leve",
         "dur": "8h00",
         "tss": 30,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -299,9 +322,7 @@ const DB = {
         "desc": "Strength",
         "dur": "8h00",
         "tss": 38,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -309,9 +330,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
         "dur": "8h00",
         "tss": 103,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -319,19 +338,7 @@ const DB = {
         "desc": "Corrida Z1 — Longa",
         "dur": "8h00",
         "tss": 47,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Seg",
-        "sport": "strength",
-        "desc": "Força — Sessão 1 · Fase 1 (4×5 Carga Alta)",
-        "dur": "8h00",
-        "tss": 39,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Seg",
@@ -339,9 +346,7 @@ const DB = {
         "desc": "Natação Z1 — Técnica",
         "dur": "8h00",
         "tss": 69,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -349,9 +354,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Aeróbio Base (solo)",
         "dur": "8h00",
         "tss": 72,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -359,9 +362,7 @@ const DB = {
         "desc": "Natação Z1 — Volume",
         "dur": "8h00",
         "tss": 74,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -369,19 +370,7 @@ const DB = {
         "desc": "Corrida Z1 — Leve",
         "dur": "8h00",
         "tss": 31,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Qua",
-        "sport": "strength",
-        "desc": "Força — Sessão 2 · Fase 1 (4×5 Carga Alta)",
-        "dur": "8h00",
-        "tss": 36,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -389,9 +378,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Aeróbio Base (solo)",
         "dur": "8h00",
         "tss": 66,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -399,9 +386,7 @@ const DB = {
         "desc": "Natação Z1 — Técnica",
         "dur": "8h00",
         "tss": 60,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -409,9 +394,7 @@ const DB = {
         "desc": "Corrida Z1 — Leve",
         "dur": "8h00",
         "tss": 33,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -419,19 +402,7 @@ const DB = {
         "desc": "Natação Z1 — Volume",
         "dur": "8h00",
         "tss": 42,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Sex",
-        "sport": "strength",
-        "desc": "Força — Sessão 3 · Fase 1 (4×5 Carga Alta)",
-        "dur": "8h00",
-        "tss": 37,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -439,9 +410,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC) ⏱️ 90min MAX",
         "dur": "8h00",
         "tss": 54,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -449,19 +418,7 @@ const DB = {
         "desc": "Corrida Z1 — Longa",
         "dur": "8h00",
         "tss": 57,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Seg",
-        "sport": "strength",
-        "desc": "Força — Unilaterais Sessão 1 (Sem. 5)",
-        "dur": "8h00",
-        "tss": 61,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Seg",
@@ -469,9 +426,7 @@ const DB = {
         "desc": "Natação — Aula 12h (Sem. 5)",
         "dur": "8h00",
         "tss": 72,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -479,9 +434,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 5)",
         "dur": "8h00",
         "tss": 53,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -489,9 +442,7 @@ const DB = {
         "desc": "Natação — Aula 12h (Sem. 5)",
         "dur": "8h00",
         "tss": 64,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -499,19 +450,7 @@ const DB = {
         "desc": "Corrida Z1 — Leve + Alfredson (Sem. 5)",
         "dur": "8h00",
         "tss": 32,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Qua",
-        "sport": "strength",
-        "desc": "Força — Unilaterais Sessão 2 (Sem. 5)",
-        "dur": "8h00",
-        "tss": 26,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -519,9 +458,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 5)",
         "dur": "8h00",
         "tss": 51,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -529,23 +466,21 @@ const DB = {
         "desc": "Natação — Aula 12h (Sem. 5)",
         "dur": "8h00",
         "tss": 73,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       }
     ]
   },
   "jean": {
     "kpis": {
-      "ctl": 3,
-      "atl": 0,
-      "tsb": 3,
-      "tss_week": 0
+      "ctl": 64,
+      "atl": 120,
+      "tsb": -57,
+      "tss_week": 953
     },
     "kpi_delta": {
-      "ctl": "-1",
-      "atl": "+0",
-      "tsb": "-1",
+      "ctl": "+23",
+      "atl": "+16",
+      "tsb": "+7",
       "tss_week": "—"
     },
     "pmc": {
@@ -566,8 +501,8 @@ const DB = {
         18,
         13,
         9,
-        6,
-        5
+        17,
+        45
       ],
       "atl": [
         38,
@@ -576,8 +511,8 @@ const DB = {
         0,
         0,
         0,
-        0,
-        0
+        50,
+        110
       ],
       "tsb": [
         10,
@@ -586,8 +521,8 @@ const DB = {
         17,
         13,
         9,
-        6,
-        5
+        -33,
+        -65
       ]
     },
     "zones": {
@@ -613,21 +548,46 @@ const DB = {
       ]
     },
     "vol": {
-      "swim": 0.0,
-      "bike": 0.0,
-      "run": 0.0,
-      "strength": 0.0
+      "swim": 48.0,
+      "bike": 56.0,
+      "run": 52.0,
+      "strength": 8.0
     },
     "hrv": {
       "labels": [],
       "vals": [],
       "baseline": 0
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 48.0,
+        "target": 52.8,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 56.0,
+        "target": 61.6,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 52.0,
+        "target": 57.2,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 8.0,
+        "target": 8.8,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
       {
-        "type": "ok",
-        "msg": "Carga equilibrada — TSB 3"
+        "type": "danger",
+        "msg": "Risco de overtraining — TSB -57, ATL 88% acima da CTL"
       }
     ],
     "sessions": [
@@ -637,9 +597,7 @@ const DB = {
         "desc": "3x 8m Z2",
         "dur": "8h00",
         "tss": 70,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -647,9 +605,7 @@ const DB = {
         "desc": "Strength",
         "dur": "8h00",
         "tss": 34,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -657,9 +613,7 @@ const DB = {
         "desc": "Lap Swimming",
         "dur": "8h00",
         "tss": 102,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -667,9 +621,7 @@ const DB = {
         "desc": "Running",
         "dur": "8h00",
         "tss": 19,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -677,9 +629,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
         "dur": "8h00",
         "tss": 81,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -687,9 +637,7 @@ const DB = {
         "desc": "Running",
         "dur": "8h00",
         "tss": 136,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Seg",
@@ -697,9 +645,7 @@ const DB = {
         "desc": "Treadmill Running",
         "dur": "4h02",
         "tss": 7,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Seg",
@@ -707,29 +653,7 @@ const DB = {
         "desc": "Natação Z1 — Técnica (Sem. 2)",
         "dur": "8h00",
         "tss": 95,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Ter",
-        "sport": "strength",
-        "desc": "Musculação — Quad + Glúteos + Mobilidade",
-        "dur": "8h00",
-        "tss": 32,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Ter",
-        "sport": "strength",
-        "desc": "Musculação — Manguito + Cadeia Post. + Core",
-        "dur": "8h00",
-        "tss": 30,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -737,9 +661,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Base Aeróbia",
         "dur": "8h00",
         "tss": 60,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -747,9 +669,7 @@ const DB = {
         "desc": "Corrida Z1 — Base Aeróbia",
         "dur": "8h00",
         "tss": 44,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -757,19 +677,7 @@ const DB = {
         "desc": "Natação Z1 — Técnica (Sem. 2)",
         "dur": "8h00",
         "tss": 92,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Qui",
-        "sport": "strength",
-        "desc": "Musculação — Escapular + Funcional + Flexibilidade",
-        "dur": "8h00",
-        "tss": 29,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -777,9 +685,7 @@ const DB = {
         "desc": "Ciclismo Z1+Z2 — 3×8min LT1 (Trainer)",
         "dur": "8h00",
         "tss": 78,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -787,9 +693,7 @@ const DB = {
         "desc": "Corrida Z1 — Base Aeróbia",
         "dur": "8h00",
         "tss": 36,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -797,9 +701,7 @@ const DB = {
         "desc": "Natação Z1 — Técnica (Sem. 2)",
         "dur": "8h00",
         "tss": 91,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -807,9 +709,7 @@ const DB = {
         "desc": "Ciclismo Longo Z1 — 3h Grupo NPC ⭐",
         "dur": "8h00",
         "tss": 134,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -817,9 +717,7 @@ const DB = {
         "desc": "Corrida Longa Z1 — 100min Grupo NPC",
         "dur": "8h00",
         "tss": 77,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Seg",
@@ -827,29 +725,7 @@ const DB = {
         "desc": "Natação — Aula (Sem. 5)",
         "dur": "8h00",
         "tss": 87,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Seg",
-        "sport": "strength",
-        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 5)",
-        "dur": "8h00",
-        "tss": 37,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Ter",
-        "sport": "strength",
-        "desc": "Musculação — Quad + Glúteos + Mobilidade (Sem. 5)",
-        "dur": "8h00",
-        "tss": 46,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -857,9 +733,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Base Aeróbia (Sem. 5)",
         "dur": "8h00",
         "tss": 86,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -867,9 +741,7 @@ const DB = {
         "desc": "Corrida Z1 — Base Aeróbia (Sem. 5)",
         "dur": "8h00",
         "tss": 49,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -877,9 +749,7 @@ const DB = {
         "desc": "Natação — Aula (Sem. 5)",
         "dur": "8h00",
         "tss": 79,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qui",
@@ -887,33 +757,21 @@ const DB = {
         "desc": "Ciclismo Z1+Z2 — 4×8min LT1 (Sem. 5)",
         "dur": "8h00",
         "tss": 87,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
-      },
-      {
-        "day": "Qui",
-        "sport": "strength",
-        "desc": "Musculação — Escapular + Funcional + Flexibilidade (Sem. 5)",
-        "dur": "8h00",
-        "tss": 36,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       }
     ]
   },
   "gabriel": {
     "kpis": {
-      "ctl": 3,
-      "atl": 0,
-      "tsb": 3,
-      "tss_week": 0
+      "ctl": 25,
+      "atl": 34,
+      "tsb": -9,
+      "tss_week": 347
     },
     "kpi_delta": {
-      "ctl": "-1",
-      "atl": "+0",
-      "tsb": "-1",
+      "ctl": "+9",
+      "atl": "+12",
+      "tsb": "-4",
       "tss_week": "—"
     },
     "pmc": {
@@ -934,8 +792,8 @@ const DB = {
         18,
         13,
         9,
-        6,
-        5
+        11,
+        16
       ],
       "atl": [
         38,
@@ -944,8 +802,8 @@ const DB = {
         0,
         0,
         0,
-        0,
-        0
+        25,
+        16
       ],
       "tsb": [
         10,
@@ -954,8 +812,8 @@ const DB = {
         17,
         13,
         9,
-        6,
-        5
+        -14,
+        -1
       ]
     },
     "zones": {
@@ -981,21 +839,46 @@ const DB = {
       ]
     },
     "vol": {
-      "swim": 0.0,
-      "bike": 0.0,
-      "run": 0.0,
-      "strength": 0.0
+      "swim": 8.0,
+      "bike": 86.0,
+      "run": 52.9,
+      "strength": 8.0
     },
     "hrv": {
       "labels": [],
       "vals": [],
       "baseline": 0
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 8.0,
+        "target": 8.8,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 86.0,
+        "target": 94.6,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 52.9,
+        "target": 58.2,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 8.0,
+        "target": 8.8,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
       {
-        "type": "ok",
-        "msg": "Carga equilibrada — TSB 3"
+        "type": "warn",
+        "msg": "Fadiga acumulada — TSB -9, monitorar recuperação"
       }
     ],
     "sessions": [
@@ -1005,9 +888,7 @@ const DB = {
         "desc": "Running",
         "dur": "2h53",
         "tss": 6,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -1015,9 +896,7 @@ const DB = {
         "desc": "Running",
         "dur": "8h00",
         "tss": 56,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
@@ -1025,9 +904,7 @@ const DB = {
         "desc": "Strength",
         "dur": "8h00",
         "tss": 40,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -1035,9 +912,7 @@ const DB = {
         "desc": "Road Cycling",
         "dur": "8h00",
         "tss": 0,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -1045,9 +920,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
         "dur": "8h00",
         "tss": 93,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1055,9 +928,7 @@ const DB = {
         "desc": "Open Water Swimming",
         "dur": "8h00",
         "tss": 33,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1065,9 +936,7 @@ const DB = {
         "desc": "Track Running",
         "dur": "3h09",
         "tss": 13,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1075,9 +944,7 @@ const DB = {
         "desc": "Road Cycling",
         "dur": "8h00",
         "tss": 23,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1085,9 +952,7 @@ const DB = {
         "desc": "Road Cycling",
         "dur": "7h48",
         "tss": 15,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -1095,9 +960,7 @@ const DB = {
         "desc": "Corrida Z1 + Strides Leves",
         "dur": "8h00",
         "tss": 37,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -1105,9 +968,7 @@ const DB = {
         "desc": "Cycling",
         "dur": "7h23",
         "tss": 18,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -1115,9 +976,7 @@ const DB = {
         "desc": "Running",
         "dur": "8h00",
         "tss": 24,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
@@ -1125,9 +984,7 @@ const DB = {
         "desc": "Cycling",
         "dur": "8h00",
         "tss": 21,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1135,9 +992,7 @@ const DB = {
         "desc": "Road Cycling",
         "dur": "6h50",
         "tss": 13,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1145,9 +1000,7 @@ const DB = {
         "desc": "Running",
         "dur": "4h03",
         "tss": 11,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1155,9 +1008,7 @@ const DB = {
         "desc": "Running",
         "dur": "7h35",
         "tss": 34,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1165,9 +1016,7 @@ const DB = {
         "desc": "Cycling",
         "dur": "8h00",
         "tss": 48,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1175,9 +1024,7 @@ const DB = {
         "desc": "Running",
         "dur": "3h10",
         "tss": 13,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1185,9 +1032,7 @@ const DB = {
         "desc": "Road Cycling",
         "dur": "8h00",
         "tss": 64,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Dom",
@@ -1195,9 +1040,7 @@ const DB = {
         "desc": "Road Cycling",
         "dur": "8h00",
         "tss": 20,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Ter",
@@ -1205,9 +1048,7 @@ const DB = {
         "desc": "Corrida Z1 Muito Leve — Recuperação",
         "dur": "8h00",
         "tss": 26,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
@@ -1215,9 +1056,7 @@ const DB = {
         "desc": "Ciclismo Z1 — Ativação Leve Trainer",
         "dur": "8h00",
         "tss": 30,
-        "zones": "75/20/5",
-        "hrv": 0,
-        "ht": "nt"
+        "zones": "75/20/5"
       }
     ]
   }
