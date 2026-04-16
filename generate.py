@@ -485,7 +485,7 @@ def build_db():
             alerts    = compute_alerts(kpis, hrv)
 
             # Se os dados reais estiverem vazios, usa protótipo como fallback
-            dados_ok = kpis["ctl"] > 0 or len(sessions) > 0 or sum(vol.values()) > 0
+            dados_ok = len(sessions) > 0 or sum(vol.values()) > 0
             if not dados_ok:
                 print(f"    dados reais vazios — usando protótipo como fallback visual")
                 db[key] = PROTOTYPE_DB[key].copy()
