@@ -205,15 +205,22 @@ def process_workouts(raw, display_days=14):
         if dur_h < 0.05:
             continue
 
-        # Só processa treinos REALIZADOS (tssActual > 0 = dado gravado pelo dispositivo)
-        # Planejados sem execução têm tssActual = 0 ou null
-        tss = round(float(w.get("tssActual") or 0))
+        # ── Filtra apenas treinos REALIZADOS ──────────────────────────
+        # Planejados têm tssActual=null/0 mas totalTime>0 (tempo planejado)
+        # Realizados têm tssActual>0 (dado gravado pelo dispositivo)
+        tss_actual_raw = w.get("tssActual")
+        tss = round(float(tss_actual_raw or 0))
+
         raw_time = float(w.get("totalTime") or 0)
 
-        # Filtra planejados: precisa de tssActual > 0 OU totalTime > 0 com workout passado
-        # Mas priorizamos tssActual como sinal primário de "completado"
-        if tss == 0 and raw_time == 0:
-            continue
+        # Para força (sem potenciômetro/GPS): aceita se tem tempo real gravado
+        # Para outros esportes: exige tssActual > 0
+        if sport == "strength":
+            if raw_time <= 0:
+                continue   # planejado sem execução
+        else:
+            if tss <= 0:
+                continue   # planejado ou sem dado real
 
         # Data
         workout_day = str(w.get("workoutDay",""))[:10]
@@ -287,7 +294,11 @@ def calc_pmc_from_workouts(raw_w):
         day = str(w.get("workoutDay",""))[:10]
         tss_val = float(w.get("tssActual") or 0)
         if tss_val > 0:  # só conta treinos realizados
-            daily[day] = daily.get(day, 0) + tss_val
+            daily[day] = daily.get(day, 0) + min(tss_val, 400)  # cap 400 TSS/sessão
+
+    # Cap diário: máximo 600 TSS/dia (evita dados absurdos de importação)
+    for d in daily:
+        daily[d] = min(daily[d], 600)
     end = datetime.utcnow()
     dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(179,-1,-1)]
     ctl, atl = 0.0, 0.0  # começa em 0 — o histórico vai construir o valor correto
