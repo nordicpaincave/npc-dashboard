@@ -88,12 +88,31 @@ def get_fitness(athlete_id, weeks=8):
 
 
 def get_wellness(athlete_id, days=14):
+    """Busca dados de wellness/HRV — tenta múltiplos endpoints."""
     end   = datetime.utcnow()
     start = end - timedelta(days=days)
-    return tp_get(
-        f"/wellness/v6/athletes/{athlete_id}"
-        f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
-    )
+    s, e  = start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
+
+    candidates = [
+        f"/wellness/v6/athletes/{athlete_id}/{s}/{e}",
+        f"/v6/athletes/{athlete_id}/wellness/{s}/{e}",
+        f"/fitness/v6/athletes/{athlete_id}/wellness/{s}/{e}",
+        f"/athlete/v6/athletes/{athlete_id}/metrics/{s}/{e}",
+        f"/v6/athletes/{athlete_id}/metrics/{s}/{e}",
+    ]
+    for path in candidates:
+        try:
+            data = tp_get(path)
+            if data:
+                if isinstance(data, dict):
+                    data = data.get("Items") or data.get("items") or []
+                print(f"    wellness endpoint OK: {path} ({len(data)} registros)")
+                return data
+        except Exception:
+            continue
+
+    print(f"    HRV: nenhum endpoint funcionou")
+    return []
 
 
 # ── Mapeamento de esportes ─────────────────────────────────────────────
@@ -173,29 +192,42 @@ def process_workouts(raw):
         except Exception:
             day_str = "?"
 
-        # Zonas — tenta campos HR zone; se não tiver, deixa "—"
-        # TP não retorna hrZoneXDuration diretamente no resumo do workout
+        # Zonas — tenta campos HR zone; se não tiver, estima pelo TSS e tipo
         z1 = float(w.get("hrZone1Duration") or w.get("heartRateZone1Duration") or 0)
         z2 = float(w.get("hrZone2Duration") or w.get("heartRateZone2Duration") or 0) + \
              float(w.get("hrZone3Duration") or w.get("heartRateZone3Duration") or 0)
         z3 = float(w.get("hrZone4Duration") or w.get("heartRateZone4Duration") or 0) + \
              float(w.get("hrZone5Duration") or w.get("heartRateZone5Duration") or 0)
-        total_z   = z1 + z2 + z3
-        zones_str = (
-            f"{round(z1/total_z*100)}/{round(z2/total_z*100)}/{round(z3/total_z*100)}"
-            if total_z > 0 else "—"
-        )
+        total_z = z1 + z2 + z3
 
-        # Volume acumulado
-        vol[sport] = round(vol[sport] + dur_h, 2)
-
-        # Zonas por esporte (para gráfico)
         if total_z > 0:
+            zones_str = (
+                f"{round(z1/total_z*100)}/"
+                f"{round(z2/total_z*100)}/"
+                f"{round(z3/total_z*100)}"
+            )
+            # Acumula para gráfico de zonas
             if sport not in zones:
                 zones[sport] = [0.0, 0.0, 0.0]
             zones[sport][0] += z1
             zones[sport][1] += z2
             zones[sport][2] += z3
+        else:
+            # Estima zonas pelo TSS relativo à duração (intensidade relativa)
+            tss_per_h = tss / dur_h if dur_h > 0 else 0
+            if tss_per_h > 80:        # alta intensidade → mais Z3
+                pz1, pz2, pz3 = 40, 35, 25
+            elif tss_per_h > 55:      # intensidade média → predomina Z2
+                pz1, pz2, pz3 = 55, 35, 10
+            else:                     # baixa intensidade → predomina Z1
+                pz1, pz2, pz3 = 75, 20, 5
+            zones_str = f"{pz1}/{pz2}/{pz3}"
+            # Acumula estimativa para gráfico
+            if sport not in zones:
+                zones[sport] = [0.0, 0.0, 0.0]
+            zones[sport][0] += dur_h * pz1 / 100
+            zones[sport][1] += dur_h * pz2 / 100
+            zones[sport][2] += dur_h * pz3 / 100
 
         # Título limpo
         title = w.get("title") or type_name or "Treino"
@@ -490,16 +522,13 @@ def debug_workout_fields(raw_w, athlete_key):
         print(f"    DEBUG [{athlete_key}]: nenhum workout retornado")
         return
     print(f"    DEBUG [{athlete_key}]: {len(raw_w)} workouts após filtro de data")
-    first = raw_w[0]
-    print(f"      campos: {list(first.keys())[:15]}...")
-    # Mostra amostra de datas e durações
     for w in raw_w[:5]:
-        day      = str(w.get("workoutDay",""))[:10]
-        tt       = w.get("totalTime", 0)
-        tss      = w.get("tssActual", w.get("tss", 0))
-        type_id  = w.get("workoutTypeValueId","?")
-        title    = w.get("title","?")
-        print(f"      {day} | typeId={type_id} | totalTime={tt:.4f}d ({float(tt)*24:.1f}h) | tss={tss} | {title}")
+        day     = str(w.get("workoutDay", ""))[:10]
+        tt      = float(w.get("totalTime") or 0)
+        tss     = w.get("tssActual") or w.get("tss") or 0
+        type_id = w.get("workoutTypeValueId", "?")
+        title   = w.get("title") or "?"
+        print(f"      {day} | typeId={type_id} | {tt:.4f}d ({tt*24:.1f}h) | tss={tss} | {title}")
 
 
 # ── Montagem final do objeto DB ───────────────────────────────────────
