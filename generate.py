@@ -118,7 +118,9 @@ def to_list(data):
     return []
 
 # ── Busca workouts (com filtro de data no cliente) ────────────────────
-def fetch_workouts(athlete_id, days=14):
+def fetch_workouts(athlete_id, days=56):
+    """Busca workouts dos últimos 56 dias (necessário para calcular CTL/ATL corretamente).
+    O parâmetro days_display controla quantos dias aparecem nas sessões."""
     end, start = datetime.utcnow(), datetime.utcnow() - timedelta(days=days)
     raw = to_list(tp_get(
         f"/fitness/v6/athletes/{athlete_id}/workouts"
@@ -168,8 +170,11 @@ def fetch_wellness(athlete_id, days=14):
     return []
 
 # ── Processamento de workouts ─────────────────────────────────────────
-def process_workouts(raw):
+def process_workouts(raw, display_days=14):
+    """Processa workouts. raw pode ter até 56 dias (para PMC);
+    display_days controla quantas sessões aparecem na tabela."""
     sessions, vol, zones_acc = [], {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}, {}
+    cutoff_display = (datetime.utcnow() - timedelta(days=display_days)).strftime("%Y-%m-%d")
 
     for w in raw:
         # Sport pelo ID numérico
@@ -183,17 +188,31 @@ def process_workouts(raw):
         if not sport:
             continue
 
-        # Duração: totalTime em DIAS no TP → converte para horas
-        dur_h = min(float(w.get("totalTime") or 0) * 24, 8.0)
+        # Duração — testa se totalTime está em horas ou dias
+        # Se valor > 1.0, provavelmente está em horas (ex: 1.5h)
+        # Se valor < 1.0 pequeno (ex: 0.083), pode ser horas (5min) ou dias (2h)
+        # Heurística: se * 24 > 8h, usa como horas direto; senão multiplica por 24
+        raw_time = float(w.get("totalTime") or 0)
+        if raw_time == 0:
+            continue
+        dur_h_as_hours = raw_time                  # assume horas
+        dur_h_as_days  = raw_time * 24             # assume dias
+        # Usa "dias" só se o resultado em horas seria < 5 minutos E em dias seria razoável
+        if dur_h_as_hours < 0.05 and 0.05 <= dur_h_as_days <= 8.0:
+            dur_h = dur_h_as_days
+        else:
+            dur_h = min(dur_h_as_hours, 8.0)
+
         if dur_h < 0.05:
             continue
 
         # TSS
         tss = round(float(w.get("tssActual") or w.get("tss") or 0))
 
-        # Dia da semana
+        # Data
+        workout_day = str(w.get("workoutDay",""))[:10]
         try:
-            dt  = datetime.strptime(str(w.get("workoutDay",""))[:10], "%Y-%m-%d")
+            dt  = datetime.strptime(workout_day, "%Y-%m-%d")
             day = DAYS_PT[dt.weekday()]
         except Exception:
             day = "?"
@@ -207,13 +226,13 @@ def process_workouts(raw):
         if tss_h > 80:   pz = (40, 35, 25)
         elif tss_h > 55: pz = (55, 35, 10)
         else:            pz = (75, 20,  5)
-        zones_str = f"{pz[0]}/{pz[1]}/{pz[2]}"
 
         # Título
         title = w.get("title") or SPORT_LABEL.get(sport, "Treino")
         if title.lower() in ("other", ""):
             title = SPORT_LABEL.get(sport, "Treino")
 
+        # Volume acumulado (todos os 56 dias — para PMC)
         vol[sport] = round(vol[sport] + dur_h, 2)
         if sport not in zones_acc:
             zones_acc[sport] = [0.0, 0.0, 0.0]
@@ -221,8 +240,28 @@ def process_workouts(raw):
         zones_acc[sport][1] += dur_h * pz[1] / 100
         zones_acc[sport][2] += dur_h * pz[2] / 100
 
-        sessions.append({"day":day,"sport":sport,"desc":title,
-                         "dur":dur_str,"tss":tss,"zones":zones_str})
+        # Sessões visíveis: apenas últimos 14 dias
+        if workout_day >= cutoff_display:
+            sessions.append({"day":day,"sport":sport,"desc":title,
+                             "dur":dur_str,"tss":tss,"zones":f"{pz[0]}/{pz[1]}/{pz[2]}"})
+
+    # Volume exibido: apenas últimos 14 dias
+    vol_display = {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}
+    for w in raw:
+        if str(w.get("workoutDay",""))[:10] < cutoff_display:
+            continue
+        sport = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
+        if not sport:
+            continue
+        raw_time = float(w.get("totalTime") or 0)
+        dur_h_as_hours = raw_time
+        dur_h_as_days  = raw_time * 24
+        if dur_h_as_hours < 0.05 and 0.05 <= dur_h_as_days <= 8.0:
+            dur_h = dur_h_as_days
+        else:
+            dur_h = min(dur_h_as_hours, 8.0)
+        if dur_h >= 0.05 and sport in vol_display:
+            vol_display[sport] = round(vol_display[sport] + dur_h, 2)
 
     # Gráfico de zonas
     zl, z1l, z2l, z3l = [], [], [], []
@@ -233,7 +272,7 @@ def process_workouts(raw):
                 zl.append(SPORT_LABEL[sport])
                 z1l.append(round(z1/t*100)); z2l.append(round(z2/t*100)); z3l.append(round(z3/t*100))
 
-    return sessions, {k:round(v,1) for k,v in vol.items()}, {"labels":zl,"z1":z1l,"z2":z2l,"z3":z3l}
+    return sessions, {k:round(v,1) for k,v in vol_display.items()}, {"labels":zl,"z1":z1l,"z2":z2l,"z3":z3l}
 
 # ── PMC ───────────────────────────────────────────────────────────────
 def calc_pmc_from_workouts(raw_w):
@@ -322,13 +361,13 @@ def build_db():
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
         try:
-            raw_w  = fetch_workouts(cfg["id"], days=14)
+            raw_w  = fetch_workouts(cfg["id"], days=56)   # 56 dias para PMC preciso
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
             raw_we = fetch_wellness(cfg["id"],  days=14)
 
-            sessions, vol, zones = process_workouts(raw_w)
+            sessions, vol, zones = process_workouts(raw_w, display_days=14)
             total_vol = sum(vol.values())
-            print(f"    processado: {len(sessions)} sessões, {total_vol:.1f}h")
+            print(f"    processado: {len(sessions)} sessões (14d), vol={total_vol:.1f}h (14d)")
 
             # Fallback se não chegaram dados reais
             if len(sessions) < 1 and total_vol < 0.5:
