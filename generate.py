@@ -118,17 +118,16 @@ def to_list(data):
     return []
 
 # ── Busca workouts (com filtro de data no cliente) ────────────────────
-def fetch_workouts(athlete_id, days=56):
-    """Busca workouts dos últimos 56 dias (necessário para calcular CTL/ATL corretamente).
-    O parâmetro days_display controla quantos dias aparecem nas sessões."""
+def fetch_workouts(athlete_id, days=180):
+    """Busca workouts dos últimos N dias. 180 dias = histórico suficiente para CTL convergir."""
     end, start = datetime.utcnow(), datetime.utcnow() - timedelta(days=days)
     raw = to_list(tp_get(
         f"/fitness/v6/athletes/{athlete_id}/workouts"
         f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
     ))
-    cutoff = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d")
+    cutoff = start.strftime("%Y-%m-%d")
     filtered = [w for w in raw if str(w.get("workoutDay",""))[:10] >= cutoff]
-    print(f"    workouts: {len(raw)} total → {len(filtered)} nos últimos {days} dias")
+    print(f"    workouts: {len(filtered)} nos últimos {days} dias")
     return filtered
 
 # ── Busca fitness/PMC ─────────────────────────────────────────────────
@@ -206,8 +205,15 @@ def process_workouts(raw, display_days=14):
         if dur_h < 0.05:
             continue
 
-        # TSS
-        tss = round(float(w.get("tssActual") or w.get("tss") or 0))
+        # Só processa treinos REALIZADOS (tssActual > 0 = dado gravado pelo dispositivo)
+        # Planejados sem execução têm tssActual = 0 ou null
+        tss = round(float(w.get("tssActual") or 0))
+        raw_time = float(w.get("totalTime") or 0)
+
+        # Filtra planejados: precisa de tssActual > 0 OU totalTime > 0 com workout passado
+        # Mas priorizamos tssActual como sinal primário de "completado"
+        if tss == 0 and raw_time == 0:
+            continue
 
         # Data
         workout_day = str(w.get("workoutDay",""))[:10]
@@ -279,10 +285,12 @@ def calc_pmc_from_workouts(raw_w):
     daily = {}
     for w in raw_w:
         day = str(w.get("workoutDay",""))[:10]
-        daily[day] = daily.get(day, 0) + float(w.get("tssActual") or w.get("tss") or 0)
+        tss_val = float(w.get("tssActual") or 0)
+        if tss_val > 0:  # só conta treinos realizados
+            daily[day] = daily.get(day, 0) + tss_val
     end = datetime.utcnow()
-    dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(55,-1,-1)]
-    ctl, atl = 50.0, 50.0
+    dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(179,-1,-1)]
+    ctl, atl = 0.0, 0.0  # começa em 0 — o histórico vai construir o valor correto
     kc, ka = 2/43, 2/8
     history = []
     for d in dates:
@@ -361,7 +369,7 @@ def build_db():
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
         try:
-            raw_w  = fetch_workouts(cfg["id"], days=56)   # 56 dias para PMC preciso
+            raw_w  = fetch_workouts(cfg["id"], days=180)  # 6 meses para CTL preciso
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
             raw_we = fetch_wellness(cfg["id"],  days=14)
 
