@@ -1,0 +1,39 @@
+name: Atualizar Dashboard NPC
+
+on:
+  schedule:
+    - cron: "0 7 */2 * *"   # toda segunda e quarta-feira às 07h UTC (04h Curitiba)
+  workflow_dispatch:          # permite rodar manualmente pelo GitHub
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write         # necessário para o git push automático
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: pip install requests anthropic
+
+      - name: Gerar dashboard com dados do TrainingPeaks
+        env:
+          TP_COOKIE: ${{ secrets.TP_COOKIE }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python generate.py
+
+      - name: Commitar e publicar index.html
+        run: |
+          git config user.name  "npc-bot"
+          git config user.email "bot@npcendurance.com"
+          git add index.html
+          git diff --staged --quiet \
+            && echo "Nenhuma alteração detectada." \
+            || (git commit -m "Dashboard atualizado — $(date +'%d/%m/%Y %H:%M') UTC" && git push)
