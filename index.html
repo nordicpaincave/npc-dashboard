@@ -1,989 +1,485 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>NPC Endurance — Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #0d1018; --bg2: #151921; --bg3: #1c2230; --bg4: #222c3c;
-  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
-  --text: #e8ecf4; --text2: #7d8599; --text3: #4a5168;
-  --blue: #4a9eff; --blue-dim: rgba(74,158,255,0.10);
-  --orange: #ff7c3a; --orange-dim: rgba(255,124,58,0.10);
-  --green: #3ecf7a; --green-dim: rgba(62,207,122,0.10);
-  --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.10);
-  --amber: #f5a623; --amber-dim: rgba(245,166,35,0.10);
-  --red: #f87171; --red-dim: rgba(248,113,113,0.10);
-  --radius: 10px; --radius-lg: 14px;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  /* Athlete colors */
-  --c-jean: #ff7c3a;
-  --c-bruno: #4a9eff;
-  --c-gabriel: #3ecf7a;
-}
-body { background:var(--bg); color:var(--text); font-family:var(--font-mono); font-size:13px; line-height:1.5; min-height:100vh; -webkit-tap-highlight-color:transparent; }
-.page { max-width:1280px; margin:0 auto; padding:1rem 1rem 5rem; }
-
-/* ── Loading ── */
-.loading-overlay { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:100; }
-.loading-spinner { width:28px; height:28px; border:2px solid var(--border2); border-top-color:var(--orange); border-radius:50%; animation:spin .8s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
-
-/* ── Header ── */
-.hdr { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding-bottom:1rem; border-bottom:0.5px solid var(--border); margin-bottom:1rem; }
-.logo-wrap { display:flex; align-items:center; gap:8px; }
-.logo-badge { font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:.14em; background:var(--orange); color:#fff; padding:4px 9px; border-radius:6px; }
-.logo-title { font-family:var(--font-display); font-size:15px; font-weight:700; }
-.logo-sub { font-size:10px; color:var(--text2); margin-top:1px; }
-.last-updated { font-size:10px; color:var(--text3); text-align:right; }
-
-/* ── Controls ── */
-.ctrls { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-.tab-group { display:flex; border:0.5px solid var(--border2); border-radius:var(--radius); overflow:hidden; }
-.tab-btn { font-family:var(--font-mono); font-size:12px; font-weight:500; padding:6px 14px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:background .15s,color .15s; white-space:nowrap; }
-.tab-btn.active { background:var(--bg3); color:var(--text); }
-.tab-btn:hover:not(.active) { background:rgba(255,255,255,.04); }
-select { font-family:var(--font-mono); font-size:12px; color:var(--text); background:var(--bg2); border:0.5px solid var(--border2); border-radius:var(--radius); padding:6px 10px; height:32px; cursor:pointer; outline:none; }
-select option { background:var(--bg2); }
-
-/* ── Alerts ── */
-.alerts { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1rem; }
-.alert-pill { display:flex; align-items:center; gap:6px; font-size:11px; padding:4px 10px; border-radius:var(--radius); border:0.5px solid; }
-.alert-icon { font-size:9px; width:14px; height:14px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; flex-shrink:0; }
-.a-danger { background:var(--red-dim); color:#fca5a5; border-color:rgba(248,113,113,.28); }
-.a-danger .alert-icon { background:rgba(248,113,113,.18); color:var(--red); }
-.a-warn { background:var(--amber-dim); color:#fcd073; border-color:rgba(245,166,35,.28); }
-.a-warn .alert-icon { background:rgba(245,166,35,.18); color:var(--amber); }
-.a-ok { background:var(--green-dim); color:#6ee7a0; border-color:rgba(62,207,122,.28); }
-.a-ok .alert-icon { background:rgba(62,207,122,.18); color:var(--green); }
-.a-info { background:var(--blue-dim); color:#93c5fd; border-color:rgba(74,158,255,.28); }
-.a-info .alert-icon { background:rgba(74,158,255,.18); color:var(--blue); }
-
-/* ════════════════════════════════════════════
-   ATHLETE HERO CARD (individual view)
-════════════════════════════════════════════ */
-.ath-hero {
-  background: var(--bg2);
-  border: 0.5px solid var(--border2);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  position: relative;
-}
-.ath-hero::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-}
-.ath-jean   .ath-hero::before { background: linear-gradient(90deg, var(--c-jean), transparent); }
-.ath-bruno  .ath-hero::before { background: linear-gradient(90deg, var(--c-bruno), transparent); }
-.ath-gabriel .ath-hero::before { background: linear-gradient(90deg, var(--c-gabriel), transparent); }
-
-.ath-hero-inner {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1rem 1.25rem;
-}
-.ath-hero-id {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding-right: 1.25rem;
-  border-right: 0.5px solid var(--border);
-  min-width: 140px;
-}
-.ath-hero-name {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-}
-.ath-jean   .ath-hero-name { color: var(--c-jean); }
-.ath-bruno  .ath-hero-name { color: var(--c-bruno); }
-.ath-gabriel .ath-hero-name { color: var(--c-gabriel); }
-
-.ath-hero-status {
-  font-size: 11px;
-  color: var(--text2);
-  margin-top: 4px;
-}
-.ath-hero-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-}
-.ath-hero-metric {
-  padding: .5rem 1rem;
-  border-right: 0.5px solid var(--border);
-  text-align: center;
-}
-.ath-hero-metric:last-child { border-right: none; }
-.ath-hero-metric-label {
-  font-size: 9px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: .09em;
-  margin-bottom: 5px;
-}
-.ath-hero-metric-val {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1;
-}
-.ath-hero-metric-delta {
-  font-size: 10px;
-  margin-top: 4px;
-}
-.ath-hero-spark {
-  width: 120px;
-  padding-left: 1rem;
-  border-left: 0.5px solid var(--border);
-}
-.ath-hero-spark-label {
-  font-size: 9px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  margin-bottom: 4px;
-}
-
-/* Mobile: hero em coluna */
-@media (max-width: 639px) {
-  .ath-hero-inner {
-    grid-template-columns: 1fr;
-    gap: .75rem;
-    padding: .875rem;
-  }
-  .ath-hero-id {
-    border-right: none;
-    border-bottom: 0.5px solid var(--border);
-    padding-right: 0;
-    padding-bottom: .75rem;
-    min-width: unset;
-  }
-  .ath-hero-metrics { grid-template-columns: repeat(2, 1fr); }
-  .ath-hero-metric:nth-child(2) { border-right: none; }
-  .ath-hero-metric:nth-child(3), .ath-hero-metric:nth-child(4) {
-    border-top: 0.5px solid var(--border);
-  }
-  .ath-hero-metric-val { font-size: 24px; }
-  .ath-hero-spark { width: 100%; border-left: none; border-top: 0.5px solid var(--border); padding-left: 0; padding-top: .75rem; }
-}
-
-@media (min-width: 640px) and (max-width: 899px) {
-  .ath-hero-inner { grid-template-columns: auto 1fr; }
-  .ath-hero-spark { display: none; }
-  .ath-hero-metrics { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* ════════════════════════════════════════════
-   ATHLETE METRIC CARDS (comparativo)
-════════════════════════════════════════════ */
-.athlete-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1rem; }
-
-.ath-card {
-  background:var(--bg2);
-  border:0.5px solid var(--border);
-  border-radius:var(--radius-lg);
-  overflow:hidden;
-  transition:border-color .2s;
-}
-.ath-card:hover { border-color:var(--border2); }
-
-.ath-card-header {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:.75rem 1rem .625rem;
-  border-bottom:0.5px solid var(--border);
-  position:relative;
-}
-.ath-card-header::before {
-  content:'';
-  position:absolute;
-  left:0; top:0; bottom:0;
-  width:3px;
-  border-radius:3px 0 0 3px;
-}
-.ath-jean   .ath-card-header::before { background:var(--c-jean); }
-.ath-bruno  .ath-card-header::before { background:var(--c-bruno); }
-.ath-gabriel .ath-card-header::before { background:var(--c-gabriel); }
-
-.ath-name { font-family:var(--font-display); font-size:14px; font-weight:700; }
-.ath-jean   .ath-name { color:var(--c-jean); }
-.ath-bruno  .ath-name { color:var(--c-bruno); }
-.ath-gabriel .ath-name { color:var(--c-gabriel); }
-
-.ath-status { font-size:10px; color:var(--text3); }
-
-/* 4 métricas em grid 2×2 */
-.ath-metrics { display:grid; grid-template-columns:1fr 1fr; gap:0; }
-.ath-metric {
-  padding:.625rem .875rem;
-  border-bottom:0.5px solid var(--border);
-  border-right:0.5px solid var(--border);
-  position:relative;
-}
-.ath-metric:nth-child(2n) { border-right:none; }
-.ath-metric:nth-child(3), .ath-metric:nth-child(4) { border-bottom:none; }
-.ath-metric-label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; }
-.ath-metric-row { display:flex; align-items:baseline; gap:6px; }
-.ath-metric-val { font-family:var(--font-display); font-size:22px; font-weight:700; line-height:1; }
-.ath-metric-delta { font-size:10px; }
-.up { color:var(--green); } .dn { color:var(--red); } .nt { color:var(--text3); }
-
-/* TSB color coding */
-.tsb-pos { color:var(--green); }
-.tsb-mid { color:var(--amber); }
-.tsb-neg { color:var(--red); }
-
-/* Sparkline minigráfico de CTL */
-.ath-sparkline { padding:.5rem .875rem .625rem; border-top:0.5px solid var(--border); }
-.ath-spark-label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:4px; }
-.spark-canvas-wrap { height:32px; position:relative; }
-
-/* ── Cards genéricos ── */
-.card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; }
-.card-title { font-size:11px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:.09em; margin-bottom:.875rem; }
-.card-title-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:.875rem; }
-.card-title-row .card-title { margin-bottom:0; }
-.row1 { margin-bottom:1rem; }
-.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1rem; }
-.row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:1rem; }
-.legend { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px; font-size:11px; color:var(--text2); }
-.legend span { display:flex; align-items:center; gap:5px; }
-.dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
-
-/* ── KPI row (individual) ── */
-.kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
-.kpi { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius); padding:.75rem .875rem; }
-.kpi.hl { border-color:var(--border2); background:var(--bg3); }
-.kpi-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
-.kpi-value { font-family:var(--font-display); font-size:26px; font-weight:700; line-height:1; }
-.kpi-delta { font-size:11px; margin-top:4px; }
-.kpi-sub { font-size:10px; color:var(--text2); margin-top:4px; line-height:1.5; }
-
-/* ── Adherence ── */
-.adh-row { display:flex; align-items:center; gap:8px; margin-bottom:9px; }
-.adh-label { font-size:11px; color:var(--text2); width:58px; flex-shrink:0; }
-.adh-track { flex:1; height:5px; background:var(--bg3); border-radius:4px; overflow:hidden; }
-.adh-fill { height:100%; border-radius:4px; transition:width .5s cubic-bezier(.4,0,.2,1); }
-.adh-pct { font-size:11px; font-weight:500; width:32px; text-align:right; flex-shrink:0; }
-.adh-detail { font-size:10px; color:var(--text3); width:88px; flex-shrink:0; text-align:right; }
-
-/* ── Sessions table ── */
-.stbl { width:100%; border-collapse:collapse; font-size:12px; }
-.stbl th { text-align:left; font-size:10px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; padding:0 8px 8px 0; border-bottom:0.5px solid var(--border); }
-.stbl td { padding:8px 8px 8px 0; border-bottom:0.5px solid var(--border); color:var(--text); vertical-align:middle; }
-.stbl tr:last-child td { border-bottom:none; }
-.stbl tr:hover td { background:rgba(255,255,255,.02); }
-.badge { display:inline-block; font-family:var(--font-mono); font-size:10px; font-weight:500; padding:2px 7px; border-radius:5px; }
-.b-swim { background:rgba(74,158,255,.16); color:#93c5fd; }
-.b-bike { background:rgba(245,166,35,.16); color:#fcd073; }
-.b-run  { background:rgba(62,207,122,.16); color:#6ee7a0; }
-.b-strength { background:rgba(167,139,250,.16); color:#c4b5fd; }
-
-/* ── Comparativo ── */
-.cmp-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:1rem; }
-.cmp-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; }
-.cmp-name { font-family:var(--font-display); font-size:14px; font-weight:700; margin-bottom:.5rem; padding-bottom:.5rem; border-bottom:0.5px solid var(--border); padding-left:10px; }
-.cmp-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; font-size:12px; border-bottom:0.5px solid var(--border); }
-.cmp-row:last-child { border-bottom:none; }
-.cmp-k { color:var(--text2); } .cmp-v { font-weight:500; }
-.section-label { font-size:10px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; margin:0 0 .75rem; }
-.error-banner { background:var(--red-dim); border:0.5px solid rgba(248,113,113,.28); color:#fca5a5; padding:10px 14px; border-radius:var(--radius); margin-bottom:1rem; font-size:13px; display:none; }
-
-/* ── Plano ── */
-.goal-card { background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%); border:0.5px solid var(--border2); border-radius:var(--radius-lg); padding:1.25rem; display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:center; margin-bottom:1rem; position:relative; overflow:hidden; }
-.goal-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),var(--blue)); }
-.goal-race { font-family:var(--font-display); font-size:20px; font-weight:800; margin-bottom:4px; }
-.goal-meta { font-size:11px; color:var(--text2); display:flex; gap:14px; flex-wrap:wrap; }
-.goal-tag { display:inline-flex; align-items:center; gap:4px; }
-.goal-tag-dot { width:5px; height:5px; border-radius:50%; background:var(--orange); }
-.countdown-block { text-align:right; }
-.countdown-num { font-family:var(--font-display); font-size:40px; font-weight:800; color:var(--orange); line-height:1; }
-.countdown-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
-.goal-badges { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
-.goal-badge { font-size:11px; padding:2px 9px; border-radius:20px; border:0.5px solid; }
-.gb-priority { background:rgba(255,124,58,.12); color:#ffa07a; border-color:rgba(255,124,58,.3); }
-.gb-target { background:rgba(74,158,255,.12); color:#93c5fd; border-color:rgba(74,158,255,.3); }
-.gb-type { background:rgba(62,207,122,.12); color:#6ee7a0; border-color:rgba(62,207,122,.3); }
-.phase-timeline-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1.25rem; margin-bottom:1rem; }
-.phase-timeline-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:8px; }
-.phase-timeline-title { font-size:11px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:.09em; }
-.phase-current-label { font-size:12px; color:var(--text); }
-.phase-current-name { font-family:var(--font-display); font-weight:700; }
-.timeline-track { position:relative; height:32px; display:flex; gap:2px; }
-.phase-segment { height:100%; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:500; color:rgba(255,255,255,.7); position:relative; cursor:default; overflow:hidden; }
-.phase-segment.active { filter:brightness(1.2); box-shadow:0 0 10px rgba(255,255,255,.08); }
-.phase-segment.past { opacity:.45; }
-.phase-segment.future { opacity:.55; }
-.phase-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 6px; pointer-events:none; }
-.now-marker { position:absolute; top:-5px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; pointer-events:none; z-index:10; }
-.now-dot { width:7px; height:7px; border-radius:50%; background:#fff; box-shadow:0 0 5px rgba(255,255,255,.5); }
-.now-line { width:1px; height:32px; background:rgba(255,255,255,.3); }
-.now-text { font-size:8px; color:rgba(255,255,255,.4); letter-spacing:.05em; margin-top:2px; }
-.week-nav-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1.25rem; }
-.week-nav-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; gap:10px; flex-wrap:wrap; }
-.week-nav-title { font-family:var(--font-display); font-size:14px; font-weight:700; }
-.week-nav-sub { font-size:11px; color:var(--text2); margin-top:2px; }
-.week-nav-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.week-nav-btn { width:28px; height:28px; border-radius:7px; background:var(--bg3); border:0.5px solid var(--border2); color:var(--text2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; transition:all .15s; }
-.week-nav-btn:hover { color:var(--text); }
-.week-nav-btn:disabled { opacity:.3; cursor:default; }
-.week-nav-today { font-size:11px; padding:4px 10px; border-radius:7px; background:var(--bg3); border:0.5px solid var(--border2); color:var(--text2); cursor:pointer; }
-.week-phase-tag { font-size:11px; padding:3px 9px; border-radius:20px; }
-.day-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
-.day-col { min-width:0; }
-.day-header { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; text-align:center; margin-bottom:5px; padding-bottom:5px; border-bottom:0.5px solid var(--border); }
-.day-header.today-header { color:var(--orange); }
-.day-date { font-size:10px; color:var(--text2); text-align:center; margin-bottom:6px; }
-.day-date.today-date { color:var(--orange); font-weight:500; }
-.day-sessions { display:flex; flex-direction:column; gap:5px; min-height:50px; }
-.session-card { background:var(--bg3); border:0.5px solid var(--border); border-radius:7px; padding:6px 8px; position:relative; overflow:hidden; }
-.session-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; }
-.session-card.swim::before { background:var(--blue); }
-.session-card.bike::before { background:var(--amber); }
-.session-card.run::before  { background:var(--green); }
-.session-card.strength::before { background:var(--purple); }
-.session-sport { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
-.session-title { font-size:10px; color:var(--text); line-height:1.3; margin-bottom:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.session-meta { display:flex; gap:5px; align-items:center; }
-.session-dur { font-size:9px; color:var(--text3); }
-.session-tss-val { font-size:9px; color:var(--amber); }
-.session-status { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-left:auto; }
-.s-done { background:var(--green); } .s-planned { background:var(--text3); }
-.day-rest { display:flex; align-items:center; justify-content:center; height:48px; background:var(--bg3); border:0.5px dashed var(--border); border-radius:7px; font-size:9px; color:var(--text3); }
-.week-stats { display:flex; gap:14px; margin-top:.875rem; padding-top:.875rem; border-top:0.5px solid var(--border); font-size:11px; color:var(--text2); flex-wrap:wrap; }
-.week-stat-val { font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text); display:block; }
-.no-prescription { text-align:center; padding:2.5rem 1rem; color:var(--text3); }
-.no-prescription-icon { font-size:28px; margin-bottom:10px; opacity:.4; }
-.footer { margin-top:2.5rem; padding-top:1rem; border-top:0.5px solid var(--border); text-align:center; font-size:11px; color:var(--text3); }
-
-/* ════════════════════════════════════
-   MOBILE FIRST — breakpoints
-════════════════════════════════════ */
-
-/* Mobile: tudo em coluna */
-@media (max-width: 639px) {
-  .page { padding:.75rem .75rem 5rem; }
-  .hdr { flex-direction:column; align-items:flex-start; gap:8px; }
-  .ctrls { width:100%; }
-  .tab-group { flex:1; }
-  .tab-btn { flex:1; padding:6px 8px; font-size:11px; }
-  select { flex:1; min-width:0; }
-
-  /* Athlete cards: 1 por linha no mobile */
-  .athlete-cards { grid-template-columns:1fr; }
-
-  /* KPI: 2 colunas */
-  .kpi-grid { grid-template-columns:repeat(2,1fr); }
-  .kpi-value { font-size:22px; }
-
-  /* Charts: empilhados */
-  .row2, .row3, .cmp-grid { grid-template-columns:1fr; }
-
-  /* Sessions table: esconder colunas menos importantes */
-  .stbl th:nth-child(6),
-  .stbl td:nth-child(6) { display:none; } /* zonas */
-  .adh-detail { display:none; }
-
-  /* Plano: sem countdown lateral */
-  .goal-card { grid-template-columns:1fr; }
-  .countdown-block { text-align:left; }
-  .countdown-num { font-size:32px; }
-
-  /* Day grid: 2 colunas no mobile */
-  .day-grid { grid-template-columns:repeat(2,1fr); }
-}
-
-/* Tablet: 2 colunas */
-@media (min-width: 640px) and (max-width: 899px) {
-  .athlete-cards { grid-template-columns:1fr 1fr; }
-  .kpi-grid { grid-template-columns:repeat(3,1fr); }
-  .row3 { grid-template-columns:1fr 1fr; }
-  .cmp-grid { grid-template-columns:1fr 1fr; }
-  .day-grid { grid-template-columns:repeat(4,1fr); }
-  .goal-card { grid-template-columns:1fr; }
-}
-
-/* Desktop médio */
-@media (min-width: 900px) and (max-width: 1099px) {
-  .athlete-cards { grid-template-columns:repeat(3,1fr); }
-  .day-grid { grid-template-columns:repeat(7,1fr); }
-}
-
-/* ── Bottom nav para mobile ── */
-.mobile-nav {
-  display:none;
-  position:fixed;
-  bottom:0; left:0; right:0;
-  background:var(--bg2);
-  border-top:0.5px solid var(--border2);
-  padding:.5rem 0 env(safe-area-inset-bottom,.5rem);
-  z-index:50;
-}
-.mobile-nav-inner { display:flex; justify-content:space-around; }
-.mobile-nav-btn {
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  background:none; border:none; cursor:pointer;
-  color:var(--text3); font-family:var(--font-mono); font-size:9px;
-  padding:.25rem .75rem; border-radius:8px;
-  transition:color .15s;
-  text-transform:uppercase; letter-spacing:.06em;
-}
-.mobile-nav-btn.active { color:var(--orange); }
-.mobile-nav-btn svg { width:20px; height:20px; }
-@media (max-width: 639px) {
-  .mobile-nav { display:block; }
-  /* Esconder tab group no header em mobile (usa bottom nav) */
-  .tab-group { display:none; }
-}
-
-/* ── PHASE COLORS ── */
-.PHASE_COLORS { }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPC Endurance — Dashboard de Treinos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f1117; --bg2: #171b24; --bg3: #1e2333;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #eef0f5; --text2: #8b90a0; --text3: #565c70;
+      --blue: #4a9eff; --orange: #ff7c3a; --green: #4db87a; --purple: #9b8fff; --amber: #f5a623;
+      --radius: 10px; --radius-lg: 14px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.5; min-height: 100vh; }
+    .page { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
+    .hdr { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-bottom: 1.25rem; border-bottom: 0.5px solid var(--border); margin-bottom: 1.5rem; }
+    .logo-badge { font-size: 11px; font-weight: 700; letter-spacing: .12em; background: var(--orange); color: #fff; padding: 4px 8px; border-radius: 6px; }
+    .logo-title { font-size: 15px; font-weight: 600; margin-left: 8px; }
+    .logo-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .ctrls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .tab-group { display: flex; border: 0.5px solid var(--border2); border-radius: var(--radius); overflow: hidden; }
+    .tab-btn { font-size: 12px; font-weight: 500; padding: 7px 16px; background: transparent; border: none; cursor: pointer; color: var(--text2); transition: background .15s, color .15s; }
+    .tab-btn.active { background: var(--bg3); color: var(--text); }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,.04); }
+    select { font-size: 12px; color: var(--text); background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 10px; height: 34px; cursor: pointer; outline: none; }
+    select option { background: var(--bg2); }
+    .alerts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .alert-pill { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: var(--radius); border: 0.5px solid; }
+    .alert-icon { font-size: 11px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; }
+    .a-danger { background: rgba(255,82,82,.1); color: #ff8080; border-color: rgba(255,82,82,.3); }
+    .a-danger .alert-icon { background: rgba(255,82,82,.2); color: #ff5252; }
+    .a-warn { background: rgba(245,166,35,.1); color: #f5c060; border-color: rgba(245,166,35,.3); }
+    .a-warn .alert-icon { background: rgba(245,166,35,.2); color: var(--amber); }
+    .a-ok { background: rgba(77,184,122,.1); color: #6fcf97; border-color: rgba(77,184,122,.3); }
+    .a-ok .alert-icon { background: rgba(77,184,122,.2); color: var(--green); }
+    .a-info { background: rgba(74,158,255,.1); color: #7bbdff; border-color: rgba(74,158,255,.3); }
+    .a-info .alert-icon { background: rgba(74,158,255,.2); color: var(--blue); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-bottom: 1.25rem; }
+    .kpi { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: .875rem 1rem; }
+    .kpi.hl { border-color: var(--border2); background: var(--bg3); }
+    .kpi-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .kpi-value { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-delta { font-size: 11px; margin-top: 5px; }
+    .kpi-sub { font-size: 10px; color: var(--text2); margin-top: 5px; line-height: 1.5; }
+    .up { color: var(--green); } .dn { color: #ff7c3a; } .nt { color: var(--text3); }
+    .card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+    .card-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .875rem; }
+    .card-title-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: .875rem; }
+    .card-title-row .card-title { margin-bottom: 0; }
+    .row1 { margin-bottom: 1.25rem; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; font-size: 11px; color: var(--text2); }
+    .legend span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .adh-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .adh-label { font-size: 11px; color: var(--text2); width: 60px; flex-shrink: 0; }
+    .adh-track { flex: 1; height: 7px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+    .adh-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+    .adh-pct { font-size: 11px; font-weight: 600; width: 34px; text-align: right; flex-shrink: 0; }
+    .adh-detail { font-size: 10px; color: var(--text3); width: 90px; flex-shrink: 0; text-align: right; }
+    .stbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .stbl th { text-align: left; font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; padding: 0 10px 10px 0; border-bottom: 0.5px solid var(--border); }
+    .stbl td { padding: 9px 10px 9px 0; border-bottom: 0.5px solid var(--border); color: var(--text); vertical-align: middle; }
+    .stbl tr:last-child td { border-bottom: none; }
+    .stbl tr:hover td { background: rgba(255,255,255,.025); }
+    .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 5px; }
+    .b-swim     { background: rgba(74,158,255,.18);  color: #7bbdff; }
+    .b-bike     { background: rgba(245,166,35,.18);  color: #f5c060; }
+    .b-run      { background: rgba(77,184,122,.18);  color: #6fcf97; }
+    .b-strength { background: rgba(155,143,255,.18); color: #c4bbff; }
+    .cmp-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 1.25rem; }
+    .cmp-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+    .cmp-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: .625rem; padding-bottom: .625rem; border-bottom: 0.5px solid var(--border); padding-left: 10px; }
+    .cmp-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 12px; border-bottom: 0.5px solid var(--border); }
+    .cmp-row:last-child { border-bottom: none; }
+    .cmp-k { color: var(--text2); } .cmp-v { font-weight: 600; color: var(--text); }
+    .section-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin: 0 0 .875rem; }
+    .footer { margin-top: 3rem; padding-top: 1rem; border-top: 0.5px solid var(--border); text-align: center; font-size: 11px; color: var(--text3); }
+    @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(3,1fr); } .row3 { grid-template-columns: 1fr 1fr; } .cmp-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } .row2,.row3,.cmp-grid { grid-template-columns: 1fr; } .adh-detail { display: none; } }
+  </style>
 </head>
 <body>
-
-<div class="loading-overlay" id="loading">
-  <div class="loading-spinner"></div>
-  <div style="font-size:12px;color:var(--text2)">Carregando NPC Dashboard...</div>
-</div>
-
-<div class="page" id="app" style="display:none">
-
-  <!-- Header -->
+<div class="page">
   <div class="hdr">
-    <div class="logo-wrap">
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
-          <span class="logo-badge">NPC</span>
-          <span class="logo-title">Endurance</span>
-        </div>
-        <div class="logo-sub">Dashboard · <span id="data-source-label">—</span></div>
+    <div>
+      <div style="display:flex;align-items:center">
+        <span class="logo-badge">NPC</span>
+        <span class="logo-title">Endurance</span>
       </div>
+      <div class="logo-sub">Dashboard de Análise de Treinos</div>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:1;min-width:0">
-      <div class="ctrls">
-        <div class="tab-group">
-          <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
-          <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
-          <button class="tab-btn" onclick="setView('plano',this)">Plano</button>
-        </div>
-        <select id="sel-athlete" onchange="updateDash()"></select>
-        <select id="sel-sport" onchange="updateDash()">
-          <option value="all">Todos os esportes</option>
-          <option value="swim">Natação</option>
-          <option value="bike">Ciclismo</option>
-          <option value="run">Corrida</option>
-          <option value="strength">Força</option>
-        </select>
-        <select id="sel-week" onchange="updateDash()"></select>
+    <div class="ctrls">
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
+        <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
       </div>
-      <div class="last-updated" id="last-updated"></div>
+      <select id="sel-athlete" onchange="updateDash()">
+        <option value="bruno">Bruno Trevisan</option>
+        <option value="jean">Jean Romano</option>
+        <option value="gabriel">Gabriel</option>
+      </select>
+      <select id="sel-sport" onchange="updateDash()">
+        <option value="all">Todos os esportes</option>
+        <option value="swim">Natação</option>
+        <option value="bike">Ciclismo</option>
+        <option value="run">Corrida</option>
+        <option value="strength">Força</option>
+      </select>
     </div>
   </div>
 
-  <div class="error-banner" id="error-banner"></div>
-
-  <!-- ══ INDIVIDUAL VIEW ══ -->
   <div id="view-individual">
-    <!-- Card de destaque do atleta selecionado -->
-    <div id="ath-hero-card" style="margin-bottom:1rem"></div>
-
     <div id="alerts-bar" class="alerts"></div>
     <div class="kpi-grid" id="kpi-grid"></div>
     <div class="card row1">
-      <div class="card-title">Tendência de carga — CTL / ATL / TSB (8 semanas)</div>
+      <div class="card-title">Tendência de carga — CTL / ATL / TSB (últimas 8 semanas)</div>
       <div class="legend" id="pmc-legend"></div>
-      <div style="position:relative;height:190px"><canvas id="pmc-chart"></canvas></div>
+      <div style="position:relative;height:200px"><canvas id="pmc-chart"></canvas></div>
     </div>
     <div class="row3">
       <div class="card">
         <div class="card-title">Distribuição de zonas (%)</div>
         <div class="legend" id="zone-legend"></div>
-        <div style="position:relative;height:150px"><canvas id="zone-chart"></canvas></div>
+        <div style="position:relative;height:160px"><canvas id="zone-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title-row">
           <span class="card-title">Volume semanal</span>
-          <span id="vol-total" style="font-size:13px;font-weight:500;color:var(--text)"></span>
+          <span id="vol-total" style="font-size:13px;font-weight:600;color:var(--text)"></span>
         </div>
         <div class="legend" id="vol-legend"></div>
-        <div style="position:relative;height:150px"><canvas id="vol-chart"></canvas></div>
+        <div style="position:relative;height:160px"><canvas id="vol-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title">Tendência de HRV (14 dias)</div>
         <div class="legend" id="hrv-legend"></div>
-        <div style="position:relative;height:150px"><canvas id="hrv-chart"></canvas></div>
+        <div style="position:relative;height:160px"><canvas id="hrv-chart"></canvas></div>
       </div>
     </div>
     <div class="card row1">
       <div class="card-title-row">
         <span class="card-title">Aderência ao plano</span>
-        <span id="adh-overall" style="font-size:13px;font-weight:500"></span>
+        <span id="adh-overall" style="font-size:13px;font-weight:600"></span>
       </div>
       <div id="adh-bars"></div>
     </div>
     <div class="card">
-      <div class="card-title">Sessões da semana</div>
-      <div style="overflow-x:auto">
-        <table class="stbl">
-          <thead><tr><th>Dia</th><th>Modalidade</th><th>Descrição</th><th>Duração</th><th>TSS</th><th>Zonas</th><th>HRV</th></tr></thead>
-          <tbody id="sessions-body"></tbody>
-        </table>
-      </div>
+      <div class="card-title">Sessões recentes</div>
+      <table class="stbl">
+        <thead><tr><th>Dia</th><th>Modalidade</th><th>Descrição</th><th>Duração</th><th>TSS</th><th>Zonas</th></tr></thead>
+        <tbody id="sessions-body"></tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ══ COMPARATIVO VIEW ══ -->
   <div id="view-comparativo" style="display:none">
-    <!-- Athlete cards no comparativo também -->
-    <div class="athlete-cards" id="ath-cards-cmp" style="margin-bottom:1rem"></div>
+    <div class="section-label">Métricas de carga</div>
+    <div class="cmp-grid" id="cmp-load"></div>
     <div class="row2">
       <div class="card">
         <div class="card-title">CTL — evolução comparativa (8 semanas)</div>
         <div class="legend" id="cmp-ctl-legend"></div>
-        <div style="position:relative;height:180px"><canvas id="cmp-ctl-chart"></canvas></div>
+        <div style="position:relative;height:190px"><canvas id="cmp-ctl-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title">HRV — evolução comparativa (14 dias)</div>
         <div class="legend" id="cmp-hrv-legend"></div>
-        <div style="position:relative;height:180px"><canvas id="cmp-hrv-chart"></canvas></div>
+        <div style="position:relative;height:190px"><canvas id="cmp-hrv-chart"></canvas></div>
       </div>
     </div>
-    <div class="section-label">Aderência ao plano</div>
-    <div class="cmp-grid" id="cmp-adh"></div>
     <div class="section-label">Volume semanal por disciplina (horas)</div>
     <div class="card">
       <div class="legend" id="cmp-vol-legend"></div>
-      <div style="position:relative;height:200px"><canvas id="cmp-vol-chart"></canvas></div>
+      <div style="position:relative;height:220px"><canvas id="cmp-vol-chart"></canvas></div>
     </div>
   </div>
 
-  <!-- ══ PLANO VIEW ══ -->
-  <div id="view-plano" style="display:none">
-    <div id="plano-content"></div>
+  <div class="footer">
+    NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 16/04/2026 22:50 UTC
   </div>
-
-  <div class="footer" id="footer">NPC Endurance · Método Norueguês</div>
 </div>
 
-<!-- Bottom nav mobile -->
-<nav class="mobile-nav">
-  <div class="mobile-nav-inner">
-    <button class="mobile-nav-btn active" onclick="setViewMobile('individual',this)">
-      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-      Individual
-    </button>
-    <button class="mobile-nav-btn" onclick="setViewMobile('comparativo',this)">
-      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
-      Comparar
-    </button>
-    <button class="mobile-nav-btn" onclick="setViewMobile('plano',this)">
-      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
-      Plano
-    </button>
-  </div>
-</nav>
-
 <script>
-// ── Config ──
-const DATA_URL='data.json';
-const COLORS={bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#3ecf7a'};
-const SPORT_LABEL={swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força'};
-const PHASE_COLORS={'Base Aeróbia':'#4a9eff','Construção':'#f5a623','Específico':'#ff7c3a','Taper':'#3ecf7a','Pré-Prova':'#a78bfa','Base':'#4a9eff'};
-const ATH_ORDER=['jean','bruno','gabriel'];
-
-// ── State ──
-let DB=null,ATHLETES=[],NAMES={},WEEKS=[],charts={},currentView='individual',planWeekOffset=0;
-const sparkCharts={};
-
-// ── Boot ──
-async function boot(){
-  try{
-    const res=await fetch(DATA_URL+'?t='+Date.now());
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const payload=await res.json();
-    DB=payload.athletes;
-    ATHLETES=ATH_ORDER.filter(id=>DB[id]);
-    NAMES=Object.fromEntries(ATHLETES.map(id=>[id,DB[id].name||id]));
-    WEEKS=payload.weeks||[];
-    const selAth=document.getElementById('sel-athlete');
-    ATHLETES.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=DB[id].name||id;selAth.appendChild(o);});
-    const selWeek=document.getElementById('sel-week');
-    WEEKS.forEach((w,i)=>{const o=document.createElement('option');o.value=w.key;o.textContent=w.label;if(i===0)o.selected=true;selWeek.appendChild(o);});
-    if(payload.last_updated) document.getElementById('last-updated').textContent='Atualizado: '+payload.last_updated;
-    document.getElementById('data-source-label').textContent=payload.is_real_data?'Dados reais via TrainingPeaks':'Dados fictícios';
-    document.getElementById('loading').style.display='none';
-    document.getElementById('app').style.display='block';
-    updateDash();
-  }catch(err){
-    document.getElementById('loading').style.display='none';
-    document.getElementById('app').style.display='block';
-    const b=document.getElementById('error-banner');b.style.display='block';b.textContent='⚠ '+err.message;
-  }
-}
-
-// ── Helpers ──
-function fmtH(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return mm>0?`${hh}h${String(mm).padStart(2,'0')}`:`${hh}h`;}
-function totalH(vol){return Object.values(vol).reduce((a,b)=>a+b,0);}
-function getA(){return document.getElementById('sel-athlete').value;}
-function getSp(){return document.getElementById('sel-sport').value;}
-function getW(){return document.getElementById('sel-week').value;}
-function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function getData(){
-  const a=DB[getA()],wk=getW();
-  if(a.weeks&&a.weeks[wk]) return {...a,...a.weeks[wk]};
-  return a;
-}
-const gridColor='rgba(255,255,255,0.05)',tickFont={size:10,family:'DM Mono'};
-
-// ── Athlete hero card (individual view) ──────────────────────────────────────
-function renderAthHero(){
-  const id=getA(), d=DB[id];
-  const tsb=d.kpis.tsb;
-  const tsbCls=tsb>5?'tsb-pos':tsb>-10?'tsb-mid':'tsb-neg';
-  const statusMsg=tsb>5?'Forma positiva ↑':tsb>-10?'Fadiga moderada':tsb>-20?'Fadiga alta':'⚠ Overreaching';
-  const statusColor=tsb>5?'var(--green)':tsb>-10?'var(--amber)':'var(--red)';
-  const color=COLORS[id];
-
-  const metrics=[
-    {label:'CTL — Fitness',   val:d.kpis.ctl,      delta:d.kpi_delta.ctl,  color:'var(--blue)'},
-    {label:'ATL — Fadiga',    val:d.kpis.atl,       delta:d.kpi_delta.atl,  color:'var(--orange)'},
-    {label:'TSB — Forma',     val:d.kpis.tsb,       delta:d.kpi_delta.tsb,  color:tsb>5?'var(--green)':tsb>-10?'var(--amber)':'var(--red)'},
-    {label:'TSS Semana',      val:d.kpis.tss_week,  delta:d.kpi_delta.tss_week, color:'var(--text)'},
-  ];
-
-  const sparkId='hero-spark-'+id;
-
-  document.getElementById('ath-hero-card').innerHTML=`
-    <div class="ath-hero ath-${id}">
-      <div class="ath-hero-inner">
-        <div class="ath-hero-id">
-          <div class="ath-hero-name">${NAMES[id]}</div>
-          <div class="ath-hero-status">
-            <span style="color:${statusColor}">${statusMsg}</span>
-          </div>
-          <div style="font-size:10px;color:var(--text3);margin-top:6px">
-            ${fmtH(totalH(d.vol))} · ${d.adherence.length} modalidades
-          </div>
-        </div>
-        <div class="ath-hero-metrics">
-          ${metrics.map(m=>{
-            const delta=String(m.delta);
-            const dir=delta.startsWith('+')?'up':delta.startsWith('-')?'dn':'nt';
-            const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
-            return `<div class="ath-hero-metric">
-              <div class="ath-hero-metric-label">${m.label}</div>
-              <div class="ath-hero-metric-val" style="color:${m.color}">${m.val}</div>
-              <div class="ath-hero-metric-delta ${dir}">${arr} ${delta}</div>
-            </div>`;
-          }).join('')}
-        </div>
-        <div class="ath-hero-spark">
-          <div class="ath-hero-spark-label">CTL 8 semanas</div>
-          <div style="position:relative;height:48px"><canvas id="${sparkId}"></canvas></div>
-        </div>
-      </div>
-    </div>`;
-
-  // Sparkline
-  if(sparkCharts['hero']){sparkCharts['hero'].destroy();delete sparkCharts['hero'];}
-  requestAnimationFrame(()=>{
-    const canvas=document.getElementById(sparkId);
-    if(!canvas) return;
-    sparkCharts['hero']=new Chart(canvas,{
-      type:'line',
-      data:{
-        labels:d.pmc.labels,
-        datasets:[{
-          data:d.pmc.ctl,
-          borderColor:color,
-          backgroundColor:color.replace('rgb(','rgba(').replace(')',',0.1)'),
-          tension:.4,pointRadius:2,borderWidth:2,fill:true
-        }]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{enabled:false}},
-        scales:{x:{display:false},y:{display:false,suggestedMin:0}},
-        animation:{duration:500}
+const DB = {
+  "bruno": {
+    "kpis": {
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 0
+    },
+    "kpi_delta": {
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
+    },
+    "pmc": {
+      "labels": [],
+      "ctl": [],
+      "atl": [],
+      "tsb": []
+    },
+    "zones": {
+      "labels": [],
+      "z1": [],
+      "z2": [],
+      "z3": []
+    },
+    "vol": {
+      "swim": 0,
+      "bike": 0,
+      "run": 0,
+      "strength": 0
+    },
+    "hrv": {
+      "labels": [],
+      "vals": [],
+      "baseline": 0
+    },
+    "adherence": [],
+    "alerts": [
+      {
+        "type": "warn",
+        "msg": "Erro ao buscar dados: 404 Client Error: Not Found for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/6285028/fitness/2026-02-19/2026-04-16"
       }
-    });
-  });
+    ],
+    "sessions": []
+  },
+  "jean": {
+    "kpis": {
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 0
+    },
+    "kpi_delta": {
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
+    },
+    "pmc": {
+      "labels": [],
+      "ctl": [],
+      "atl": [],
+      "tsb": []
+    },
+    "zones": {
+      "labels": [],
+      "z1": [],
+      "z2": [],
+      "z3": []
+    },
+    "vol": {
+      "swim": 0,
+      "bike": 0,
+      "run": 0,
+      "strength": 0
+    },
+    "hrv": {
+      "labels": [],
+      "vals": [],
+      "baseline": 0
+    },
+    "adherence": [],
+    "alerts": [
+      {
+        "type": "warn",
+        "msg": "Erro ao buscar dados: 404 Client Error: Not Found for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/6286348/fitness/2026-02-19/2026-04-16"
+      }
+    ],
+    "sessions": []
+  },
+  "gabriel": {
+    "kpis": {
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 0
+    },
+    "kpi_delta": {
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
+    },
+    "pmc": {
+      "labels": [],
+      "ctl": [],
+      "atl": [],
+      "tsb": []
+    },
+    "zones": {
+      "labels": [],
+      "z1": [],
+      "z2": [],
+      "z3": []
+    },
+    "vol": {
+      "swim": 0,
+      "bike": 0,
+      "run": 0,
+      "strength": 0
+    },
+    "hrv": {
+      "labels": [],
+      "vals": [],
+      "baseline": 0
+    },
+    "adherence": [],
+    "alerts": [
+      {
+        "type": "warn",
+        "msg": "Erro ao buscar dados: 404 Client Error: Not Found for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/5775491/fitness/2026-02-19/2026-04-16"
+      }
+    ],
+    "sessions": []
+  }
+};
+
+const ATHLETES = ['bruno','jean','gabriel'];
+const NAMES    = { bruno:'Bruno', jean:'Jean', gabriel:'Gabriel' };
+const COLORS   = { bruno:'#4a9eff', jean:'#ff7c3a', gabriel:'#4db87a' };
+const SPORT_LABEL = { swim:'Natação', bike:'Bike', run:'Corrida', strength:'Força' };
+
+const charts = {};
+let currentView = 'individual';
+const gc = 'rgba(255,255,255,0.06)';
+const tf = { size:11, family:'system-ui' };
+
+function fmtH(h) {
+  const hh=Math.floor(h), mm=Math.round((h-hh)*60);
+  return mm>0 ? `${hh}h${String(mm).padStart(2,'0')}` : `${hh}h`;
 }
+function totalH(vol) { return Object.values(vol).reduce((a,b)=>a+b,0); }
+function getA()  { return document.getElementById('sel-athlete').value; }
+function getSp() { return document.getElementById('sel-sport').value; }
+function dc(id)  { if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
 
-// ── Athlete metric cards (comparativo) ───────────────────────────────────────
-function renderAthCards(containerId){
-  const container=document.getElementById(containerId);
-  if(!container) return;
-
-  // Destroy old spark charts
-  Object.keys(sparkCharts).forEach(k=>{
-    if(sparkCharts[k]){sparkCharts[k].destroy();delete sparkCharts[k];}
-  });
-
-  container.innerHTML=ATHLETES.map(id=>{
-    const d=DB[id];
-    const tsb=d.kpis.tsb;
-    const tsbCls=tsb>5?'tsb-pos':tsb>-10?'tsb-mid':'tsb-neg';
-    const ctl=d.kpis.ctl,atl=d.kpis.atl,tss=d.kpis.tss_week;
-    const dCTL=String(d.kpi_delta.ctl),dATL=String(d.kpi_delta.atl),dTSB=String(d.kpi_delta.tsb);
-    const dirCTL=dCTL.startsWith('+')?'up':dCTL.startsWith('-')?'dn':'nt';
-    const dirATL=dATL.startsWith('+')?'up':dATL.startsWith('-')?'dn':'nt';
-    const dirTSB=dTSB.startsWith('+')?'up':dTSB.startsWith('-')?'dn':'nt';
-    const statusMsg=tsb>5?'Forma positiva':tsb>-10?'Fadiga moderada':tsb>-20?'Fadiga alta':'Overreaching';
-
-    return `<div class="ath-card ath-${id}">
-      <div class="ath-card-header">
-        <div>
-          <div class="ath-name">${NAMES[id]}</div>
-          <div class="ath-status">${statusMsg} · TSB ${tsb}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:10px;color:var(--text3)">TSS semana</div>
-          <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text)">${tss}</div>
-        </div>
-      </div>
-      <div class="ath-metrics">
-        <div class="ath-metric">
-          <div class="ath-metric-label">CTL — Fitness</div>
-          <div class="ath-metric-row">
-            <span class="ath-metric-val" style="color:var(--blue)">${ctl}</span>
-            <span class="ath-metric-delta ${dirCTL}">${dCTL.startsWith('+')||dCTL.startsWith('-')?dCTL:('→'+dCTL)}</span>
-          </div>
-        </div>
-        <div class="ath-metric">
-          <div class="ath-metric-label">ATL — Fadiga</div>
-          <div class="ath-metric-row">
-            <span class="ath-metric-val" style="color:var(--orange)">${atl}</span>
-            <span class="ath-metric-delta ${dirATL}">${dATL.startsWith('+')||dATL.startsWith('-')?dATL:('→'+dATL)}</span>
-          </div>
-        </div>
-        <div class="ath-metric">
-          <div class="ath-metric-label">TSB — Forma</div>
-          <div class="ath-metric-row">
-            <span class="ath-metric-val ${tsbCls}">${tsb}</span>
-            <span class="ath-metric-delta ${dirTSB}">${dTSB.startsWith('+')||dTSB.startsWith('-')?dTSB:('→'+dTSB)}</span>
-          </div>
-        </div>
-        <div class="ath-metric">
-          <div class="ath-metric-label">Horas totais</div>
-          <div class="ath-metric-row">
-            <span class="ath-metric-val" style="color:var(--text);font-size:18px">${fmtH(totalH(d.vol))}</span>
-          </div>
-        </div>
-      </div>
-      <div class="ath-sparkline">
-        <div class="ath-spark-label">CTL últimas 8 semanas</div>
-        <div class="spark-canvas-wrap"><canvas id="spark-${id}-${containerId}"></canvas></div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Render sparklines after DOM update
-  requestAnimationFrame(()=>{
-    ATHLETES.forEach(id=>{
-      const canvasId=`spark-${id}-${containerId}`;
-      const canvas=document.getElementById(canvasId);
-      if(!canvas) return;
-      const d=DB[id];
-      const color=COLORS[id];
-      sparkCharts[canvasId]=new Chart(canvas,{
-        type:'line',
-        data:{
-          labels:d.pmc.labels,
-          datasets:[{
-            data:d.pmc.ctl,
-            borderColor:color,
-            backgroundColor:color.replace(')',',0.08)').replace('rgb','rgba'),
-            tension:.4,pointRadius:2,borderWidth:1.5,fill:true
-          }]
-        },
-        options:{
-          responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{enabled:false}},
-          scales:{
-            x:{display:false},
-            y:{display:false,suggestedMin:0}
-          },
-          animation:{duration:600}
-        }
-      });
-    });
-  });
-}
-
-// ── View toggle ──
-function setView(v,btn){
-  currentView=v;
+function setView(v, btn) {
+  currentView = v;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  ['individual','comparativo','plano'].forEach(name=>{
-    document.getElementById('view-'+name).style.display=name===v?'block':'none';
-  });
-  document.getElementById('sel-athlete').disabled=(v==='comparativo');
-  document.getElementById('sel-sport').disabled=(v==='comparativo'||v==='plano');
-  document.getElementById('sel-week').style.display=(v==='plano')?'none':'block';
+  btn.classList.add('active');
+  document.getElementById('view-individual').style.display  = v==='individual'  ? 'block':'none';
+  document.getElementById('view-comparativo').style.display = v==='comparativo' ? 'block':'none';
+  document.getElementById('sel-athlete').disabled = v==='comparativo';
+  document.getElementById('sel-sport').disabled   = v==='comparativo';
   if(v==='comparativo') renderComparativo();
-  else if(v==='plano'){planWeekOffset=0;renderPlano();}
-  else updateDash();
-}
-function setViewMobile(v,btn){
-  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  // Also sync tab buttons
-  document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.classList.toggle('active',b.textContent.toLowerCase().includes(v==='individual'?'indiv':v==='comparativo'?'compar':'plano'));
-  });
-  setView(v,null);
 }
 
-// ── Main update ──
-function updateDash(){
-  if(currentView==='comparativo'){renderComparativo();return;}
-  if(currentView==='plano'){renderPlano();return;}
-  const d=getData();
-  renderAthHero();
-  renderAlerts(d);renderKPIs(d);renderPMC(d);renderZone(d);renderVol(d);renderHRV(d);renderAdherence(d);renderSessions(d);
+function updateDash() {
+  if(currentView==='comparativo'){ renderComparativo(); return; }
+  const d = DB[getA()];
+  renderAlerts(d);
+  renderKPIs(d);
+  renderPMC(d);
+  renderZone(d);
+  renderVol(d);
+  renderHRV(d);
+  renderAdherence(d);
+  renderSessions(d);
 }
 
-// ── Alerts ──
-function renderAlerts(d){
-  const icons={danger:'⚠',warn:'!',ok:'✓',info:'i'},cls={danger:'a-danger',warn:'a-warn',ok:'a-ok',info:'a-info'};
-  document.getElementById('alerts-bar').innerHTML=(d.alerts||[]).map(a=>`<div class="alert-pill ${cls[a.type]}"><span class="alert-icon">${icons[a.type]}</span>${a.msg}</div>`).join('');
+function renderAlerts(d) {
+  const icons={danger:'⚠',warn:'!',ok:'✓',info:'i'};
+  const cls={danger:'a-danger',warn:'a-warn',ok:'a-ok',info:'a-info'};
+  document.getElementById('alerts-bar').innerHTML=(d.alerts||[]).map(a=>
+    `<div class="alert-pill ${cls[a.type]}"><span class="alert-icon">${icons[a.type]}</span>${a.msg}</div>`
+  ).join('');
 }
 
-// ── KPIs ──
-function renderKPIs(d){
-  const total=totalH(d.vol),parts=[d.vol.swim>0?`Nat ${fmtH(d.vol.swim)}`:'',d.vol.bike>0?`Bike ${fmtH(d.vol.bike)}`:'',d.vol.run>0?`Corr ${fmtH(d.vol.run)}`:'',d.vol.strength>0?`Força ${fmtH(d.vol.strength)}`:''].filter(Boolean).join(' · ');
-  const defs=[{key:'ctl',label:'CTL — Fitness'},{key:'atl',label:'ATL — Fadiga'},{key:'tsb',label:'TSB — Forma'},{key:'tss_week',label:'TSS Semanal'}];
-  document.getElementById('kpi-grid').innerHTML=defs.map(def=>{
-    const val=d.kpis[def.key],delta=String(d.kpi_delta[def.key]),dir=delta.startsWith('+')?'up':delta.startsWith('-')?'dn':'nt',arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
-    return `<div class="kpi"><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
-  }).join('')+`<div class="kpi hl"><div class="kpi-label">Total de horas</div><div class="kpi-value">${fmtH(total)}</div><div class="kpi-sub">${parts}</div></div>`;
+function renderKPIs(d) {
+  const total=totalH(d.vol);
+  const parts=['swim','bike','run','strength']
+    .filter(k=>d.vol[k]>0)
+    .map(k=>`${SPORT_LABEL[k]} ${fmtH(d.vol[k])}`).join(' · ');
+  const defs=[{key:'ctl',label:'CTL — Fitness'},{key:'atl',label:'ATL — Fadiga'},{key:'tsb',label:'TSB — Form'},{key:'tss_week',label:'TSS Semanal'}];
+  document.getElementById('kpi-grid').innerHTML=
+    defs.map(def=>{
+      const val=d.kpis[def.key], delta=d.kpi_delta[def.key];
+      const dir=String(delta).startsWith('+')?'up':String(delta).startsWith('-')?'dn':'nt';
+      const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
+      return `<div class="kpi"><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
+    }).join('')+
+    `<div class="kpi hl"><div class="kpi-label">Total de horas</div><div class="kpi-value">${fmtH(total)}</div><div class="kpi-sub">${parts}</div></div>`;
 }
 
-// ── PMC ──
-function renderPMC(d){dc('pmc');document.getElementById('pmc-legend').innerHTML=`<span><span class="dot" style="background:#4a9eff"></span>CTL</span><span><span class="dot" style="background:#ff7c3a"></span>ATL</span><span><span class="dot" style="background:#3ecf7a"></span>TSB</span>`;charts['pmc']=new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:d.pmc.labels,datasets:[{label:'CTL',data:d.pmc.ctl,borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,.06)',tension:.4,pointRadius:3,borderWidth:2,fill:true},{label:'ATL',data:d.pmc.atl,borderColor:'#ff7c3a',backgroundColor:'rgba(255,124,58,.06)',tension:.4,pointRadius:3,borderWidth:2,fill:true},{label:'TSB',data:d.pmc.tsb,borderColor:'#3ecf7a',borderDash:[5,3],tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:'#4a5168',font:tickFont}},y:{grid:{color:gridColor},ticks:{color:'#4a5168',font:tickFont}}}}});}
-
-// ── Zones ──
-function renderZone(d){dc('zone');document.getElementById('zone-legend').innerHTML=`<span><span class="dot" style="background:#1e3a5f"></span>Z1</span><span><span class="dot" style="background:#4a9eff"></span>Z2</span><span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;charts['zone']=new Chart(document.getElementById('zone-chart'),{type:'bar',data:{labels:d.zones.labels,datasets:[{label:'Z1',data:d.zones.z1,backgroundColor:'#1e3a5f',borderRadius:3},{label:'Z2',data:d.zones.z2,backgroundColor:'#4a9eff',borderRadius:3},{label:'Z3',data:d.zones.z3,backgroundColor:'#ff7c3a',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#4a5168',font:tickFont}},y:{stacked:true,max:100,ticks:{color:'#4a5168',font:tickFont,callback:v=>v+'%'},grid:{color:gridColor}}}}});}
-
-// ── Volume ──
-function renderVol(d){dc('vol');const map={swim:['Natação','#4a9eff'],bike:['Bike','#f5a623'],run:['Corrida','#3ecf7a'],strength:['Força','#a78bfa']},labels=[],vals=[],colors=[];for(const[k,[l,c]]of Object.entries(map)){if(d.vol[k]>0){labels.push(l);vals.push(d.vol[k]);colors.push(c);}}document.getElementById('vol-total').textContent=fmtH(totalH(d.vol))+' total';document.getElementById('vol-legend').innerHTML=labels.map((l,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${l}</span>`).join('');charts['vol']=new Chart(document.getElementById('vol-chart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.toFixed(1)}h`}}},scales:{x:{grid:{display:false},ticks:{color:'#4a5168',font:tickFont}},y:{ticks:{color:'#4a5168',font:tickFont,callback:v=>v+'h'},grid:{color:gridColor}}}}});}
-
-// ── HRV ──
-function renderHRV(d){dc('hrv');const b=d.hrv.baseline;document.getElementById('hrv-legend').innerHTML=`<span><span class="dot" style="background:#a78bfa"></span>HRV diário</span><span><span class="dot" style="background:var(--bg3);border:0.5px solid #4a5168"></span>Baseline ${b}</span>`;charts['hrv']=new Chart(document.getElementById('hrv-chart'),{type:'line',data:{labels:d.hrv.labels,datasets:[{label:'HRV',data:d.hrv.vals,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true},{label:'Baseline',data:Array(d.hrv.vals.length).fill(b),borderColor:'#2d3348',borderDash:[5,3],pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:'#4a5168',font:{size:9,family:'DM Mono'},maxTicksLimit:7}},y:{grid:{color:gridColor},ticks:{color:'#4a5168',font:tickFont},suggestedMin:b-15,suggestedMax:b+15}}}});}
-
-// ── Adherence ──
-function renderAdherence(d){const overall=Math.round(d.adherence.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/d.adherence.length*100),oc=overall>=90?'#3ecf7a':overall>=70?'#f5a623':'#f87171';document.getElementById('adh-overall').innerHTML=`<span style="color:${oc}">${overall}% aderência</span>`;document.getElementById('adh-bars').innerHTML=d.adherence.map(r=>{const pct=Math.min(Math.round(r.done/r.target*100),100),over=r.done>r.target,bc=over?'#3ecf7a':pct>=85?r.color:'#f87171',label=over?`${r.done.toFixed(1)}h / ${r.target.toFixed(1)}h ↑`:`${r.done.toFixed(1)}h / ${r.target.toFixed(1)}h`;return `<div class="adh-row"><span class="adh-label">${r.label}</span><div class="adh-track"><div class="adh-fill" style="width:${pct}%;background:${bc}"></div></div><span class="adh-pct" style="color:${bc}">${pct}%</span><span class="adh-detail">${label}</span></div>`;}).join('');}
-
-// ── Sessions ──
-function renderSessions(d){const sel=getSp(),rows=(d.sessions||[]).filter(s=>sel==='all'||s.sport===sel),arr={up:'↑',dn:'↓',nt:'→'},hc={up:'#3ecf7a',dn:'#f87171',nt:'#4a5168'};document.getElementById('sessions-body').innerHTML=rows.map(s=>`<tr><td style="font-weight:500;white-space:nowrap">${s.day}</td><td><span class="badge b-${s.sport}">${SPORT_LABEL[s.sport]}</span></td><td style="color:var(--text2)">${s.desc}</td><td style="white-space:nowrap">${s.dur}</td><td style="font-weight:500">${s.tss}</td><td style="color:var(--text3)">${s.zones}</td><td style="color:${hc[s.ht]};white-space:nowrap">${s.hrv>0?s.hrv+' '+arr[s.ht]:'—'}</td></tr>`).join('');}
-
-// ── Comparativo ──
-function renderComparativo(){
-  renderAthCards('ath-cards-cmp');
-  dc('cmp-ctl');document.getElementById('cmp-ctl-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
-  charts['cmp-ctl']=new Chart(document.getElementById('cmp-ctl-chart'),{type:'line',data:{labels:DB[ATHLETES[0]].pmc.labels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:'#4a5168',font:tickFont}},y:{grid:{color:gridColor},ticks:{color:'#4a5168',font:tickFont}}}}});
-  dc('cmp-hrv');document.getElementById('cmp-hrv-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
-  charts['cmp-hrv']=new Chart(document.getElementById('cmp-hrv-chart'),{type:'line',data:{labels:DB[ATHLETES[0]].hrv.labels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:DB[id].hrv.vals,borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:'#4a5168',font:{size:9,family:'DM Mono'},maxTicksLimit:7}},y:{grid:{color:gridColor},ticks:{color:'#4a5168',font:tickFont}}}}});
-  document.getElementById('cmp-adh').innerHTML=ATHLETES.map(id=>{const adh=DB[id].adherence,overall=Math.round(adh.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/adh.length*100),oc=overall>=90?'#3ecf7a':overall>=70?'#f5a623':'#f87171';return `<div class="cmp-card"><div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>${adh.map(r=>{const pct=Math.min(Math.round(r.done/r.target*100),100),bc=r.done>r.target?'#3ecf7a':pct>=85?r.color:'#f87171';return `<div class="adh-row" style="margin-bottom:8px"><span class="adh-label">${r.label}</span><div class="adh-track"><div class="adh-fill" style="width:${pct}%;background:${bc}"></div></div><span class="adh-pct" style="color:${bc}">${pct}%</span></div>`;}).join('')}<div style="font-size:12px;font-weight:500;color:${oc};margin-top:5px">Aderência: ${overall}%</div></div>`;}).join('');
-  dc('cmp-vol');const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];document.getElementById('cmp-vol-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
-  charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',data:{labels:vLabels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[ATHLETES[c.datasetIndex]]}: ${c.raw.toFixed(1)}h`}}},scales:{x:{grid:{display:false},ticks:{color:'#4a5168',font:tickFont}},y:{ticks:{color:'#4a5168',font:tickFont,callback:v=>v+'h'},grid:{color:gridColor}}}}});
+function renderPMC(d) {
+  dc('pmc');
+  document.getElementById('pmc-legend').innerHTML=`<span><span class="dot" style="background:#4a9eff"></span>CTL</span><span><span class="dot" style="background:#ff7c3a"></span>ATL</span><span><span class="dot" style="background:#4db87a"></span>TSB</span>`;
+  charts['pmc']=new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:d.pmc.labels,datasets:[
+    {label:'CTL',data:d.pmc.ctl,borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,.07)',tension:.4,pointRadius:3,borderWidth:2,fill:true},
+    {label:'ATL',data:d.pmc.atl,borderColor:'#ff7c3a',backgroundColor:'rgba(255,124,58,.07)',tension:.4,pointRadius:3,borderWidth:2,fill:true},
+    {label:'TSB',data:d.pmc.tsb,borderColor:'#4db87a',borderDash:[5,3],tension:.4,pointRadius:3,borderWidth:2},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 }
 
-// ══════════════════════════════════════════
-// PLANO VIEW (mantido do original)
-// ══════════════════════════════════════════
-function renderPlano(){
-  const id=getA(),athlete=DB[id];
-  const plan=athlete.plan;
-  if(!plan){document.getElementById('plano-content').innerHTML='<div class="no-prescription"><div class="no-prescription-icon">📋</div><div class="no-prescription-text">Plano não disponível para este atleta.</div></div>';return;}
-  const goal=plan.goal||{};
-  const phases=plan.phases||[];
-  const weeks=plan.weeks||{};
-  const today=new Date();
-  const mon=new Date(today);
-  mon.setDate(today.getDate()-((today.getDay()+6)%7)+planWeekOffset*7);
-  const curWeekKey=mon.toISOString().slice(0,10);
-  document.getElementById('plano-content').innerHTML=renderGoalCard(goal,today)+renderPhaseTimeline(phases,today,plan.race_date||goal.date)+renderWeekNav(weeks,curWeekKey,phases);
+function renderZone(d) {
+  dc('zone');
+  document.getElementById('zone-legend').innerHTML=`<span><span class="dot" style="background:#2a5080"></span>Z1</span><span><span class="dot" style="background:#4a9eff"></span>Z2</span><span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;
+  if(!d.zones.labels.length){ document.getElementById('zone-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Dados de zona indisponíveis</p>'; return; }
+  charts['zone']=new Chart(document.getElementById('zone-chart'),{type:'bar',data:{labels:d.zones.labels,datasets:[
+    {label:'Z1',data:d.zones.z1,backgroundColor:'#2a5080',borderRadius:3},
+    {label:'Z2',data:d.zones.z2,backgroundColor:'#4a9eff',borderRadius:3},
+    {label:'Z3',data:d.zones.z3,backgroundColor:'#ff7c3a',borderRadius:3},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{stacked:true,max:100,ticks:{color:'#565c70',font:tf,callback:v=>v+'%'},grid:{color:gc}}}}});
 }
 
-function renderGoalCard(goal,today){
-  if(!goal||!goal.date) return '';
-  const raceDate=new Date(goal.date+'T12:00:00');
-  const diffDays=Math.ceil((raceDate-today)/(1000*60*60*24));
-  const diffWeeks=Math.ceil(diffDays/7);
-  return `<div class="goal-card"><div><div class="goal-race">${goal.name||'Prova Alvo'}</div><div class="goal-meta"><span class="goal-tag"><span class="goal-tag-dot"></span>${goal.date}</span>${goal.distance?`<span class="goal-tag">📏 ${goal.distance}</span>`:''} ${goal.location?`<span class="goal-tag">📍 ${goal.location}</span>`:''}</div><div class="goal-badges">${goal.priority?`<span class="goal-badge gb-priority">Prioridade ${goal.priority}</span>`:''} ${goal.target?`<span class="goal-badge gb-target">🎯 ${goal.target}</span>`:''} ${goal.type?`<span class="goal-badge gb-type">${goal.type}</span>`:''}</div></div><div class="countdown-block"><div class="countdown-num">${diffDays>0?diffDays:'Hoje'}</div><div class="countdown-label">${diffDays>1?'dias restantes':diffDays===1?'amanhã':'dia da prova'}</div>${diffWeeks>1?`<div style="font-size:11px;color:var(--text3);margin-top:3px">${diffWeeks} semanas</div>`:''}</div></div>`;
+function renderVol(d) {
+  dc('vol');
+  const map={swim:['Natação','#4a9eff'],bike:['Bike','#f5a623'],run:['Corrida','#4db87a'],strength:['Força','#9b8fff']};
+  const labels=[],vals=[],colors=[];
+  for(const[k,[l,c]]of Object.entries(map)){if(d.vol[k]>0){labels.push(l);vals.push(d.vol[k]);colors.push(c);}}
+  document.getElementById('vol-total').textContent=fmtH(totalH(d.vol))+' total';
+  document.getElementById('vol-legend').innerHTML=labels.map((l,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${l}</span>`).join('');
+  charts['vol']=new Chart(document.getElementById('vol-chart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.toFixed(1)}h`}}},scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},grid:{color:gc}}}}});
 }
 
-function renderPhaseTimeline(phases,today,raceDate){
-  if(!phases||!phases.length) return '';
-  const totalStart=new Date(phases[0].start+'T00:00:00');
-  const totalEnd=raceDate?new Date(raceDate+'T00:00:00'):new Date(phases[phases.length-1].end+'T00:00:00');
-  let currentPhase='';
-  let nowPct=Math.max(0,Math.min(100,(today-totalStart)/((totalEnd-totalStart))*100));
-  const rawWidths=phases.map(p=>{const pStart=new Date(p.start+'T00:00:00'),pEnd=new Date(p.end+'T00:00:00');return Math.max(1.5,(pEnd-pStart)/(totalEnd-totalStart)*100);});
-  const rawSum=rawWidths.reduce((a,b)=>a+b,0);
-  const normWidths=rawWidths.map(w=>w/rawSum*100);
-  const segments=phases.map((p,i)=>{
-    const pStart=new Date(p.start+'T00:00:00'),pEnd=new Date(p.end+'T00:00:00');
-    const w=normWidths[i];
-    const isPast=pEnd<today,isActive=pStart<=today&&today<=pEnd;
-    if(isActive) currentPhase=p.name;
-    const cls=isPast?'past':isActive?'active':'future';
-    const color=PHASE_COLORS[p.name]||'#4a5168';
-    return `<div class="phase-segment ${cls}" style="width:${w}%;background:${color}20;border:0.5px solid ${color}40;" title="${p.name}: ${p.start} → ${p.end}"><span class="phase-label" style="color:${color};${w<8?'font-size:8px':''}">${p.name}</span></div>`;
+function renderHRV(d) {
+  dc('hrv');
+  const baseline=d.hrv.baseline;
+  document.getElementById('hrv-legend').innerHTML=`<span><span class="dot" style="background:#9b8fff"></span>HRV diário</span><span><span class="dot" style="background:#3a3f52;border:0.5px solid #565c70"></span>Baseline</span>`;
+  if(!d.hrv.vals.length){ document.getElementById('hrv-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">HRV indisponível</p>'; return; }
+  charts['hrv']=new Chart(document.getElementById('hrv-chart'),{type:'line',data:{labels:d.hrv.labels,datasets:[
+    {label:'HRV',data:d.hrv.vals,borderColor:'#9b8fff',backgroundColor:'rgba(155,143,255,.1)',tension:.3,pointRadius:3,borderWidth:2,fill:true},
+    {label:'Baseline',data:Array(d.hrv.vals.length).fill(baseline),borderColor:'#3a3f52',borderDash:[5,3],pointRadius:0,borderWidth:1.5},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},suggestedMin:baseline-15,suggestedMax:baseline+15}}}});
+}
+
+function renderAdherence(d) {
+  const adh=d.adherence||[];
+  if(!adh.length){ document.getElementById('adh-bars').innerHTML='<p style="color:var(--text3);font-size:12px">Sem dados de aderência</p>'; document.getElementById('adh-overall').textContent=''; return; }
+  const overall=Math.round(adh.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/adh.length*100);
+  const oc=overall>=90?'#4db87a':overall>=70?'#f5a623':'#ff7c3a';
+  document.getElementById('adh-overall').innerHTML=`<span style="color:${oc}">${overall}% aderência</span>`;
+  document.getElementById('adh-bars').innerHTML=adh.map(r=>{
+    const pct=Math.min(Math.round(r.done/r.target*100),100);
+    const bc=r.done>r.target?'#4db87a':pct>=85?r.color:'#ff7c3a';
+    return `<div class="adh-row"><span class="adh-label">${r.label}</span><div class="adh-track"><div class="adh-fill" style="width:${pct}%;background:${bc}"></div></div><span class="adh-pct" style="color:${bc}">${pct}%</span><span class="adh-detail">${r.done.toFixed(1)}h / ${r.target.toFixed(1)}h</span></div>`;
   }).join('');
-  return `<div class="phase-timeline-card"><div class="phase-timeline-header"><span class="phase-timeline-title">Ciclo de Periodização</span><span class="phase-current-label">Fase atual: <span class="phase-current-name" style="color:${PHASE_COLORS[currentPhase]||'var(--text)'}">${currentPhase||'—'}</span></span></div><div class="timeline-track">${segments}<div class="now-marker" style="left:${nowPct}%"><div class="now-dot"></div><div class="now-line"></div><div class="now-text">HOJE</div></div></div><div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">${phases.map(p=>`<span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:2px;background:${PHASE_COLORS[p.name]||'#4a5168'};display:inline-block"></span>${p.name}</span>`).join('')}</div></div>`;
 }
 
-function renderWeekNav(weeks,curWeekKey,phases){
-  const DOW_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  const today=new Date();today.setHours(0,0,0,0);
-  const monDate=new Date(curWeekKey+'T00:00:00');
-  const days=[];
-  for(let i=0;i<7;i++){const d=new Date(monDate);d.setDate(monDate.getDate()+i);days.push(d);}
-  const weekData=weeks[curWeekKey];
-  const weekEnd=new Date(monDate);weekEnd.setDate(monDate.getDate()+6);
-  const label=weekData?weekData.label:`Semana de ${monDate.getDate()}/${monDate.getMonth()+1}`;
-  const phase=weekData?weekData.phase:'';
-  const tssTarget=weekData?weekData.tss_target:null;
-  const phaseColor=PHASE_COLORS[phase]||'var(--text3)';
-  let totalTSS=0,totalDur=0;
-  const dayColumns=days.map((d,i)=>{
-    const dk=d.toISOString().slice(0,10);
-    const isToday=d.getTime()===today.getTime();
-    const sessionsForDay=(weekData&&weekData.days&&weekData.days[dk])||[];
-    const isRest=sessionsForDay.length===0;
-    if(!isRest) sessionsForDay.forEach(s=>{totalTSS+=s.tss||0;totalDur+=s.dur_h||0;});
-    const sessHTML=isRest?`<div class="day-rest">descanso</div>`:sessionsForDay.map(s=>`<div class="session-card ${s.sport}"><div class="session-sport">${SPORT_LABEL[s.sport]||s.sport}</div><div class="session-title">${s.title}</div><div class="session-meta">${s.dur_h?`<span class="session-dur">${fmtH(s.dur_h)}</span>`:''} ${s.tss?`<span class="session-tss-val">TSS ${s.tss}</span>`:''}<span class="session-status ${s.completed?'s-done':'s-planned'}" title="${s.completed?'Concluído':'Planejado'}"></span></div></div>`).join('');
-    return `<div class="day-col"><div class="day-header${isToday?' today-header':''}">${DOW_PT[(i+1)%7]}</div><div class="day-date${isToday?' today-date':''}">${d.getDate()}/${d.getMonth()+1}</div><div class="day-sessions">${sessHTML}</div></div>`;
+function renderSessions(d) {
+  const sel=getSp();
+  const rows=(d.sessions||[]).filter(s=>sel==='all'||s.sport===sel);
+  const arr={up:'↑',dn:'↓',nt:'→'};
+  const hc={up:'#4db87a',dn:'#ff7c3a',nt:'#565c70'};
+  document.getElementById('sessions-body').innerHTML=rows.length
+    ? rows.map(s=>`<tr><td style="font-weight:600">${s.day}</td><td><span class="badge b-${s.sport}">${SPORT_LABEL[s.sport]||s.sport}</span></td><td style="color:#8b90a0">${s.desc}</td><td>${s.dur}</td><td style="font-weight:600">${s.tss}</td><td style="color:#565c70">${s.zones}</td></tr>`).join('')
+    : '<tr><td colspan="6" style="color:var(--text3);padding:1rem 0">Nenhuma sessão encontrada</td></tr>';
+}
+
+function renderComparativo() {
+  const loadMap=[{key:'ctl',label:'CTL'},{key:'atl',label:'ATL'},{key:'tsb',label:'TSB'},{key:'tss_week',label:'TSS semana'}];
+  document.getElementById('cmp-load').innerHTML=ATHLETES.map(id=>{
+    const d=DB[id],tsb=d.kpis.tsb;
+    const tc=tsb>5?'#4db87a':tsb<-10?'#ff7c3a':'#8b90a0';
+    return `<div class="cmp-card"><div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>${loadMap.map(m=>`<div class="cmp-row"><span class="cmp-k">${m.label}</span><span class="cmp-v" style="${m.key==='tsb'?`color:${tc}`:''}"> ${d.kpis[m.key]}</span></div>`).join('')}<div class="cmp-row"><span class="cmp-k">Horas totais</span><span class="cmp-v">${fmtH(totalH(d.vol))}</span></div></div>`;
   }).join('');
-  const hasDailySessions=weekData&&weekData.days&&Object.values(weekData.days).some(d=>d.length>0);
-  const macroHTML=weekData?`<div style="padding:.875rem 0"><div style="font-size:12px;color:var(--text2);margin-bottom:.875rem;line-height:1.6"><span style="color:${phaseColor};font-weight:500">Foco: </span>${weekData.focus||''}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px">${(weekData.key_sessions||[]).map(s=>`<div style="background:var(--bg3);border:0.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:7px"><span style="color:${phaseColor};font-size:13px">›</span>${s}</div>`).join('')}</div>${weekData.is_discharge?`<div style="margin-top:10px;padding:7px 10px;background:rgba(62,207,122,0.08);border:0.5px solid rgba(62,207,122,0.2);border-radius:7px;font-size:11px;color:#6ee7a0">♻️ Semana de descarga — volume reduzido ~50%</div>`:''}</div>`:`<div class="no-prescription"><div class="no-prescription-icon">📅</div><div class="no-prescription-text">Semana fora do ciclo planejado.</div></div>`;
-  return `<div class="week-nav-card"><div class="week-nav-header"><div><div class="week-nav-title">${label}</div><div class="week-nav-sub">${monDate.getDate()}/${monDate.getMonth()+1} — ${weekEnd.getDate()}/${weekEnd.getMonth()+1}</div></div><div class="week-nav-controls">${phase?`<span class="week-phase-tag" style="background:${phaseColor}20;color:${phaseColor};border:0.5px solid ${phaseColor}40;">${phase}</span>`:''} ${weekData&&weekData.ctl_target?`<span style="font-size:11px;color:var(--text3);padding:3px 7px;background:var(--bg3);border:0.5px solid var(--border);border-radius:6px">CTL alvo <span style="color:var(--text)">${weekData.ctl_target}</span></span>`:''}<button class="week-nav-btn" onclick="navWeek(-1)">←</button><button class="week-nav-today" onclick="navWeek(0)">Hoje</button><button class="week-nav-btn" onclick="navWeek(1)">→</button></div></div>${hasDailySessions?`<div class="day-grid">${dayColumns}</div><div class="week-stats"><div><span class="week-stat-val">${tssTarget||'—'}</span>TSS alvo</div><div><span class="week-stat-val">${totalTSS||'—'}</span>TSS planejado</div><div><span class="week-stat-val">${totalDur?fmtH(totalDur):'—'}</span>Volume</div>${phase?`<div><span class="week-stat-val" style="color:${phaseColor}">${phase}</span>Fase</div>`:''}</div>`:macroHTML}</div>`;
+
+  dc('cmp-ctl');
+  document.getElementById('cmp-ctl-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  charts['cmp-ctl']=new Chart(document.getElementById('cmp-ctl-chart'),{type:'line',data:{labels:DB.bruno.pmc.labels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+
+  dc('cmp-hrv');
+  document.getElementById('cmp-hrv-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const hrvLabels=DB.bruno.hrv.labels.length?DB.bruno.hrv.labels:DB.jean.hrv.labels;
+  charts['cmp-hrv']=new Chart(document.getElementById('cmp-hrv-chart'),{type:'line',data:{labels:hrvLabels,datasets:ATHLETES.filter(id=>DB[id].hrv.vals.length).map(id=>({label:NAMES[id],data:DB[id].hrv.vals,borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+
+  dc('cmp-vol');
+  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];
+  document.getElementById('cmp-vol-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',data:{labels:vLabels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[ATHLETES[c.datasetIndex]]}: ${c.raw.toFixed(1)}h`}}},scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},grid:{color:gc}}}}});
 }
 
-function navWeek(delta){
-  if(delta===0) planWeekOffset=0;
-  else planWeekOffset+=delta;
-  renderPlano();
-}
-
-boot();
+updateDash();
 </script>
 </body>
 </html>
