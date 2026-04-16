@@ -52,12 +52,28 @@ def get_workouts(athlete_id, days=14):
 
 
 def get_fitness(athlete_id, weeks=8):
+    """Tenta múltiplos endpoints para dados de fitness (CTL/ATL/TSB)."""
     end   = datetime.utcnow()
     start = end - timedelta(weeks=weeks)
-    return tp_get(
-        f"/fitness/v6/athletes/{athlete_id}/fitness"
-        f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
-    )
+    s, e  = start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
+
+    candidates = [
+        f"/fitness/v6/athletes/{athlete_id}/fitness/{s}/{e}",
+        f"/fitness/v6/athletes/{athlete_id}/fitnesssummaries/{s}/{e}",
+        f"/fitness/v6/athletes/{athlete_id}/days/{s}/{e}",
+        f"/coaching/v6/athletes/{athlete_id}/fitness/{s}/{e}",
+    ]
+    for path in candidates:
+        try:
+            data = tp_get(path)
+            if data:
+                print(f"    fitness endpoint OK: {path}")
+                return data
+        except Exception:
+            continue
+
+    print(f"    fitness endpoint: nenhum funcionou — CTL/ATL/TSB serão calculados dos workouts")
+    return []
 
 
 def get_wellness(athlete_id, days=14):
@@ -173,9 +189,45 @@ def process_workouts(raw):
 
 
 # ── Processamento de PMC (fitness) ────────────────────────────────────
-def process_fitness(raw):
+def calc_pmc_from_workouts(raw_workouts, weeks=8):
+    """
+    Calcula CTL/ATL/TSB a partir dos workouts quando o endpoint de fitness falha.
+    CTL = EMA 42 dias do TSS diário
+    ATL = EMA 7 dias do TSS diário
+    TSB = CTL - ATL
+    """
+    # Monta dicionário de TSS diário
+    daily = {}
+    for w in (raw_workouts or []):
+        day = str(w.get("workoutDay", ""))[:10]
+        if not day:
+            continue
+        tss = float(w.get("tss") or w.get("totalTrainingStressScore") or 0)
+        daily[day] = daily.get(day, 0) + tss
+
+    # Gera série de datas (56 dias = 8 semanas)
+    end   = datetime.utcnow()
+    dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(55, -1, -1)]
+
+    ctl, atl = 50.0, 50.0  # valores iniciais típicos
+    k_ctl, k_atl = 2/(42+1), 2/(7+1)
+
+    history = []
+    for d in dates:
+        tss   = daily.get(d, 0)
+        ctl   = tss * k_ctl + ctl * (1 - k_ctl)
+        atl   = tss * k_atl + atl * (1 - k_atl)
+        tsb   = ctl - atl
+        history.append({"date": d, "ctl": ctl, "atl": atl, "tsb": tsb,
+                         "tss": tss})
+
+    return history
+
+
+def process_fitness(raw, raw_workouts=None):
+    # Se não há dados do endpoint, calcula dos workouts
     if not raw:
-        return {"labels": [], "ctl": [], "atl": [], "tsb": []}
+        raw = calc_pmc_from_workouts(raw_workouts or [])
 
     records = sorted(raw, key=lambda x: x.get("date", ""))
 
@@ -188,7 +240,7 @@ def process_fitness(raw):
     for r in sample:
         try:
             dt = datetime.strptime(str(r["date"])[:10], "%Y-%m-%d")
-            labels.append(f"S{dt.strftime('%d/%m')}")
+            labels.append(dt.strftime("%d/%m"))
         except Exception:
             labels.append("?")
         ctl_l.append(round(float(r.get("ctl") or 0)))
@@ -200,13 +252,13 @@ def process_fitness(raw):
 
 def current_kpis(raw_fitness, raw_workouts):
     if not raw_fitness:
-        return {"ctl": 0, "atl": 0, "tsb": 0, "tss_week": 0}
+        raw_fitness = calc_pmc_from_workouts(raw_workouts or [])
 
-    records = sorted(raw_fitness, key=lambda x: x.get("date", ""))
-    latest  = records[-1]
+    records  = sorted(raw_fitness, key=lambda x: x.get("date", ""))
+    latest   = records[-1] if records else {}
 
-    week_ago  = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
-    tss_week  = sum(
+    week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
+    tss_week = sum(
         round(float(r.get("tss") or 0))
         for r in records
         if str(r.get("date", ""))[:10] >= week_ago
@@ -220,7 +272,10 @@ def current_kpis(raw_fitness, raw_workouts):
     }
 
 
-def kpi_deltas(raw_fitness):
+def kpi_deltas(raw_fitness, raw_workouts):
+    if not raw_fitness:
+        raw_fitness = calc_pmc_from_workouts(raw_workouts or [])
+
     if not raw_fitness or len(raw_fitness) < 8:
         return {"ctl": "—", "atl": "—", "tsb": "—", "tss_week": "—"}
 
@@ -335,9 +390,9 @@ def build_db():
                 print(f"    HRV indisponível: {e}")
 
             sessions, vol, zones = process_workouts(raw_w)
-            pmc       = process_fitness(raw_f)
+            pmc       = process_fitness(raw_f, raw_w)
             kpis      = current_kpis(raw_f, raw_w)
-            kpi_delta = kpi_deltas(raw_f)
+            kpi_delta = kpi_deltas(raw_f, raw_w)
             hrv       = process_wellness(raw_we)
             adherence = compute_adherence(vol, sessions)
             alerts    = compute_alerts(kpis, hrv)
