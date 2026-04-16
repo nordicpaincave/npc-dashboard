@@ -45,10 +45,21 @@ def tp_get(path):
 def get_workouts(athlete_id, days=14):
     end   = datetime.utcnow()
     start = end - timedelta(days=days)
-    return tp_get(
+    data  = tp_get(
         f"/fitness/v6/athletes/{athlete_id}/workouts"
         f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
     )
+    # Garante que é lista
+    if isinstance(data, dict):
+        data = data.get("Items") or data.get("items") or data.get("workouts") or []
+
+    # Filtra por data no lado do cliente (a API às vezes ignora o range)
+    cutoff = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d")
+    filtered = [
+        w for w in (data or [])
+        if str(w.get("workoutDay", ""))[:10] >= cutoff
+    ]
+    return filtered
 
 
 def get_fitness(athlete_id, weeks=8):
@@ -145,6 +156,7 @@ def process_workouts(raw):
         # Duração — totalTime vem em DIAS no TP
         total_time_days = float(w.get("totalTime") or 0)
         dur_h = total_time_days * 24          # converte para horas
+        dur_h = min(dur_h, 8.0)              # cap de segurança: máximo 8h por sessão
         if dur_h < 0.05:                      # ignora sessões < 3min
             continue
         hh, mm   = int(dur_h), int((dur_h % 1) * 60)
@@ -473,18 +485,21 @@ PROTOTYPE_DB = {
 
 
 def debug_workout_fields(raw_w, athlete_key):
-    """Imprime os campos do primeiro workout para diagnóstico."""
+    """Imprime diagnóstico dos workouts para ajuste de parsing."""
     if not raw_w:
         print(f"    DEBUG [{athlete_key}]: nenhum workout retornado")
         return
-    first = raw_w[0] if isinstance(raw_w, list) else raw_w
-    print(f"    DEBUG [{athlete_key}]: {len(raw_w)} workouts — campos do 1º: {list(first.keys())}")
-    # Campos relevantes
-    for f in ["workoutDay","title","athleteWorkoutTypeName","workoutTypeName","type",
-              "totalTime","movingTime","tss","totalTrainingStressScore","tssActual",
-              "hrZone1Duration","heartRateZone1Duration"]:
-        if f in first:
-            print(f"      {f}: {first[f]}")
+    print(f"    DEBUG [{athlete_key}]: {len(raw_w)} workouts após filtro de data")
+    first = raw_w[0]
+    print(f"      campos: {list(first.keys())[:15]}...")
+    # Mostra amostra de datas e durações
+    for w in raw_w[:5]:
+        day      = str(w.get("workoutDay",""))[:10]
+        tt       = w.get("totalTime", 0)
+        tss      = w.get("tssActual", w.get("tss", 0))
+        type_id  = w.get("workoutTypeValueId","?")
+        title    = w.get("title","?")
+        print(f"      {day} | typeId={type_id} | totalTime={tt:.4f}d ({float(tt)*24:.1f}h) | tss={tss} | {title}")
 
 
 # ── Montagem final do objeto DB ───────────────────────────────────────
