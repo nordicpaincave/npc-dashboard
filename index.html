@@ -181,7 +181,7 @@
   </div>
 
   <div class="footer">
-    NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 17/04/2026 18:14 UTC
+    NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 17/04/2026 18:17 UTC
   </div>
 </div>
 
@@ -189,57 +189,57 @@
 const DB = {
   "bruno": {
     "kpis": {
-      "ctl": 72,
-      "atl": 68,
-      "tsb": 4,
-      "tss_week": 412
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 777
     },
     "kpi_delta": {
-      "ctl": "+3",
-      "atl": "+8",
-      "tsb": "-4",
-      "tss_week": "+31"
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
     },
     "pmc": {
       "labels": [
-        "S1",
-        "S2",
-        "S3",
-        "S4",
-        "S5",
-        "S6",
-        "S7",
-        "S8"
+        "11/11",
+        "03/12",
+        "25/12",
+        "16/01",
+        "07/02",
+        "01/03",
+        "23/03",
+        "14/04"
       ],
       "ctl": [
-        58,
-        61,
-        65,
-        68,
-        70,
-        74,
-        73,
-        72
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        17,
+        69
       ],
       "atl": [
-        62,
-        70,
-        75,
-        72,
-        65,
-        78,
-        74,
-        68
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        53,
+        101
       ],
       "tsb": [
-        -4,
-        -9,
-        -10,
-        -4,
-        5,
-        -4,
-        -1,
-        4
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -36,
+        -32
       ]
     },
     "zones": {
@@ -249,198 +249,290 @@ const DB = {
         "Corrida"
       ],
       "z1": [
-        72,
-        68,
-        65
+        46,
+        75,
+        73
       ],
       "z2": [
-        22,
-        25,
-        28
+        35,
+        20,
+        21
       ],
       "z3": [
-        6,
-        7,
-        7
+        19,
+        5,
+        5
       ]
     },
     "vol": {
-      "swim": 2.1,
-      "bike": 5.8,
-      "run": 3.2,
-      "strength": 1.0
+      "swim": 6.3,
+      "bike": 8.9,
+      "run": 5.0,
+      "strength": 0.0
     },
     "hrv": {
-      "labels": [
-        "1/4",
-        "2/4",
-        "3/4",
-        "4/4",
-        "5/4",
-        "6/4",
-        "7/4",
-        "8/4",
-        "9/4",
-        "10/4",
-        "11/4",
-        "12/4",
-        "13/4",
-        "14/4"
-      ],
-      "vals": [
-        56,
-        54,
-        57,
-        59,
-        55,
-        53,
-        58,
-        60,
-        57,
-        54,
-        55,
-        58,
-        59,
-        60
-      ],
-      "baseline": 57
+      "labels": [],
+      "vals": [],
+      "baseline": 0
     },
     "adherence": [
       {
         "label": "Natação",
-        "done": 2.1,
-        "target": 2.5,
+        "done": 6.3,
+        "target": 6.9,
         "color": "#4a9eff"
       },
       {
         "label": "Bike",
-        "done": 5.8,
-        "target": 6.0,
+        "done": 8.9,
+        "target": 9.8,
         "color": "#f5a623"
       },
       {
         "label": "Corrida",
-        "done": 3.2,
-        "target": 3.5,
+        "done": 5.0,
+        "target": 5.5,
         "color": "#4db87a"
-      },
-      {
-        "label": "Força",
-        "done": 1.0,
-        "target": 1.0,
-        "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
-        "type": "warn",
-        "msg": "Erro ao buscar dados: 401 Client Error: Unauthorized for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/6285028/workouts/2025-10-19/2026-04-17"
+        "type": "ok",
+        "msg": "Carga equilibrada — TSB 0"
       }
     ],
     "sessions": [
       {
-        "day": "Seg",
+        "day": "Sex",
         "sport": "run",
-        "desc": "Limiar duplo — 3×10min Z2 + 2×8min Z3",
-        "dur": "1h15",
-        "tss": 82,
-        "zones": "60/30/10"
-      },
-      {
-        "day": "Ter",
-        "sport": "swim",
-        "desc": "Volume Z1 — 3.200m aeróbico",
-        "dur": "1h05",
-        "tss": 48,
-        "zones": "80/18/2"
-      },
-      {
-        "day": "Qua",
-        "sport": "bike",
-        "desc": "Endurance Z1 — 90min fundo",
-        "dur": "1h30",
-        "tss": 65,
-        "zones": "75/22/3"
-      },
-      {
-        "day": "Qui",
-        "sport": "run",
-        "desc": "Limiar duplo — 4×6min Z2 + 3×5min Z3",
-        "dur": "1h10",
-        "tss": 78,
-        "zones": "55/32/13"
+        "desc": "Corrida Z1 — Leve",
+        "dur": "40min",
+        "tss": 30,
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
-        "sport": "swim",
-        "desc": "CSS — 8×100m no limiar",
-        "dur": "55min",
-        "tss": 55,
-        "zones": "40/42/18"
+        "sport": "strength",
+        "desc": "Strength",
+        "dur": "1h15",
+        "tss": 38,
+        "zones": "75/20/5"
       },
       {
         "day": "Sáb",
         "sport": "bike",
-        "desc": "Longa Z1 — 3h base aeróbica",
-        "dur": "3h00",
-        "tss": 95,
-        "zones": "80/18/2"
+        "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
+        "dur": "2h04",
+        "tss": 103,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Corrida Z1 — Longa",
+        "dur": "55min",
+        "tss": 47,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação Z1 — Técnica",
+        "dur": "51min",
+        "tss": 69,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Aeróbio Base (solo)",
+        "dur": "1h26",
+        "tss": 72,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Natação Z1 — Volume",
+        "dur": "50min",
+        "tss": 74,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Corrida Z1 — Leve",
+        "dur": "35min",
+        "tss": 31,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Aeróbio Base (solo)",
+        "dur": "1h20",
+        "tss": 66,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qui",
+        "sport": "swim",
+        "desc": "Natação Z1 — Técnica",
+        "dur": "46min",
+        "tss": 60,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sex",
+        "sport": "run",
+        "desc": "Corrida Z1 — Leve",
+        "dur": "35min",
+        "tss": 33,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "Natação Z1 — Volume",
+        "dur": "35min",
+        "tss": 42,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sáb",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC) ⏱️ 90min MAX",
+        "dur": "1h38",
+        "tss": 54,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Corrida Z1 — Longa",
+        "dur": "1h03",
+        "tss": 57,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 5)",
+        "dur": "48min",
+        "tss": 72,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 5)",
+        "dur": "1h11",
+        "tss": 53,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 5)",
+        "dur": "49min",
+        "tss": 64,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Corrida Z1 — Leve + Alfredson (Sem. 5)",
+        "dur": "35min",
+        "tss": 32,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 5)",
+        "dur": "1h10",
+        "tss": 51,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qui",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 5)",
+        "dur": "55min",
+        "tss": 73,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 5)",
+        "dur": "38min",
+        "tss": 57,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Sex",
+        "sport": "run",
+        "desc": "Corrida Z1 — Leve + Alfredson (Sem. 5)",
+        "dur": "35min",
+        "tss": 32,
+        "zones": "75/20/5"
       }
     ]
   },
   "jean": {
     "kpis": {
-      "ctl": 85,
-      "atl": 79,
-      "tsb": 6,
-      "tss_week": 498
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 993
     },
     "kpi_delta": {
-      "ctl": "+5",
-      "atl": "+6",
-      "tsb": "+2",
-      "tss_week": "+44"
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
     },
     "pmc": {
       "labels": [
-        "S1",
-        "S2",
-        "S3",
-        "S4",
-        "S5",
-        "S6",
-        "S7",
-        "S8"
+        "11/11",
+        "03/12",
+        "25/12",
+        "16/01",
+        "07/02",
+        "01/03",
+        "23/03",
+        "14/04"
       ],
       "ctl": [
-        68,
-        72,
-        76,
-        79,
-        82,
-        85,
-        84,
-        85
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        26,
+        84
       ],
       "atl": [
-        70,
-        78,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         82,
-        80,
-        76,
-        88,
-        82,
-        79
+        119
       ],
       "tsb": [
-        -2,
-        -6,
-        -6,
-        -1,
-        6,
-        -3,
-        2,
-        6
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -57,
+        -35
       ]
     },
     "zones": {
@@ -450,333 +542,511 @@ const DB = {
         "Corrida"
       ],
       "z1": [
-        70,
+        45,
         65,
-        60
+        69
       ],
       "z2": [
-        24,
+        35,
         28,
-        32
+        23
       ],
       "z3": [
-        6,
-        7,
+        20,
+        8,
         8
       ]
     },
     "vol": {
-      "swim": 2.8,
-      "bike": 7.2,
-      "run": 4.5,
-      "strength": 1.0
+      "swim": 8.0,
+      "bike": 11.0,
+      "run": 8.0,
+      "strength": 0.0
     },
     "hrv": {
-      "labels": [
-        "1/4",
-        "2/4",
-        "3/4",
-        "4/4",
-        "5/4",
-        "6/4",
-        "7/4",
-        "8/4",
-        "9/4",
-        "10/4",
-        "11/4",
-        "12/4",
-        "13/4",
-        "14/4"
-      ],
-      "vals": [
-        60,
-        62,
-        61,
-        58,
-        60,
-        63,
-        64,
-        62,
-        59,
-        61,
-        63,
-        64,
-        63,
-        65
-      ],
-      "baseline": 62
+      "labels": [],
+      "vals": [],
+      "baseline": 0
     },
     "adherence": [
       {
         "label": "Natação",
-        "done": 2.8,
-        "target": 3.0,
+        "done": 8.0,
+        "target": 8.8,
         "color": "#4a9eff"
       },
       {
         "label": "Bike",
-        "done": 7.2,
-        "target": 7.0,
+        "done": 11.0,
+        "target": 12.1,
         "color": "#f5a623"
       },
       {
         "label": "Corrida",
-        "done": 4.5,
-        "target": 4.5,
+        "done": 8.0,
+        "target": 8.8,
         "color": "#4db87a"
-      },
-      {
-        "label": "Força",
-        "done": 1.0,
-        "target": 1.0,
-        "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
-        "type": "warn",
-        "msg": "Erro ao buscar dados: 401 Client Error: Unauthorized for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/6286348/workouts/2025-10-19/2026-04-17"
+        "type": "ok",
+        "msg": "Carga equilibrada — TSB 0"
       }
     ],
     "sessions": [
       {
-        "day": "Seg",
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "Lap Swimming",
+        "dur": "1h07",
+        "tss": 102,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Sex",
+        "sport": "run",
+        "desc": "Running",
+        "dur": "38min",
+        "tss": 19,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Sáb",
         "sport": "bike",
-        "desc": "Limiar duplo — 5×8min Z2 + 3×6min Z3",
-        "dur": "1h30",
+        "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
+        "dur": "1h36",
+        "tss": 81,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Running",
+        "dur": "1h40",
+        "tss": 136,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Treadmill Running",
+        "dur": "10min",
+        "tss": 7,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação Z1 — Técnica (Sem. 2)",
+        "dur": "1h07",
         "tss": 95,
-        "zones": "50/36/14"
+        "zones": "40/35/25"
       },
       {
         "day": "Ter",
-        "sport": "swim",
-        "desc": "Técnica + CSS — 3.600m",
-        "dur": "1h10",
-        "tss": 58,
-        "zones": "65/28/7"
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia",
+        "dur": "2h09",
+        "tss": 60,
+        "zones": "75/20/5"
       },
       {
         "day": "Qua",
         "sport": "run",
-        "desc": "Volume Z1 — 12km fácil",
-        "dur": "1h15",
-        "tss": 62,
-        "zones": "78/20/2"
+        "desc": "Corrida Z1 — Base Aeróbia",
+        "dur": "55min",
+        "tss": 44,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qua",
+        "sport": "swim",
+        "desc": "Natação Z1 — Técnica (Sem. 2)",
+        "dur": "1h08",
+        "tss": 92,
+        "zones": "40/35/25"
       },
       {
         "day": "Qui",
         "sport": "bike",
-        "desc": "Limiar duplo — FTP intervals",
-        "dur": "1h20",
-        "tss": 88,
-        "zones": "45/38/17"
+        "desc": "Ciclismo Z1+Z2 — 3×8min LT1 (Trainer)",
+        "dur": "1h27",
+        "tss": 78,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Sex",
+        "sport": "run",
+        "desc": "Corrida Z1 — Base Aeróbia",
+        "dur": "56min",
+        "tss": 36,
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
         "sport": "swim",
-        "desc": "Endurance — 4.000m Z1/Z2",
-        "dur": "1h20",
-        "tss": 65,
-        "zones": "70/26/4"
+        "desc": "Natação Z1 — Técnica (Sem. 2)",
+        "dur": "1h08",
+        "tss": 91,
+        "zones": "55/35/10"
       },
       {
         "day": "Sáb",
+        "sport": "bike",
+        "desc": "Ciclismo Longo Z1 — 3h Grupo NPC ⭐",
+        "dur": "2h50",
+        "tss": 134,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
         "sport": "run",
-        "desc": "Longa Z1/Z2 — 18km progressivo",
-        "dur": "1h45",
-        "tss": 100,
-        "zones": "65/28/7"
+        "desc": "Corrida Longa Z1 — 100min Grupo NPC",
+        "dur": "1h40",
+        "tss": 77,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 5)",
+        "dur": "1h15",
+        "tss": 87,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia (Sem. 5)",
+        "dur": "1h30",
+        "tss": 86,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Corrida Z1 — Base Aeróbia (Sem. 5)",
+        "dur": "1h00",
+        "tss": 49,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qua",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 5)",
+        "dur": "1h10",
+        "tss": 79,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Ciclismo Z1+Z2 — 4×8min LT1 (Sem. 5)",
+        "dur": "1h27",
+        "tss": 87,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sex",
+        "sport": "run",
+        "desc": "Corrida Z1+Z2 — 2×10min LT1 — NOVO (Sem. 5)",
+        "dur": "55min",
+        "tss": 43,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 5)",
+        "dur": "1h04",
+        "tss": 103,
+        "zones": "40/35/25"
       }
     ]
   },
   "gabriel": {
     "kpis": {
-      "ctl": 58,
-      "atl": 72,
-      "tsb": -14,
-      "tss_week": 380
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 347
     },
     "kpi_delta": {
-      "ctl": "+2",
-      "atl": "+14",
-      "tsb": "-12",
-      "tss_week": "+55"
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
     },
     "pmc": {
       "labels": [
-        "S1",
-        "S2",
-        "S3",
-        "S4",
-        "S5",
-        "S6",
-        "S7",
-        "S8"
+        "11/11",
+        "03/12",
+        "25/12",
+        "16/01",
+        "07/02",
+        "01/03",
+        "23/03",
+        "14/04"
       ],
       "ctl": [
-        46,
-        49,
-        52,
-        54,
-        56,
-        58,
-        57,
-        58
+        166,
+        192,
+        227,
+        177,
+        149,
+        118,
+        76,
+        63
       ],
       "atl": [
-        50,
-        55,
-        60,
-        58,
-        52,
-        65,
-        70,
-        72
+        265,
+        144,
+        308,
+        117,
+        115,
+        93,
+        69,
+        52
       ],
       "tsb": [
-        -4,
-        -6,
-        -8,
-        -4,
-        4,
-        -7,
-        -13,
-        -14
+        -99,
+        48,
+        -81,
+        60,
+        34,
+        25,
+        7,
+        10
       ]
     },
     "zones": {
       "labels": [
+        "Natação",
         "Bike",
         "Corrida"
       ],
       "z1": [
-        60,
-        58
+        74,
+        48,
+        52
       ],
       "z2": [
-        28,
-        30
+        21,
+        33,
+        32
       ],
       "z3": [
-        12,
-        12
+        5,
+        18,
+        16
       ]
     },
     "vol": {
-      "swim": 0,
-      "bike": 5.5,
-      "run": 4.2,
-      "strength": 1.5
+      "swim": 0.9,
+      "bike": 6.0,
+      "run": 3.1,
+      "strength": 0.0
     },
     "hrv": {
-      "labels": [
-        "1/4",
-        "2/4",
-        "3/4",
-        "4/4",
-        "5/4",
-        "6/4",
-        "7/4",
-        "8/4",
-        "9/4",
-        "10/4",
-        "11/4",
-        "12/4",
-        "13/4",
-        "14/4"
-      ],
-      "vals": [
-        58,
-        56,
-        54,
-        52,
-        55,
-        53,
-        51,
-        50,
-        52,
-        51,
-        53,
-        54,
-        55,
-        53
-      ],
-      "baseline": 55
+      "labels": [],
+      "vals": [],
+      "baseline": 0
     },
     "adherence": [
       {
+        "label": "Natação",
+        "done": 0.9,
+        "target": 1.0,
+        "color": "#4a9eff"
+      },
+      {
         "label": "Bike",
-        "done": 5.5,
-        "target": 5.0,
+        "done": 6.0,
+        "target": 6.6,
         "color": "#f5a623"
       },
       {
         "label": "Corrida",
-        "done": 4.2,
-        "target": 4.0,
+        "done": 3.1,
+        "target": 3.4,
         "color": "#4db87a"
-      },
-      {
-        "label": "Força",
-        "done": 1.5,
-        "target": 1.5,
-        "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
-        "type": "warn",
-        "msg": "Erro ao buscar dados: 401 Client Error: Unauthorized for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/5775491/workouts/2025-10-19/2026-04-17"
+        "type": "ok",
+        "msg": "Carga equilibrada — TSB 0"
       }
     ],
     "sessions": [
       {
-        "day": "Seg",
+        "day": "Sex",
         "sport": "run",
-        "desc": "Limiar — 3×10min Z2 pré-duatlon",
-        "dur": "1h00",
-        "tss": 70,
-        "zones": "55/33/12"
-      },
-      {
-        "day": "Ter",
-        "sport": "bike",
-        "desc": "Específico duatlon — 3×8min Z3",
-        "dur": "1h10",
-        "tss": 85,
-        "zones": "40/38/22"
-      },
-      {
-        "day": "Qua",
-        "sport": "strength",
-        "desc": "Alfredson + estabilização joelho",
-        "dur": "40min",
-        "tss": 25,
-        "zones": "—"
-      },
-      {
-        "day": "Qui",
-        "sport": "run",
-        "desc": "Taper ativo — 6km Z1 leve",
-        "dur": "40min",
-        "tss": 35,
-        "zones": "85/13/2"
+        "desc": "Running",
+        "dur": "7min",
+        "tss": 6,
+        "zones": "75/20/5"
       },
       {
         "day": "Sex",
+        "sport": "run",
+        "desc": "Running",
+        "dur": "36min",
+        "tss": 56,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Sex",
+        "sport": "strength",
+        "desc": "Strength",
+        "dur": "59min",
+        "tss": 40,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Sáb",
         "sport": "bike",
-        "desc": "Ativação pré-prova — 30min Z1",
-        "dur": "30min",
-        "tss": 22,
-        "zones": "80/15/5"
+        "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
+        "dur": "1h51",
+        "tss": 93,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "swim",
+        "desc": "Open Water Swimming",
+        "dur": "55min",
+        "tss": 33,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Track Running",
+        "dur": "7min",
+        "tss": 13,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Dom",
+        "sport": "bike",
+        "desc": "Road Cycling",
+        "dur": "28min",
+        "tss": 23,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "bike",
+        "desc": "Road Cycling",
+        "dur": "19min",
+        "tss": 15,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Ter",
+        "sport": "run",
+        "desc": "Corrida Z1 + Strides Leves",
+        "dur": "38min",
+        "tss": 37,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sáb",
+        "sport": "bike",
+        "desc": "Cycling",
+        "dur": "18min",
+        "tss": 18,
+        "zones": "55/35/10"
       },
       {
         "day": "Sáb",
         "sport": "run",
-        "desc": "PROVA — Duatlon 5/20/2.5km",
-        "dur": "~56min",
-        "tss": 110,
-        "zones": "20/35/45"
+        "desc": "Running",
+        "dur": "25min",
+        "tss": 24,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Sáb",
+        "sport": "bike",
+        "desc": "Cycling",
+        "dur": "22min",
+        "tss": 21,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Dom",
+        "sport": "bike",
+        "desc": "Road Cycling",
+        "dur": "17min",
+        "tss": 13,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Running",
+        "dur": "10min",
+        "tss": 11,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Running",
+        "dur": "18min",
+        "tss": 34,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Dom",
+        "sport": "bike",
+        "desc": "Cycling",
+        "dur": "27min",
+        "tss": 48,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Dom",
+        "sport": "run",
+        "desc": "Running",
+        "dur": "7min",
+        "tss": 13,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Dom",
+        "sport": "bike",
+        "desc": "Road Cycling",
+        "dur": "34min",
+        "tss": 64,
+        "zones": "40/35/25"
+      },
+      {
+        "day": "Dom",
+        "sport": "bike",
+        "desc": "Road Cycling",
+        "dur": "21min",
+        "tss": 20,
+        "zones": "55/35/10"
+      },
+      {
+        "day": "Ter",
+        "sport": "run",
+        "desc": "Corrida Z1 Muito Leve — Recuperação",
+        "dur": "35min",
+        "tss": 26,
+        "zones": "75/20/5"
+      },
+      {
+        "day": "Qua",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Ativação Leve Trainer",
+        "dur": "40min",
+        "tss": 30,
+        "zones": "75/20/5"
       }
     ]
   }
