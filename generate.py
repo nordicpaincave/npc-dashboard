@@ -441,46 +441,42 @@ def process_workouts(raw, display_days=7):
 
 # ── PMC ───────────────────────────────────────────────────────────────
 def calc_pmc_from_workouts(raw_w):
+    """
+    Fórmula exata do TrainingPeaks (Bannister):
+    CTL_t = CTL_{t-1} + (TSS_t - CTL_{t-1}) * (1 - e^(-1/42))
+    ATL_t = ATL_{t-1} + (TSS_t - ATL_{t-1}) * (1 - e^(-1/7))
+    """
+    import math
+    kc = 1 - math.exp(-1 / 42)   # ≈ 0.02353 — igual ao TP
+    ka = 1 - math.exp(-1 / 7)    # ≈ 0.13212 — igual ao TP
+
     daily = {}
     for w in raw_w:
-        day      = str(w.get("workoutDay",""))[:10]
-        tss_val  = float(w.get("tssActual") or 0) or \
-                   float(w.get("hrTss") or w.get("hrTSS") or 0) or \
-                   float(w.get("sTss")  or w.get("sTSS")  or 0)
+        day     = str(w.get("workoutDay",""))[:10]
+        tss_val = (float(w.get("tssActual") or 0) or
+                   float(w.get("hrTss") or w.get("hrTSS") or 0) or
+                   float(w.get("sTss")  or w.get("sTSS")  or 0))
         has_time = float(w.get("totalTime") or 0) > 0
         if tss_val > 0 and has_time:
-            daily[day] = daily.get(day, 0) + min(tss_val, 300)  # cap 300/sessão
-
-    # Cap diário conservador
+            daily[day] = daily.get(day, 0) + min(tss_val, 300)
     for d in daily:
-        daily[d] = min(daily[d], 500)
+        daily[d] = min(daily[d], 500)  # cap diário
+
     end   = datetime.utcnow()
     dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(74, -1, -1)]
-    ctl, atl = 0.0, 0.0  # começa em 0 — histórico limpo constrói o valor
-    kc, ka = 2/43, 2/8
-    history = []
+    ctl, atl = 0.0, 0.0
+    history  = []
     for d in dates:
         tss = daily.get(d, 0)
-        ctl = tss*kc + ctl*(1-kc); atl = tss*ka + atl*(1-ka)
-        history.append({"date":d,"ctl":ctl,"atl":atl,"tsb":ctl-atl,"tss":tss})
+        ctl = ctl + (tss - ctl) * kc
+        atl = atl + (tss - atl) * ka
+        history.append({"date": d, "ctl": ctl, "atl": atl, "tsb": ctl - atl, "tss": tss})
     return history
+
 
 def _past_workouts_with_ctl(raw_w):
     """Retorna workouts passados com CTL calculado pelo TP (campo ctl > 0)."""
     today = datetime.utcnow().strftime("%Y-%m-%d")
-
-    # Debug: mostra ctl dos últimos 3 workouts realizados
-    completed = sorted(
-        [w for w in raw_w
-         if str(w.get("workoutDay",""))[:10] <= today
-         and float(w.get("tssActual") or 0) > 0],
-        key=lambda x: str(x.get("workoutDay",""))
-    )
-    for w in completed[-3:]:
-        print(f"    DEBUG ctl: {str(w.get('workoutDay',''))[:10]} "
-              f"ctl={w.get('ctl')} atl={w.get('atl')} tsb={w.get('tsb')} "
-              f"tss={w.get('tssActual')}")
-
     return sorted(
         [w for w in raw_w
          if float(w.get("ctl") or 0) > 0
