@@ -274,7 +274,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 17/04/2026 18:58 UTC</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 17/04/2026 19:06 UTC</div>
 </div>
 
 <script>
@@ -468,6 +468,12 @@ const DB = {
         "done": 2.8,
         "target": 3.1,
         "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 0.0,
+        "target": 1.5,
+        "color": "#9b8fff"
       }
     ],
     "alerts": [
@@ -781,6 +787,12 @@ const DB = {
         "done": 4.5,
         "target": 5.0,
         "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 0.0,
+        "target": 1.5,
+        "color": "#9b8fff"
       }
     ],
     "alerts": [
@@ -1075,6 +1087,12 @@ const DB = {
         "done": 1.6,
         "target": 1.8,
         "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 0.0,
+        "target": 1.5,
+        "color": "#9b8fff"
       }
     ],
     "alerts": [
@@ -1441,7 +1459,10 @@ function renderVol(d) {
   dc('vol');
   const map={swim:['Natação','#4a9eff'],bike:['Bike','#f5a623'],run:['Corrida','#4db87a'],strength:['Força','#9b8fff']};
   const labels=[],vals=[],colors=[];
-  for(const[k,[l,c]]of Object.entries(map)){if(d.vol[k]>0){labels.push(l);vals.push(d.vol[k]);colors.push(c);}}
+  for(const[k,[l,c]]of Object.entries(map)){
+    // Força sempre aparece (mesmo se 0) para mostrar ausência explícita
+    if(d.vol[k]>0 || k==='strength'){labels.push(l);vals.push(d.vol[k]||0);colors.push(c);}
+  }
   document.getElementById('vol-total').textContent=fmtH(totalH(d.vol))+' total';
   document.getElementById('vol-legend').innerHTML=labels.map((l,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${l}</span>`).join('');
   charts['vol']=new Chart(document.getElementById('vol-chart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:5}]},
@@ -1495,8 +1516,7 @@ function renderComparativo() {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 
   dc('cmp-vol');
-  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];
-  document.getElementById('cmp-vol-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];  document.getElementById('cmp-vol-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
   charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',
     data:{labels:vLabels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[ATHLETES[c.datasetIndex]]}: ${c.raw.toFixed(1)}h`}}},
