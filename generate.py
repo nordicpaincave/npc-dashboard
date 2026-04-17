@@ -258,23 +258,37 @@ def process_workouts(raw, display_days=14):
             sessions.append({"day":day,"sport":sport,"desc":title,
                              "dur":dur_str,"tss":tss,"zones":f"{pz[0]}/{pz[1]}/{pz[2]}"})
 
-    # Volume exibido: apenas últimos 14 dias
+    # Volume exibido: apenas últimos 14 dias, apenas treinos realizados
     vol_display = {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}
     for w in raw:
-        if str(w.get("workoutDay",""))[:10] < cutoff_display:
+        workout_day_w = str(w.get("workoutDay",""))[:10]
+        if workout_day_w < cutoff_display:
             continue
-        sport = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
-        if not sport:
+
+        sport_w = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
+        if not sport_w:
             continue
-        raw_time = float(w.get("totalTime") or 0)
-        dur_h_as_hours = raw_time
-        dur_h_as_days  = raw_time * 24
-        if dur_h_as_hours < 0.05 and 0.05 <= dur_h_as_days <= 8.0:
-            dur_h = dur_h_as_days
+
+        # Só conta realizados: tssActual > 0 para esportes com GPS/potenciômetro
+        # Para força: aceita se tem totalTime E compliance > 0
+        tss_a = float(w.get("tssActual") or 0)
+        compliance = float(w.get("complianceDurationPercent") or 0)
+        raw_time_w = float(w.get("totalTime") or 0)
+
+        if sport_w == "strength":
+            if raw_time_w <= 0 or (compliance == 0 and tss_a == 0):
+                continue
         else:
-            dur_h = min(dur_h_as_hours, 8.0)
-        if dur_h >= 0.05 and sport in vol_display:
-            vol_display[sport] = round(vol_display[sport] + dur_h, 2)
+            if tss_a <= 0:
+                continue
+
+        dur_h_w = raw_time_w
+        if dur_h_w < 0.05 and raw_time_w * 24 <= 8.0:
+            dur_h_w = raw_time_w * 24
+        dur_h_w = min(dur_h_w, 8.0)
+
+        if dur_h_w >= 0.05 and sport_w in vol_display:
+            vol_display[sport_w] = round(vol_display[sport_w] + dur_h_w, 2)
 
     # Gráfico de zonas
     zl, z1l, z2l, z3l = [], [], [], []
@@ -343,20 +357,21 @@ def build_pmc(raw_f, raw_w):
     return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
 
 def build_kpis(raw_f, raw_w):
-    # CTL/ATL/TSB já vêm nos objetos de workout — pega o último realizado
-    completed = [w for w in raw_w if float(w.get("tssActual") or 0) > 0
-                 or float(w.get("ctl") or 0) > 0]
-    completed = sorted(completed, key=lambda x: str(x.get("workoutDay","")))
+    # Pega apenas workouts com CTL calculado pelo TP (> 0)
+    with_ctl = sorted(
+        [w for w in raw_w if float(w.get("ctl") or 0) > 0],
+        key=lambda x: str(x.get("workoutDay",""))
+    )
 
-    if completed:
-        latest = completed[-1]
+    if with_ctl:
+        latest = with_ctl[-1]
         ctl = round(float(latest.get("ctl") or 0))
         atl = round(float(latest.get("atl") or 0))
         tsb = round(float(latest.get("tsb") or 0))
     else:
         ctl, atl, tsb = 0, 0, 0
 
-    # TSS semanal: soma tssActual dos últimos 7 dias
+    # TSS semanal: só treinos realizados (tssActual > 0)
     week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
     tss_week = round(sum(
         float(w.get("tssActual") or 0) for w in raw_w
