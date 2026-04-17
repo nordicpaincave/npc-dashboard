@@ -327,6 +327,16 @@ def calc_pmc_from_workouts(raw_w):
 def _past_workouts_with_ctl(raw_w):
     """Retorna workouts passados (≤ hoje) com CTL calculado pelo TP, ordenados por data."""
     today = datetime.utcnow().strftime("%Y-%m-%d")
+
+    # Debug: inspeciona campos do primeiro workout com tssActual > 0
+    completed_sample = [w for w in raw_w if float(w.get("tssActual") or 0) > 0]
+    if completed_sample:
+        w0 = sorted(completed_sample, key=lambda x: str(x.get("workoutDay","")))[-1]
+        ctl_related = {k: v for k, v in w0.items()
+                       if any(x in k.lower() for x in ["ctl","atl","tsb","fitness","fatigue","form"])}
+        print(f"    DEBUG campos PMC no último workout realizado: {ctl_related}")
+        print(f"    DEBUG workoutDay: {w0.get('workoutDay')}")
+
     return sorted(
         [w for w in raw_w
          if float(w.get("ctl") or 0) > 0
