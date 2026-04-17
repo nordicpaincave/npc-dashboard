@@ -166,7 +166,49 @@ def fetch_wellness(athlete_id, days=14):
         print(f"    metrics: erro — {ex}")
     return []
 
-# Tipos de métricas do TP (confirmados via Network tab)
+# ── Busca notas semanais do calendário ───────────────────────────────
+def fetch_calendar_notes(athlete_id):
+    """Busca as notas de planejamento semanal do coach (aparecem nas segundas no TP)."""
+    # Busca do início do plano (março 2026) até a prova (outubro 2026)
+    s = "2026-03-01"
+    e = "2026-10-05"
+    try:
+        data = tp_get(f"/fitness/v1/athletes/{athlete_id}/calendarNote/{s}/{e}")
+        notes = data if isinstance(data, list) else []
+        print(f"    calendar notes: {len(notes)} notas")
+        return notes
+    except Exception as ex:
+        print(f"    calendar notes: erro — {ex}")
+        return []
+
+def process_calendar_notes(raw_notes):
+    """Converte notas do TP em dict {week_num: {title, body, date}}."""
+    result = {}
+    for note in (raw_notes or []):
+        date_str = str(note.get("date") or note.get("startDate") or
+                       note.get("noteDate") or "")[:10]
+        if not date_str:
+            continue
+        text = (note.get("text") or note.get("description") or
+                note.get("title") or note.get("coachNote") or "")
+        if not text:
+            continue
+        # Calcula o número da semana no plano (semana 1 = 16/mar/2026)
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            week1_start = datetime(2026, 3, 16)
+            week_num    = int((dt - week1_start).days / 7) + 1
+            if 1 <= week_num <= 29:
+                result[week_num] = {
+                    "date":  date_str,
+                    "title": text[:80],   # primeira linha como título
+                    "body":  text,
+                }
+        except Exception:
+            continue
+    return result
+
+
 METRIC_TYPES = {
     60: "hrv",          # HRV
     6:  "sleep_h",      # Sleep Hours
@@ -552,13 +594,15 @@ def build_db():
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
         try:
-            raw_w  = fetch_workouts(cfg["id"], days=75)   # desde ~01/fev — evita dados ruins anteriores
+            raw_w  = fetch_workouts(cfg["id"], days=75)
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
             raw_we = fetch_wellness(cfg["id"],  days=14)
+            raw_cn = fetch_calendar_notes(cfg["id"])
 
             sessions, planned, vol, zones = process_workouts(raw_w, display_days=7)
             total_vol = sum(vol.values())
-            print(f"    processado: {len(sessions)} sessões (7d), vol={total_vol:.1f}h (7d)")
+            week_notes = process_calendar_notes(raw_cn)
+            print(f"    processado: {len(sessions)} sessões, vol={total_vol:.1f}h, {len(week_notes)} notas semanais")
 
             # Fallback se não chegaram dados reais
             if len(sessions) < 1 and total_vol < 0.5:
@@ -578,7 +622,7 @@ def build_db():
             print(f"    CTL={kpis['ctl']} ATL={kpis['atl']} TSB={kpis['tsb']} TSS={kpis['tss_week']}")
             db[key] = {"kpis":kpis,"kpi_delta":kpi_delta,"pmc":pmc,"zones":zones,
                        "vol":vol,"hrv":hrv,"adherence":adherence,"alerts":alerts,
-                       "sessions":sessions,"planned":planned}
+                       "sessions":sessions,"planned":planned,"week_notes":week_notes}
 
         except Exception as e:
             print(f"    ERRO: {e} — usando protótipo")
