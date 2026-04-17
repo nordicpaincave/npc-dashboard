@@ -103,8 +103,26 @@ PROTOTYPE = {
 
 # ── Autenticação ──────────────────────────────────────────────────────
 def hdrs():
-    return {"Cookie": f"Production_tpAuth={os.environ['TP_COOKIE']}",
-            "Accept": "application/json", "User-Agent": "Mozilla/5.0"}
+    # TP migrou para Bearer token — usa TP_BEARER se disponível, senão tenta TP_COOKIE
+    bearer = os.environ.get("TP_BEARER", "")
+    cookie = os.environ.get("TP_COOKIE", "")
+    if bearer:
+        return {
+            "Authorization": f"Bearer {bearer}",
+            "Accept":        "application/json, text/javascript, */*; q=0.01",
+            "Content-Type":  "application/json",
+            "User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Origin":        "https://app.trainingpeaks.com",
+            "Referer":       "https://app.trainingpeaks.com/",
+        }
+    elif cookie:
+        return {
+            "Cookie":     f"Production_tpAuth={cookie}",
+            "Accept":     "application/json",
+            "User-Agent": "Mozilla/5.0",
+        }
+    else:
+        raise ValueError("Nenhuma credencial do TP encontrada. Configure TP_BEARER ou TP_COOKIE nos secrets do GitHub.")
 
 def tp_get(path):
     r = requests.get(f"{TP_BASE}{path}", headers=hdrs(), timeout=20)
@@ -183,29 +201,55 @@ def fetch_calendar_notes(athlete_id):
 
 def process_calendar_notes(raw_notes):
     """Converte notas do TP em dict {week_num: {title, body, date}}."""
+    if not raw_notes:
+        return {}
+
+    # Debug: mostra campos da primeira nota para diagnóstico
+    first = raw_notes[0] if raw_notes else {}
+    debug_keys = {k: str(v)[:60] for k, v in first.items()
+                  if v and k not in ('athleteId','id')}
+    print(f"    DEBUG note fields: {debug_keys}")
+
     result = {}
-    for note in (raw_notes or []):
-        date_str = str(note.get("date") or note.get("startDate") or
-                       note.get("noteDate") or "")[:10]
-        if not date_str:
+    for note in raw_notes:
+        # Data da nota — tenta vários campos
+        date_str = str(
+            note.get("date") or note.get("startDate") or
+            note.get("noteDate") or note.get("timeStamp") or ""
+        )[:10]
+        if not date_str or date_str < "2026-01-01":
             continue
-        text = (note.get("text") or note.get("description") or
-                note.get("title") or note.get("coachNote") or "")
-        if not text:
+
+        # Título e corpo separados no TP
+        title_raw = (note.get("title") or note.get("subject") or
+                     note.get("name") or "").strip()
+        body_raw  = (note.get("description") or note.get("text") or
+                     note.get("coachNote") or note.get("body") or
+                     note.get("note") or "").strip()
+
+        # Combina tudo: título + corpo
+        if title_raw and body_raw:
+            full_text = f"{title_raw}\n\n{body_raw}"
+        else:
+            full_text = title_raw or body_raw
+        if not full_text:
             continue
-        # Calcula o número da semana no plano (semana 1 = 16/mar/2026)
+
+        # Número da semana no plano (semana 1 = 16/mar/2026)
         try:
-            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            dt         = datetime.strptime(date_str, "%Y-%m-%d")
             week1_start = datetime(2026, 3, 16)
-            week_num    = int((dt - week1_start).days / 7) + 1
+            week_num   = int((dt - week1_start).days / 7) + 1
             if 1 <= week_num <= 29:
                 result[week_num] = {
                     "date":  date_str,
-                    "title": text[:80],   # primeira linha como título
-                    "body":  text,
+                    "title": title_raw or full_text[:60],
+                    "body":  full_text,
                 }
         except Exception:
             continue
+
+    print(f"    notas processadas: {len(result)} semanas com conteúdo")
     return result
 
 
