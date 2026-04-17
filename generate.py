@@ -311,11 +311,31 @@ def calc_pmc_from_workouts(raw_w):
     return history
 
 def build_pmc(raw_f, raw_w):
-    records = sorted(raw_f or calc_pmc_from_workouts(raw_w), key=lambda x: x.get("date",""))
-    sample  = records[::max(1,len(records)//8)][-8:]
+    # Usa CTL/ATL/TSB diretamente dos campos de cada workout
+    records = sorted(
+        [w for w in raw_w if float(w.get("ctl") or 0) > 0],
+        key=lambda x: str(x.get("workoutDay",""))
+    )
+
+    if not records:
+        # Fallback para cálculo EMA se campos não existirem
+        records = calc_pmc_from_workouts(raw_w)
+        records = sorted(records, key=lambda x: x.get("date",""))
+        sample  = records[::max(1,len(records)//8)][-8:]
+        labels, ctl_l, atl_l, tsb_l = [], [], [], []
+        for r in sample:
+            try: labels.append(datetime.strptime(str(r["date"])[:10],"%Y-%m-%d").strftime("%d/%m"))
+            except: labels.append("?")
+            ctl_l.append(round(float(r.get("ctl") or 0)))
+            atl_l.append(round(float(r.get("atl") or 0)))
+            tsb_l.append(round(float(r.get("tsb") or 0)))
+        return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
+
+    # Amostra 8 pontos distribuídos
+    sample = records[::max(1, len(records)//8)][-8:]
     labels, ctl_l, atl_l, tsb_l = [], [], [], []
     for r in sample:
-        try: labels.append(datetime.strptime(str(r["date"])[:10],"%Y-%m-%d").strftime("%d/%m"))
+        try: labels.append(datetime.strptime(str(r.get("workoutDay",""))[:10],"%Y-%m-%d").strftime("%d/%m"))
         except: labels.append("?")
         ctl_l.append(round(float(r.get("ctl") or 0)))
         atl_l.append(round(float(r.get("atl") or 0)))
@@ -323,24 +343,46 @@ def build_pmc(raw_f, raw_w):
     return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
 
 def build_kpis(raw_f, raw_w):
-    records  = sorted(raw_f or calc_pmc_from_workouts(raw_w), key=lambda x: x.get("date",""))
-    latest   = records[-1] if records else {}
+    # CTL/ATL/TSB já vêm nos objetos de workout — pega o último realizado
+    completed = [w for w in raw_w if float(w.get("tssActual") or 0) > 0
+                 or float(w.get("ctl") or 0) > 0]
+    completed = sorted(completed, key=lambda x: str(x.get("workoutDay","")))
+
+    if completed:
+        latest = completed[-1]
+        ctl = round(float(latest.get("ctl") or 0))
+        atl = round(float(latest.get("atl") or 0))
+        tsb = round(float(latest.get("tsb") or 0))
+    else:
+        ctl, atl, tsb = 0, 0, 0
+
+    # TSS semanal: soma tssActual dos últimos 7 dias
     week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
-    tss_week = sum(round(float(r.get("tss") or 0)) for r in records
-                   if str(r.get("date",""))[:10] >= week_ago)
-    return {"ctl":round(float(latest.get("ctl") or 0)),
-            "atl":round(float(latest.get("atl") or 0)),
-            "tsb":round(float(latest.get("tsb") or 0)),
-            "tss_week":tss_week}
+    tss_week = round(sum(
+        float(w.get("tssActual") or 0) for w in raw_w
+        if str(w.get("workoutDay",""))[:10] >= week_ago
+        and float(w.get("tssActual") or 0) > 0
+    ))
+
+    print(f"    PMC direto do TP: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
+    return {"ctl": ctl, "atl": atl, "tsb": tsb, "tss_week": tss_week}
+
 
 def build_deltas(raw_f, raw_w):
-    records = sorted(raw_f or calc_pmc_from_workouts(raw_w), key=lambda x: x.get("date",""))
-    if len(records) < 8:
+    completed = sorted(
+        [w for w in raw_w if float(w.get("ctl") or 0) > 0],
+        key=lambda x: str(x.get("workoutDay",""))
+    )
+    if len(completed) < 8:
         return {"ctl":"—","atl":"—","tsb":"—","tss_week":"—"}
-    c, p = records[-1], records[-8]
-    def fmt(a,b): d=round(float(a or 0)-float(b or 0)); return f"+{d}" if d>=0 else str(d)
-    return {"ctl":fmt(c.get("ctl"),p.get("ctl")),"atl":fmt(c.get("atl"),p.get("atl")),
-            "tsb":fmt(c.get("tsb"),p.get("tsb")),"tss_week":"—"}
+    c, p = completed[-1], completed[-8]
+    def fmt(a, b):
+        d = round(float(a or 0) - float(b or 0))
+        return f"+{d}" if d >= 0 else str(d)
+    return {"ctl": fmt(c.get("ctl"), p.get("ctl")),
+            "atl": fmt(c.get("atl"), p.get("atl")),
+            "tsb": fmt(c.get("tsb"), p.get("tsb")),
+            "tss_week": "—"}
 
 # ── HRV ───────────────────────────────────────────────────────────────
 def build_hrv(raw_we):
