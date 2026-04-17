@@ -229,16 +229,12 @@ def process_workouts(raw, display_days=14):
         # TSS real: usa tssActual, senão hrTSS, senão sTSS
         tss = round(tss_actual or hr_tss or s_tss)
 
-        # Força: sessionid tem totalTime > 0 no passado = foi executado
-        # (hrTSS é o TSS de força, tssActual fica 0)
-        today_str2 = datetime.utcnow().strftime("%Y-%m-%d")
-        if sport == "strength":
-            if raw_time <= 0 or workout_day > today_str2:
-                continue  # planejado ou sem tempo gravado
-        else:
-            # Para outros esportes exige tssActual ou hrTSS > 0
-            if tss_actual <= 0 and hr_tss <= 0 and s_tss <= 0:
-                continue
+        # Todos os esportes: exige pelo menos um TSS > 0 (sinal de execução real)
+        # tssActual → bike/corrida via potenciômetro ou pace
+        # hrTSS     → força e cardio via FC
+        # sTSS      → natação
+        if tss_actual <= 0 and hr_tss <= 0 and s_tss <= 0:
+            continue  # planejado sem execução
 
         # Data
         workout_day = str(w.get("workoutDay",""))[:10]
@@ -326,14 +322,12 @@ def process_workouts(raw, display_days=14):
         tss_a      = float(w.get("tssActual") or 0)
         hr_tss_w   = float(w.get("hrTss") or w.get("hrTSS") or 0)
         s_tss_w    = float(w.get("sTss")  or w.get("sTSS")  or 0)
-        raw_time_w = float(w.get("totalTime") or 0)
 
-        if sport_w == "strength":
-            if raw_time_w <= 0 or workout_day_w > datetime.utcnow().strftime("%Y-%m-%d"):
-                continue
-        else:
-            if tss_a <= 0 and hr_tss_w <= 0 and s_tss_w <= 0:
-                continue
+        # Qualquer TSS > 0 = treino executado (mesmo critério para todos os esportes)
+        if tss_a <= 0 and hr_tss_w <= 0 and s_tss_w <= 0:
+            continue
+
+        raw_time_w = float(w.get("totalTime") or 0)
 
         dur_h_w = raw_time_w
         if dur_h_w < 0.05 and raw_time_w * 24 <= 8.0:
