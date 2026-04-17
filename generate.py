@@ -151,22 +151,32 @@ def fetch_fitness(athlete_id, weeks=8):
 
 # ── Busca wellness/HRV ────────────────────────────────────────────────
 def fetch_wellness(athlete_id, days=14):
-    end, start = datetime.utcnow(), datetime.utcnow() - timedelta(days=days)
-    s, e = start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
-    for path in [
-        f"/wellness/v6/athletes/{athlete_id}/{s}/{e}",
-        f"/v6/athletes/{athlete_id}/wellness/{s}/{e}",
-        f"/fitness/v6/athletes/{athlete_id}/wellness/{s}/{e}",
-    ]:
-        try:
-            data = to_list(tp_get(path))
-            if data:
-                print(f"    wellness: {len(data)} registros")
-                return data
-        except Exception:
-            continue
-    print(f"    wellness: indisponível")
+    """Busca métricas diárias (HRV, sono, FC repouso) via endpoint consolidatedtimedmetrics."""
+    end   = datetime.utcnow()
+    start = end - timedelta(days=days)
+    s, e  = start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
+    try:
+        data = tp_get(f"/metrics/v3/athletes/{athlete_id}/consolidatedtimedmetrics/{s}/{e}")
+        if data:
+            if isinstance(data, dict):
+                data = data.get("Items") or data.get("items") or []
+            print(f"    metrics: {len(data)} registros")
+            return data
+    except Exception as ex:
+        print(f"    metrics: erro — {ex}")
     return []
+
+# Tipos de métricas do TP (confirmados via Network tab)
+METRIC_TYPES = {
+    60: "hrv",          # HRV
+    6:  "sleep_h",      # Sleep Hours
+    46: "deep_sleep",   # Deep Sleep
+    47: "rem_sleep",    # REM Sleep
+    48: "light_sleep",  # Light Sleep
+    5:  "resting_hr",   # Pulse/FC repouso
+    64: "body_battery", # Body Battery [min, max, avg]
+    62: "stress",       # Stress Level [?, max, avg]
+}
 
 # ── Processamento de workouts ─────────────────────────────────────────
 def process_workouts(raw, display_days=14):
@@ -253,10 +263,34 @@ def process_workouts(raw, display_days=14):
         zones_acc[sport][1] += dur_h * pz[1] / 100
         zones_acc[sport][2] += dur_h * pz[2] / 100
 
-        # Sessões visíveis: apenas últimos 14 dias
+        # Sessões visíveis: apenas últimos 7 dias (display_days)
         if workout_day >= cutoff_display:
             sessions.append({"day":day,"sport":sport,"desc":title,
-                             "dur":dur_str,"tss":tss,"zones":f"{pz[0]}/{pz[1]}/{pz[2]}"})
+                             "dur":dur_str,"tss":tss,"zones":f"{pz[0]}/{pz[1]}/{pz[2]}",
+                             "date":workout_day})
+
+    # Treinos planejados (próximas 4 semanas) para o calendário
+    today_str  = datetime.utcnow().strftime("%Y-%m-%d")
+    future_cut = (datetime.utcnow() + timedelta(days=28)).strftime("%Y-%m-%d")
+    planned = []
+    for w in raw:
+        wd = str(w.get("workoutDay",""))[:10]
+        if wd < today_str or wd > future_cut:
+            continue
+        tss_a = float(w.get("tssActual") or 0)
+        if tss_a > 0:
+            continue  # já foi executado
+        sport_p = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
+        if not sport_p:
+            continue
+        tss_p = round(float(w.get("tssPlanned") or 0))
+        try:
+            dt_p  = datetime.strptime(wd, "%Y-%m-%d")
+            day_p = DAYS_PT[dt_p.weekday()]
+        except Exception:
+            day_p = "?"
+        title_p = w.get("title") or SPORT_LABEL.get(sport_p, "Treino")
+        planned.append({"day":day_p,"sport":sport_p,"desc":title_p,"tss":tss_p,"date":wd})
 
     # Volume exibido: apenas últimos 14 dias, apenas treinos realizados
     vol_display = {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}
@@ -299,7 +333,7 @@ def process_workouts(raw, display_days=14):
                 zl.append(SPORT_LABEL[sport])
                 z1l.append(round(z1/t*100)); z2l.append(round(z2/t*100)); z3l.append(round(z3/t*100))
 
-    return sessions, {k:round(v,1) for k,v in vol_display.items()}, {"labels":zl,"z1":z1l,"z2":z2l,"z3":z3l}
+    return sessions, planned, {k:round(v,1) for k,v in vol_display.items()}, {"labels":zl,"z1":z1l,"z2":z2l,"z3":z3l}
 
 # ── PMC ───────────────────────────────────────────────────────────────
 def calc_pmc_from_workouts(raw_w):
@@ -412,14 +446,52 @@ def build_deltas(raw_f, raw_w):
 
 # ── HRV ───────────────────────────────────────────────────────────────
 def build_hrv(raw_we):
-    records = sorted(raw_we or [], key=lambda x: x.get("date",""))[-14:]
-    labels, vals = [], []
+    """Extrai HRV, sono e FC repouso dos dados de métricas consolidadas do TP."""
+    if not raw_we:
+        return {
+            "labels": [], "vals": [], "baseline": 0,
+            "sleep": [], "resting_hr": [], "body_battery": []
+        }
+
+    records = sorted(raw_we, key=lambda x: str(x.get("timeStamp", x.get("date", ""))))
+
+    labels, hrv_vals, sleep_vals, hr_vals, battery_vals = [], [], [], [], []
+
     for r in records:
-        try: labels.append(datetime.strptime(str(r["date"])[:10],"%Y-%m-%d").strftime("%d/%m"))
-        except: labels.append("?")
-        vals.append(round(float(r.get("hrv") or r.get("rmssd") or r.get("hrvScore") or 0)))
-    valid = [v for v in vals if v > 0]
-    return {"labels":labels,"vals":vals,"baseline":round(sum(valid)/len(valid)) if valid else 0}
+        # Data
+        ts = str(r.get("timeStamp") or r.get("date",""))[:10]
+        try:
+            labels.append(datetime.strptime(ts, "%Y-%m-%d").strftime("%d/%m"))
+        except Exception:
+            labels.append("?")
+
+        # Extrai métricas dos details
+        hrv = sleep = hr = battery = None
+        for detail in (r.get("details") or []):
+            t = detail.get("type")
+            v = detail.get("value")
+            if t == 60 and v is not None:    hrv     = round(float(v))
+            elif t == 6 and v is not None:   sleep   = round(float(v), 1)
+            elif t == 5 and v is not None:   hr      = round(float(v))
+            elif t == 64 and isinstance(v, list) and len(v) >= 3:
+                battery = round(float(v[2])) if v[2] is not None else None
+
+        hrv_vals.append(hrv or 0)
+        sleep_vals.append(sleep or 0)
+        hr_vals.append(hr or 0)
+        battery_vals.append(battery or 0)
+
+    valid_hrv = [v for v in hrv_vals if v > 0]
+    baseline  = round(sum(valid_hrv) / len(valid_hrv)) if valid_hrv else 0
+
+    return {
+        "labels":       labels,
+        "vals":         hrv_vals,
+        "baseline":     baseline,
+        "sleep":        sleep_vals,
+        "resting_hr":   hr_vals,
+        "body_battery": battery_vals,
+    }
 
 # ── Alertas ───────────────────────────────────────────────────────────
 def build_alerts(kpis, hrv):
@@ -452,7 +524,7 @@ def build_db():
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
             raw_we = fetch_wellness(cfg["id"],  days=14)
 
-            sessions, vol, zones = process_workouts(raw_w, display_days=7)
+            sessions, planned, vol, zones = process_workouts(raw_w, display_days=7)
             total_vol = sum(vol.values())
             print(f"    processado: {len(sessions)} sessões (7d), vol={total_vol:.1f}h (7d)")
 
@@ -473,7 +545,8 @@ def build_db():
 
             print(f"    CTL={kpis['ctl']} ATL={kpis['atl']} TSB={kpis['tsb']} TSS={kpis['tss_week']}")
             db[key] = {"kpis":kpis,"kpi_delta":kpi_delta,"pmc":pmc,"zones":zones,
-                       "vol":vol,"hrv":hrv,"adherence":adherence,"alerts":alerts,"sessions":sessions}
+                       "vol":vol,"hrv":hrv,"adherence":adherence,"alerts":alerts,
+                       "sessions":sessions,"planned":planned}
 
         except Exception as e:
             print(f"    ERRO: {e} — usando protótipo")
