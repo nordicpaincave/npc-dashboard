@@ -325,18 +325,8 @@ def calc_pmc_from_workouts(raw_w):
     return history
 
 def _past_workouts_with_ctl(raw_w):
-    """Retorna workouts passados (≤ hoje) com CTL calculado pelo TP, ordenados por data."""
+    """Retorna workouts passados com CTL do TP. Retorna lista vazia se campo não existe."""
     today = datetime.utcnow().strftime("%Y-%m-%d")
-
-    # Debug: inspeciona campos do primeiro workout com tssActual > 0
-    completed_sample = [w for w in raw_w if float(w.get("tssActual") or 0) > 0]
-    if completed_sample:
-        w0 = sorted(completed_sample, key=lambda x: str(x.get("workoutDay","")))[-1]
-        ctl_related = {k: v for k, v in w0.items()
-                       if any(x in k.lower() for x in ["ctl","atl","tsb","fitness","fatigue","form"])}
-        print(f"    DEBUG campos PMC no último workout realizado: {ctl_related}")
-        print(f"    DEBUG workoutDay: {w0.get('workoutDay')}")
-
     return sorted(
         [w for w in raw_w
          if float(w.get("ctl") or 0) > 0
@@ -362,28 +352,46 @@ def build_pmc(raw_f, raw_w):
 def build_kpis(raw_f, raw_w):
     today    = datetime.utcnow().strftime("%Y-%m-%d")
     with_ctl = _past_workouts_with_ctl(raw_w)
-    print(f"    DEBUG: {len(with_ctl)} workouts com ctl>0 até {today}")
 
     if with_ctl:
+        # CTL/ATL/TSB direto do TP
         latest = with_ctl[-1]
         ctl    = round(float(latest.get("ctl") or 0))
         atl    = round(float(latest.get("atl") or 0))
         tsb    = round(float(latest.get("tsb") or 0))
-        print(f"    DEBUG último: {str(latest.get('workoutDay',''))[:10]} ctl_raw={latest.get('ctl')}")
+        print(f"    PMC via campo TP: CTL={ctl} ATL={atl} TSB={tsb}")
     else:
-        ctl, atl, tsb = 0, 0, 0
+        # Campo ctl não disponível via cookie — calcula por EMA
+        pmc_records = sorted(calc_pmc_from_workouts(raw_w),
+                             key=lambda x: x.get("date",""))
+        # Filtra apenas dias passados
+        past = [r for r in pmc_records if r.get("date","") <= today]
+        if past:
+            latest = past[-1]
+            ctl    = round(float(latest.get("ctl") or 0))
+            atl    = round(float(latest.get("atl") or 0))
+            tsb    = round(float(latest.get("tsb") or 0))
+            print(f"    PMC via EMA: CTL={ctl} ATL={atl} TSB={tsb}")
+        else:
+            ctl, atl, tsb = 0, 0, 0
 
+    # TSS semanal: só treinos realizados
     week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
     tss_week = round(sum(
         float(w.get("tssActual") or 0) for w in raw_w
         if today >= str(w.get("workoutDay",""))[:10] >= week_ago
         and float(w.get("tssActual") or 0) > 0
     ))
-    print(f"    PMC: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
+
+    print(f"    KPIs: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
     return {"ctl": ctl, "atl": atl, "tsb": tsb, "tss_week": tss_week}
 
 def build_deltas(raw_f, raw_w):
+    today     = datetime.utcnow().strftime("%Y-%m-%d")
     completed = _past_workouts_with_ctl(raw_w)
+    if not completed:
+        completed = [r for r in calc_pmc_from_workouts(raw_w)
+                     if r.get("date","") <= today]
     if len(completed) < 8:
         return {"ctl":"—","atl":"—","tsb":"—","tss_week":"—"}
     c, p = completed[-1], completed[-8]
