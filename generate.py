@@ -511,8 +511,16 @@ def build_alerts(kpis, hrv):
     return alerts
 
 def build_adherence(vol):
-    return [{"label":SPORT_LABEL[k],"done":v,"target":round(v*1.1,1),"color":SPORT_COLOR[k]}
-            for k, v in vol.items() if v > 0]
+    result = []
+    for k, color in [("swim","#4a9eff"),("bike","#f5a623"),("run","#4db87a"),("strength","#9b8fff")]:
+        done = vol.get(k, 0)
+        # Força sempre aparece — target estimado em 1.5h se não foi feito nada
+        if k == "strength":
+            target = max(round(done * 1.1, 1), 1.5) if done > 0 else 1.5
+            result.append({"label": SPORT_LABEL[k], "done": done, "target": target, "color": color})
+        elif done > 0:
+            result.append({"label": SPORT_LABEL[k], "done": done, "target": round(done * 1.1, 1), "color": color})
+    return result
 
 # ── Build DB ──────────────────────────────────────────────────────────
 def build_db():
