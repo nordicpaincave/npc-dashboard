@@ -190,8 +190,14 @@ def process_workouts(raw, display_days=14):
         sport = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
         if not sport:
             name = (w.get("athleteWorkoutTypeName") or w.get("title") or "").lower()
-            for k, kws in [("swim",["swim","pool"]),("bike",["bike","cycl","ride"]),
-                           ("run",["run","corr"]),("strength",["strength","weight","gym"])]:
+            for k, kws in [
+                ("swim",     ["swim","pool","natação","natacao","open water"]),
+                ("bike",     ["bike","cycl","ride","ciclismo","bicicleta","pedal","zwift"]),
+                ("run",      ["run","corr","trail","treadmill","atletismo"]),
+                ("strength", ["strength","weight","gym","força","forca","musculação",
+                              "musculacao","muscula","funcional","mobilidade","core",
+                              "unilateral","bilateral","hipertrofia","alfredson"]),
+            ]:
                 if any(kw in name for kw in kws):
                     sport = k; break
         if not sport:
@@ -302,6 +308,18 @@ def process_workouts(raw, display_days=14):
             continue
 
         sport_w = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
+        if not sport_w:
+            name_w = (w.get("athleteWorkoutTypeName") or w.get("title") or "").lower()
+            for k, kws in [
+                ("swim",     ["swim","pool","natação","natacao"]),
+                ("bike",     ["bike","cycl","ride","ciclismo","pedal"]),
+                ("run",      ["run","corr","trail"]),
+                ("strength", ["strength","weight","gym","força","forca","musculação",
+                              "musculacao","muscula","funcional","mobilidade","core",
+                              "unilateral","bilateral","alfredson"]),
+            ]:
+                if any(kw in name_w for kw in kws):
+                    sport_w = k; break
         if not sport_w:
             continue
 
