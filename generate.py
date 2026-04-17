@@ -315,9 +315,9 @@ def calc_pmc_from_workouts(raw_w):
     # Cap diário conservador
     for d in daily:
         daily[d] = min(daily[d], 500)
-    end = datetime.utcnow()
-    dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(179,-1,-1)]
-    ctl, atl = 0.0, 0.0  # começa em 0 — o histórico vai construir o valor correto
+    end   = datetime.utcnow()
+    dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(74, -1, -1)]
+    ctl, atl = 0.0, 0.0  # começa em 0 — histórico limpo constrói o valor
     kc, ka = 2/43, 2/8
     history = []
     for d in dates:
@@ -448,7 +448,7 @@ def build_db():
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
         try:
-            raw_w  = fetch_workouts(cfg["id"], days=180)  # 180 dias para EMA preciso
+            raw_w  = fetch_workouts(cfg["id"], days=75)   # desde ~01/fev — evita dados ruins anteriores
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
             raw_we = fetch_wellness(cfg["id"],  days=14)
 
