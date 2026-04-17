@@ -179,11 +179,16 @@ METRIC_TYPES = {
 }
 
 # ── Processamento de workouts ─────────────────────────────────────────
-def process_workouts(raw, display_days=14):
-    """Processa workouts. raw pode ter até 56 dias (para PMC);
-    display_days controla quantas sessões aparecem na tabela."""
+def process_workouts(raw, display_days=7):
+    """Processa workouts. raw pode ter até 75 dias (para PMC);
+    O volume e sessões exibidos são da semana calendário atual (seg a hoje)."""
     sessions, vol, zones_acc = [], {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}, {}
-    cutoff_display = (datetime.utcnow() - timedelta(days=display_days)).strftime("%Y-%m-%d")
+
+    # Semana calendário atual: de segunda-feira até hoje
+    today    = datetime.utcnow()
+    monday   = today - timedelta(days=today.weekday())
+    cutoff_display = monday.strftime("%Y-%m-%d")
+    print(f"    janela de exibição: {cutoff_display} → {today.strftime('%Y-%m-%d')}")
 
     for w in raw:
         # Sport pelo ID numérico
@@ -425,13 +430,18 @@ def build_kpis(raw_f, raw_w):
         else:
             ctl, atl, tsb = 0, 0, 0
 
-    # TSS semanal: só treinos realizados, últimos 7 dias
-    week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
+    # TSS semanal: semana calendário atual (segunda a hoje)
+    today_dt = datetime.utcnow()
+    monday   = (today_dt - timedelta(days=today_dt.weekday())).strftime("%Y-%m-%d")
     tss_week = round(sum(
-        float(w.get("tssActual") or 0) for w in raw_w
-        if today >= str(w.get("workoutDay",""))[:10] >= week_ago
-        and float(w.get("tssActual") or 0) > 0
-        and float(w.get("totalTime") or 0) > 0   # garante que foi executado
+        float(w.get("tssActual") or 0) +
+        float(w.get("hrTss") or w.get("hrTSS") or 0) +
+        float(w.get("sTss")  or w.get("sTSS")  or 0)
+        for w in raw_w
+        if today >= str(w.get("workoutDay",""))[:10] >= monday
+        and (float(w.get("tssActual") or 0) > 0 or
+             float(w.get("hrTss") or w.get("hrTSS") or 0) > 0 or
+             float(w.get("sTss")  or w.get("sTSS")  or 0) > 0)
     ))
 
     # Cap realista: CTL triatleta de base raramente passa de 150
