@@ -25,6 +25,7 @@ jobs:
 
       - name: Gerar dashboard com dados do TrainingPeaks
         env:
+          TP_BEARER: ${{ secrets.TP_BEARER }}
           TP_COOKIE: ${{ secrets.TP_COOKIE }}
         run: python generate.py
 
