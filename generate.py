@@ -305,14 +305,16 @@ def process_workouts(raw, display_days=14):
 def calc_pmc_from_workouts(raw_w):
     daily = {}
     for w in raw_w:
-        day = str(w.get("workoutDay",""))[:10]
-        tss_val = float(w.get("tssActual") or 0)
-        if tss_val > 0:  # só conta treinos realizados
-            daily[day] = daily.get(day, 0) + min(tss_val, 400)  # cap 400 TSS/sessão
+        day      = str(w.get("workoutDay",""))[:10]
+        tss_val  = float(w.get("tssActual") or 0)
+        has_time = float(w.get("totalTime") or 0) > 0
+        # Só conta treinos realmente executados (ambos os campos preenchidos)
+        if tss_val > 0 and has_time:
+            daily[day] = daily.get(day, 0) + min(tss_val, 300)  # cap 300/sessão
 
-    # Cap diário: máximo 600 TSS/dia (evita dados absurdos de importação)
+    # Cap diário conservador
     for d in daily:
-        daily[d] = min(daily[d], 600)
+        daily[d] = min(daily[d], 500)
     end = datetime.utcnow()
     dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(179,-1,-1)]
     ctl, atl = 0.0, 0.0  # começa em 0 — o histórico vai construir o valor correto
@@ -375,13 +377,18 @@ def build_kpis(raw_f, raw_w):
         else:
             ctl, atl, tsb = 0, 0, 0
 
-    # TSS semanal: só treinos realizados
+    # TSS semanal: só treinos realizados, últimos 7 dias
     week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
     tss_week = round(sum(
         float(w.get("tssActual") or 0) for w in raw_w
         if today >= str(w.get("workoutDay",""))[:10] >= week_ago
         and float(w.get("tssActual") or 0) > 0
+        and float(w.get("totalTime") or 0) > 0   # garante que foi executado
     ))
+
+    # Cap realista: CTL triatleta de base raramente passa de 150
+    ctl = min(ctl, 150)
+    atl = min(atl, 200)
 
     print(f"    KPIs: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
     return {"ctl": ctl, "atl": atl, "tsb": tsb, "tss_week": tss_week}
@@ -441,13 +448,13 @@ def build_db():
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
         try:
-            raw_w  = fetch_workouts(cfg["id"], days=180)  # 6 meses para CTL preciso
+            raw_w  = fetch_workouts(cfg["id"], days=180)  # 180 dias para EMA preciso
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
             raw_we = fetch_wellness(cfg["id"],  days=14)
 
-            sessions, vol, zones = process_workouts(raw_w, display_days=14)
+            sessions, vol, zones = process_workouts(raw_w, display_days=7)
             total_vol = sum(vol.values())
-            print(f"    processado: {len(sessions)} sessões (14d), vol={total_vol:.1f}h (14d)")
+            print(f"    processado: {len(sessions)} sessões (7d), vol={total_vol:.1f}h (7d)")
 
             # Fallback se não chegaram dados reais
             if len(sessions) < 1 and total_vol < 0.5:
