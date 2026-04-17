@@ -357,21 +357,27 @@ def build_pmc(raw_f, raw_w):
     return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
 
 def build_kpis(raw_f, raw_w):
+    # Diagnóstico
+    sample_ctl = [(str(w.get("workoutDay",""))[:10], w.get("ctl"), w.get("tssActual"))
+                  for w in sorted(raw_w, key=lambda x: str(x.get("workoutDay","")))[-5:]]
+    print(f"    DEBUG últimos 5 workouts (dia, ctl, tssActual): {sample_ctl}")
+
     # Pega apenas workouts com CTL calculado pelo TP (> 0)
     with_ctl = sorted(
         [w for w in raw_w if float(w.get("ctl") or 0) > 0],
         key=lambda x: str(x.get("workoutDay",""))
     )
+    print(f"    DEBUG workouts com ctl>0: {len(with_ctl)}")
 
     if with_ctl:
-        latest = with_ctl[-1]
-        ctl = round(float(latest.get("ctl") or 0))
-        atl = round(float(latest.get("atl") or 0))
-        tsb = round(float(latest.get("tsb") or 0))
+        latest   = with_ctl[-1]
+        ctl      = round(float(latest.get("ctl") or 0))
+        atl      = round(float(latest.get("atl") or 0))
+        tsb      = round(float(latest.get("tsb") or 0))
+        print(f"    DEBUG latest ctl raw = {latest.get('ctl')}")
     else:
         ctl, atl, tsb = 0, 0, 0
 
-    # TSS semanal: só treinos realizados (tssActual > 0)
     week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
     tss_week = round(sum(
         float(w.get("tssActual") or 0) for w in raw_w
@@ -379,7 +385,7 @@ def build_kpis(raw_f, raw_w):
         and float(w.get("tssActual") or 0) > 0
     ))
 
-    print(f"    PMC direto do TP: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
+    print(f"    PMC: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
     return {"ctl": ctl, "atl": atl, "tsb": tsb, "tss_week": tss_week}
 
 
