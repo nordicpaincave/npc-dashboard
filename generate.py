@@ -216,21 +216,23 @@ def process_workouts(raw, display_days=14):
             continue
 
         # ── Filtra apenas treinos REALIZADOS ──────────────────────────
-        # Planejados têm tssActual=null/0 mas totalTime>0 (tempo planejado)
-        # Realizados têm tssActual>0 (dado gravado pelo dispositivo)
-        tss_actual_raw = w.get("tssActual")
-        tss = round(float(tss_actual_raw or 0))
+        tss_actual = float(w.get("tssActual") or 0)
+        hr_tss     = float(w.get("hrTss")     or w.get("hrTSS") or 0)
+        s_tss      = float(w.get("sTss")      or w.get("sTSS")  or 0)
 
-        raw_time = float(w.get("totalTime") or 0)
+        # TSS real: usa tssActual, senão hrTSS, senão sTSS
+        tss = round(tss_actual or hr_tss or s_tss)
 
-        # Para força (sem potenciômetro/GPS): aceita se tem tempo real gravado
-        # Para outros esportes: exige tssActual > 0
+        # Força: sessionid tem totalTime > 0 no passado = foi executado
+        # (hrTSS é o TSS de força, tssActual fica 0)
+        today_str2 = datetime.utcnow().strftime("%Y-%m-%d")
         if sport == "strength":
-            if raw_time <= 0:
-                continue   # planejado sem execução
+            if raw_time <= 0 or workout_day > today_str2:
+                continue  # planejado ou sem tempo gravado
         else:
-            if tss <= 0:
-                continue   # planejado ou sem dado real
+            # Para outros esportes exige tssActual ou hrTSS > 0
+            if tss_actual <= 0 and hr_tss <= 0 and s_tss <= 0:
+                continue
 
         # Data
         workout_day = str(w.get("workoutDay",""))[:10]
@@ -303,17 +305,16 @@ def process_workouts(raw, display_days=14):
         if not sport_w:
             continue
 
-        # Só conta realizados: tssActual > 0 para esportes com GPS/potenciômetro
-        # Para força: aceita se tem totalTime E compliance > 0
-        tss_a = float(w.get("tssActual") or 0)
-        compliance = float(w.get("complianceDurationPercent") or 0)
+        tss_a      = float(w.get("tssActual") or 0)
+        hr_tss_w   = float(w.get("hrTss") or w.get("hrTSS") or 0)
+        s_tss_w    = float(w.get("sTss")  or w.get("sTSS")  or 0)
         raw_time_w = float(w.get("totalTime") or 0)
 
         if sport_w == "strength":
-            if raw_time_w <= 0 or (compliance == 0 and tss_a == 0):
+            if raw_time_w <= 0 or workout_day_w > datetime.utcnow().strftime("%Y-%m-%d"):
                 continue
         else:
-            if tss_a <= 0:
+            if tss_a <= 0 and hr_tss_w <= 0 and s_tss_w <= 0:
                 continue
 
         dur_h_w = raw_time_w
@@ -340,9 +341,10 @@ def calc_pmc_from_workouts(raw_w):
     daily = {}
     for w in raw_w:
         day      = str(w.get("workoutDay",""))[:10]
-        tss_val  = float(w.get("tssActual") or 0)
+        tss_val  = float(w.get("tssActual") or 0) or \
+                   float(w.get("hrTss") or w.get("hrTSS") or 0) or \
+                   float(w.get("sTss")  or w.get("sTSS")  or 0)
         has_time = float(w.get("totalTime") or 0) > 0
-        # Só conta treinos realmente executados (ambos os campos preenchidos)
         if tss_val > 0 and has_time:
             daily[day] = daily.get(day, 0) + min(tss_val, 300)  # cap 300/sessão
 
