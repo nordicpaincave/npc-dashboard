@@ -324,32 +324,25 @@ def calc_pmc_from_workouts(raw_w):
         history.append({"date":d,"ctl":ctl,"atl":atl,"tsb":ctl-atl,"tss":tss})
     return history
 
-def build_pmc(raw_f, raw_w):
-    # Usa CTL/ATL/TSB diretamente dos campos de cada workout
-    records = sorted(
-        [w for w in raw_w if float(w.get("ctl") or 0) > 0],
+def _past_workouts_with_ctl(raw_w):
+    """Retorna workouts passados (≤ hoje) com CTL calculado pelo TP, ordenados por data."""
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    return sorted(
+        [w for w in raw_w
+         if float(w.get("ctl") or 0) > 0
+         and str(w.get("workoutDay",""))[:10] <= today],
         key=lambda x: str(x.get("workoutDay",""))
     )
 
+def build_pmc(raw_f, raw_w):
+    records = _past_workouts_with_ctl(raw_w)
     if not records:
-        # Fallback para cálculo EMA se campos não existirem
-        records = calc_pmc_from_workouts(raw_w)
-        records = sorted(records, key=lambda x: x.get("date",""))
-        sample  = records[::max(1,len(records)//8)][-8:]
-        labels, ctl_l, atl_l, tsb_l = [], [], [], []
-        for r in sample:
-            try: labels.append(datetime.strptime(str(r["date"])[:10],"%Y-%m-%d").strftime("%d/%m"))
-            except: labels.append("?")
-            ctl_l.append(round(float(r.get("ctl") or 0)))
-            atl_l.append(round(float(r.get("atl") or 0)))
-            tsb_l.append(round(float(r.get("tsb") or 0)))
-        return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
-
-    # Amostra 8 pontos distribuídos
+        records = sorted(calc_pmc_from_workouts(raw_w), key=lambda x: x.get("date",""))
     sample = records[::max(1, len(records)//8)][-8:]
     labels, ctl_l, atl_l, tsb_l = [], [], [], []
     for r in sample:
-        try: labels.append(datetime.strptime(str(r.get("workoutDay",""))[:10],"%Y-%m-%d").strftime("%d/%m"))
+        day_key = r.get("workoutDay") or r.get("date","")
+        try: labels.append(datetime.strptime(str(day_key)[:10],"%Y-%m-%d").strftime("%d/%m"))
         except: labels.append("?")
         ctl_l.append(round(float(r.get("ctl") or 0)))
         atl_l.append(round(float(r.get("atl") or 0)))
@@ -357,43 +350,30 @@ def build_pmc(raw_f, raw_w):
     return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
 
 def build_kpis(raw_f, raw_w):
-    # Diagnóstico
-    sample_ctl = [(str(w.get("workoutDay",""))[:10], w.get("ctl"), w.get("tssActual"))
-                  for w in sorted(raw_w, key=lambda x: str(x.get("workoutDay","")))[-5:]]
-    print(f"    DEBUG últimos 5 workouts (dia, ctl, tssActual): {sample_ctl}")
-
-    # Pega apenas workouts com CTL calculado pelo TP (> 0)
-    with_ctl = sorted(
-        [w for w in raw_w if float(w.get("ctl") or 0) > 0],
-        key=lambda x: str(x.get("workoutDay",""))
-    )
-    print(f"    DEBUG workouts com ctl>0: {len(with_ctl)}")
+    today    = datetime.utcnow().strftime("%Y-%m-%d")
+    with_ctl = _past_workouts_with_ctl(raw_w)
+    print(f"    DEBUG: {len(with_ctl)} workouts com ctl>0 até {today}")
 
     if with_ctl:
-        latest   = with_ctl[-1]
-        ctl      = round(float(latest.get("ctl") or 0))
-        atl      = round(float(latest.get("atl") or 0))
-        tsb      = round(float(latest.get("tsb") or 0))
-        print(f"    DEBUG latest ctl raw = {latest.get('ctl')}")
+        latest = with_ctl[-1]
+        ctl    = round(float(latest.get("ctl") or 0))
+        atl    = round(float(latest.get("atl") or 0))
+        tsb    = round(float(latest.get("tsb") or 0))
+        print(f"    DEBUG último: {str(latest.get('workoutDay',''))[:10]} ctl_raw={latest.get('ctl')}")
     else:
         ctl, atl, tsb = 0, 0, 0
 
     week_ago = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d")
     tss_week = round(sum(
         float(w.get("tssActual") or 0) for w in raw_w
-        if str(w.get("workoutDay",""))[:10] >= week_ago
+        if today >= str(w.get("workoutDay",""))[:10] >= week_ago
         and float(w.get("tssActual") or 0) > 0
     ))
-
     print(f"    PMC: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
     return {"ctl": ctl, "atl": atl, "tsb": tsb, "tss_week": tss_week}
 
-
 def build_deltas(raw_f, raw_w):
-    completed = sorted(
-        [w for w in raw_w if float(w.get("ctl") or 0) > 0],
-        key=lambda x: str(x.get("workoutDay",""))
-    )
+    completed = _past_workouts_with_ctl(raw_w)
     if len(completed) < 8:
         return {"ctl":"—","atl":"—","tsb":"—","tss_week":"—"}
     c, p = completed[-1], completed[-8]
