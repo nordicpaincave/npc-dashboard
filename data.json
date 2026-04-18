@@ -1,1902 +1,3299 @@
 {
-  "last_updated": "2026-04-13 segunda 00:15",
+  "last_updated": "2026-04-18 Sábado 15:24",
   "is_real_data": true,
+  "source": "supabase",
   "weeks": [
     {
       "key": "w4",
-      "label": "Semana atual (13–19 Abr)"
+      "label": "3 semanas atrás (23–29 Mar)"
     },
     {
       "key": "w3",
-      "label": "Semana passada (6–12 Abr)"
+      "label": "2 semanas atrás (30–5 Abr)"
     },
     {
       "key": "w2",
-      "label": "2 semanas atrás (30 Mar–5 Abr)"
+      "label": "Semana passada (6–12 Abr)"
     },
     {
       "key": "w1",
-      "label": "3 semanas atrás (23–29 Mar)"
+      "label": "Semana atual (13–19 Abr)"
     }
   ],
   "athletes": {
     "jean": {
-      "name": "Jean Romano",
-      "kpis": {
-        "ctl": 52.2,
-        "atl": 111.2,
-        "tsb": -65.3,
-        "tss_week": 0
-      },
-      "kpi_delta": {
-        "ctl": "+11.6",
-        "atl": "+4.5",
-        "tsb": "-1.8",
-        "tss_week": "-808"
-      },
-      "pmc": {
-        "labels": [
-          "16/2",
-          "22/2",
-          "1/3",
-          "8/3",
-          "15/3",
-          "22/3",
-          "29/3",
-          "5/4"
-        ],
-        "ctl": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          10.9,
-          26.3,
-          40.6
-        ],
-        "atl": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          48.4,
-          87.3,
-          106.7
-        ],
-        "tsb": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          -39.3,
-          -67.1,
-          -63.5
-        ]
-      },
-      "zones": {
-        "labels": [
-          "Natação",
-          "Bike",
-          "Corrida"
-        ],
-        "z1": [
-          92,
-          78,
-          88
-        ],
-        "z2": [
-          7,
-          18,
-          10
-        ],
-        "z3": [
-          1,
-          4,
-          2
-        ]
-      },
-      "vol": {
-        "swim": 3.4,
-        "bike": 6.4,
-        "run": 3.7,
-        "strength": 2.9
-      },
-      "hrv": {
-        "labels": [
-          "30/3",
-          "31/3",
-          "1/4",
-          "2/4",
-          "3/4",
-          "4/4",
-          "5/4",
-          "6/4",
-          "7/4",
-          "8/4",
-          "9/4",
-          "10/4",
-          "11/4",
-          "12/4"
-        ],
-        "vals": [
-          65,
-          65,
-          65,
-          65,
-          65,
-          65,
-          65,
-          72,
-          73,
-          60,
-          63,
-          58,
-          66,
-          61
-        ],
-        "baseline": 64.9
-      },
-      "adherence": [
-        {
-          "label": "Natação",
-          "done": 3.4,
-          "target": 4.5,
-          "color": "#4a9eff"
+      "w1": {
+        "kpis": {
+          "ctl": 62.7,
+          "atl": 123.3,
+          "tsb": -60.6,
+          "tss_week": 784,
+          "delta_ctl": "+11",
+          "delta_atl": "+7",
+          "delta_tsb": "+4",
+          "delta_tss": "-21"
         },
-        {
-          "label": "Bike",
-          "done": 6.4,
-          "target": 6.0,
-          "color": "#f5a623"
+        "pmc": {
+          "labels": [
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4",
+            "13/4"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            10.9,
+            26.3,
+            40.6,
+            52.1,
+            62.7
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            48.4,
+            87.3,
+            106.7,
+            111.0,
+            123.3
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            -37.4,
+            -61.0,
+            -66.1,
+            -58.9,
+            -60.6
+          ]
         },
-        {
-          "label": "Corrida",
-          "done": 3.7,
-          "target": 2.6,
-          "color": "#4db87a"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "label": "Força",
-          "done": 2.9,
-          "target": 2.25,
-          "color": "#9b8fff"
-        }
-      ],
-      "alerts": [
-        {
-          "type": "warn",
-          "msg": "TSB −65.3 da semana passada — iniciar Sem 5 com volume controlado"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "type": "warn",
-          "msg": "HRV em queda na semana passada (73→61) — monitorar diariamente"
-        },
-        {
-          "type": "ok",
-          "msg": "Primeiro duplo limiar de corrida (2×10min Z2) prescrito para sexta"
-        },
-        {
-          "type": "info",
-          "msg": "Buenos Aires (70.3) em 25 semanas — CTL 52/120 · Sem 5 de 29"
-        }
-      ],
-      "sessions": [
-        {
-          "day": "Seg",
-          "sport": "swim",
-          "desc": "Natação — Aula",
-          "dur": "1h30",
-          "tss": 95,
-          "zones": "—",
-          "hrv": 61,
-          "ht": "nt"
-        },
-        {
-          "day": "Seg",
-          "sport": "strength",
-          "desc": "Musculação — Manguito + Cadeia Post.",
-          "dur": "45min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 61,
-          "ht": "nt"
-        },
-        {
-          "day": "Ter",
-          "sport": "strength",
-          "desc": "Musculação — Quad + Glúteos + Mobilidade",
-          "dur": "45min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Ter",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Base Aeróbia (1h30 MAX)",
-          "dur": "1h30",
-          "tss": 60,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qua",
-          "sport": "run",
-          "desc": "Corrida Z1 — Base Aeróbia (55min)",
-          "dur": "55min",
-          "tss": 40,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qua",
-          "sport": "swim",
-          "desc": "Natação — Aula",
-          "dur": "1h30",
-          "tss": 95,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qui",
-          "sport": "bike",
-          "desc": "Ciclismo Z1+Z2 — 4×8min LT1",
-          "dur": "1h28",
-          "tss": 80,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qui",
-          "sport": "strength",
-          "desc": "Musculação — Escapular + Funcional",
-          "dur": "45min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sex",
-          "sport": "run",
-          "desc": "Corrida Z1+Z2 — 2×10min LT1 ⭐ NOVO",
-          "dur": "50min",
-          "tss": 55,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sex",
-          "sport": "swim",
-          "desc": "Natação — Aula",
-          "dur": "1h30",
-          "tss": 95,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sáb",
-          "sport": "bike",
-          "desc": "Ciclismo Longo Z1 — 3h Grupo NPC ⭐",
-          "dur": "3h00",
-          "tss": 135,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Dom",
-          "sport": "run",
-          "desc": "Corrida Longa Z1 — 100min Grupo NPC",
-          "dur": "1h40",
-          "tss": 77,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        }
-      ],
-      "plan": {
-        "goal": {
-          "name": "70.3 Buenos Aires",
-          "date": "2026-10-04",
-          "distance": "70.3 km",
-          "location": "Buenos Aires, Argentina",
-          "priority": "A",
-          "target": "Top 5 M40-44",
-          "type": "Triatleta"
-        },
-        "phases": [
+        "adherence": [],
+        "sessions": [
           {
-            "name": "Base Aeróbia",
-            "start": "2026-03-16",
-            "end": "2026-05-10"
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Natação — Aula (Sem. 5)",
+            "dur": "—",
+            "tss": 87,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Construção",
-            "start": "2026-05-11",
-            "end": "2026-07-05"
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 5)",
+            "dur": "—",
+            "tss": 37,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Específico",
-            "start": "2026-07-06",
-            "end": "2026-08-23"
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Musculação — Quad + Glúteos + Mobilidade (Sem. 5)",
+            "dur": "—",
+            "tss": 46,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Taper",
-            "start": "2026-08-24",
-            "end": "2026-09-20"
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Base Aeróbia (Sem. 5)",
+            "dur": "—",
+            "tss": 86,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Pré-Prova",
-            "start": "2026-09-21",
-            "end": "2026-10-04"
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Base Aeróbia (Sem. 5)",
+            "dur": "—",
+            "tss": 49,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "run",
+            "desc": "Natação — Aula (Sem. 5)",
+            "dur": "—",
+            "tss": 79,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Ciclismo Z1+Z2 — 4×8min LT1 (Sem. 5)",
+            "dur": "—",
+            "tss": 87,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Musculação — Escapular + Funcional + Flexibilidade (Sem. 5)",
+            "dur": "—",
+            "tss": 36,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Corrida Z1+Z2 — 2×10min LT1 — NOVO (Sem. 5)",
+            "dur": "—",
+            "tss": 43,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Natação — Aula (Sem. 5)",
+            "dur": "—",
+            "tss": 103,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Longo Z1 — 3h Grupo NPC ⭐ (Sem. 5)",
+            "dur": "—",
+            "tss": 129,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           }
         ],
-        "weeks": {
-          "2026-03-16": {
-            "label": "Semana 1 (16–22 Mar)",
-            "phase": "Base Aeróbia",
-            "tss_target": 400,
-            "ctl_target": 20,
-            "focus": "Estabelecer base aeróbia Z1 nas três modalidades. Zonas recém-calibradas.",
-            "key_sessions": [
-              "Bike Z1 longo sábado",
-              "Corrida Z1 longa domingo",
-              "Natação técnica"
-            ],
-            "is_discharge": false,
-            "days": {}
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -61, recuperação prioritária"
           },
-          "2026-03-23": {
-            "label": "Semana 2 (23–29 Mar)",
-            "phase": "Base Aeróbia",
-            "tss_target": 550,
-            "ctl_target": 30,
-            "focus": "Aumentar volume Z1. Primeiro bloco Z1+Z2 bike (3×8min).",
-            "key_sessions": [
-              "Bike Z1+Z2 3×8min",
-              "Corrida longa 80min",
-              "3× musculação"
-            ],
-            "is_discharge": false,
-            "days": {}
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
           },
-          "2026-03-30": {
-            "label": "Semana 3 (30 Mar–5 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 620,
-            "ctl_target": 41,
-            "focus": "Consolidar base aeróbia. Manter ramp rate ≤10pts/sem.",
-            "key_sessions": [
-              "Bike longo 3h grupo NPC",
-              "Corrida longa 90min",
-              "Bike Z1+Z2 3×8min"
-            ],
-            "is_discharge": false,
-            "days": {}
-          },
-          "2026-04-06": {
-            "label": "Semana 4 (6–12 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 750,
-            "ctl_target": 52,
-            "focus": "Primeira semana com zonas recalibradas (ergoespirometria ICE 06/04). Primeiro duplo limiar bike.",
-            "key_sessions": [
-              "Bike Z1+Z2 3×8min LT1",
-              "Bike longo 3h grupo NPC",
-              "Corrida longa 100min grupo"
-            ],
-            "is_discharge": false,
-            "days": {
-              "2026-04-06": [
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula",
-                  "tss": 95,
-                  "dur_h": 1.5,
-                  "completed": true
-                }
-              ],
-              "2026-04-07": [
-                {
-                  "sport": "strength",
-                  "title": "Musculação — Manguito + Core",
-                  "tss": 30,
-                  "dur_h": 0.75,
-                  "completed": true
-                },
-                {
-                  "sport": "strength",
-                  "title": "Musculação — Quad + Glúteos",
-                  "tss": 32,
-                  "dur_h": 0.75,
-                  "completed": true
-                },
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Base Aeróbia",
-                  "tss": 60,
-                  "dur_h": 2.15,
-                  "completed": true
-                }
-              ],
-              "2026-04-08": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Base Aeróbia",
-                  "tss": 44,
-                  "dur_h": 0.93,
-                  "completed": true
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula",
-                  "tss": 92,
-                  "dur_h": 1.5,
-                  "completed": true
-                }
-              ],
-              "2026-04-09": [
-                {
-                  "sport": "strength",
-                  "title": "Musculação — Escapular + Core",
-                  "tss": 29,
-                  "dur_h": 0.75,
-                  "completed": true
-                },
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1+Z2 — 3×8min LT1",
-                  "tss": 78,
-                  "dur_h": 1.46,
-                  "completed": true
-                }
-              ],
-              "2026-04-10": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Base Aeróbia",
-                  "tss": 36,
-                  "dur_h": 0.95,
-                  "completed": true
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula",
-                  "tss": 91,
-                  "dur_h": 1.5,
-                  "completed": true
-                }
-              ],
-              "2026-04-11": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Longo Z1 — 3h Grupo NPC",
-                  "tss": 134,
-                  "dur_h": 2.84,
-                  "completed": true
-                }
-              ],
-              "2026-04-12": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Longa Z1 — 100min Grupo NPC",
-                  "tss": 77,
-                  "dur_h": 1.67,
-                  "completed": true
-                }
-              ]
-            }
-          },
-          "2026-04-13": {
-            "label": "Semana 5 (13–19 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 732,
-            "ctl_target": 62,
-            "focus": "Introdução do primeiro duplo limiar em corrida (2×10min Z2). Progressão bike para 4×8min. Natação via aula do professor.",
-            "key_sessions": [
-              "Bike Z1+Z2 4×8min LT1 (qui)",
-              "Corrida Z1+Z2 2×10min LT1 — NOVO (sex)",
-              "Bike longo 3h grupo NPC (sáb)",
-              "Corrida longa 100min grupo (dom)"
-            ],
-            "is_discharge": false,
-            "days": {
-              "2026-04-13": [
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula",
-                  "tss": 95,
-                  "dur_h": 1.5,
-                  "completed": false
-                },
-                {
-                  "sport": "strength",
-                  "title": "Musculação — Manguito + Core",
-                  "tss": 30,
-                  "dur_h": 0.75,
-                  "completed": false
-                }
-              ],
-              "2026-04-14": [
-                {
-                  "sport": "strength",
-                  "title": "Musculação — Quad + Glúteos",
-                  "tss": 30,
-                  "dur_h": 0.75,
-                  "completed": false
-                },
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Base Aeróbia",
-                  "tss": 60,
-                  "dur_h": 1.5,
-                  "completed": false
-                }
-              ],
-              "2026-04-15": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Base Aeróbia (55min)",
-                  "tss": 40,
-                  "dur_h": 0.92,
-                  "completed": false
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula",
-                  "tss": 95,
-                  "dur_h": 1.5,
-                  "completed": false
-                }
-              ],
-              "2026-04-16": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1+Z2 — 4×8min LT1",
-                  "tss": 80,
-                  "dur_h": 1.47,
-                  "completed": false
-                },
-                {
-                  "sport": "strength",
-                  "title": "Musculação — Escapular + Funcional",
-                  "tss": 30,
-                  "dur_h": 0.75,
-                  "completed": false
-                }
-              ],
-              "2026-04-17": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1+Z2 — 2×10min LT1 — NOVO ⭐",
-                  "tss": 55,
-                  "dur_h": 0.83,
-                  "completed": false
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula",
-                  "tss": 95,
-                  "dur_h": 1.5,
-                  "completed": false
-                }
-              ],
-              "2026-04-18": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Longo Z1 — 3h Grupo NPC ⭐",
-                  "tss": 135,
-                  "dur_h": 3.0,
-                  "completed": false
-                }
-              ],
-              "2026-04-19": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Longa Z1 — 100min Grupo NPC",
-                  "tss": 77,
-                  "dur_h": 1.67,
-                  "completed": false
-                }
-              ]
-            }
-          },
-          "2026-04-20": {
-            "label": "Semana 6 (20–26 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 780,
-            "ctl_target": 70,
-            "focus": "Consolidar duplo limiar corrida. Progressão para 3×10min Z2 corrida se Sem 5 bem tolerada.",
-            "key_sessions": [
-              "Corrida Z1+Z2 3×10min (sex)",
-              "Bike Z1+Z2 4×8min (qui)",
-              "Bike longo 3h (sáb)"
-            ],
-            "is_discharge": false,
-            "days": {}
-          },
-          "2026-04-27": {
-            "label": "Semana 7 (27 Abr–3 Mai)",
-            "phase": "Base Aeróbia",
-            "tss_target": 430,
-            "ctl_target": 72,
-            "focus": "Semana de descarga — absorção do estímulo acumulado nas últimas 4 semanas.",
-            "key_sessions": [
-              "Volume reduzido ~50%",
-              "Manter frequência de sessões",
-              "Sessões de qualidade apenas se HRV ok"
-            ],
-            "is_discharge": true,
-            "days": {}
-          },
-          "2026-05-04": {
-            "label": "Semana 8 (4–10 Mai)",
-            "phase": "Base Aeróbia",
-            "tss_target": 820,
-            "ctl_target": 78,
-            "focus": "Retomada com volume maior. Introdução do duplo limiar completo (Z2 manhã + Z3 tarde).",
-            "key_sessions": [
-              "Duplo limiar completo 1× bike",
-              "Corrida Z2 consolidada 3×10min",
-              "Bike longo 3h30"
-            ],
-            "is_discharge": false,
-            "days": {}
-          },
-          "2026-05-11": {
-            "label": "Semana 9 (11–17 Mai)",
-            "phase": "Construção",
-            "tss_target": 860,
-            "ctl_target": 84,
-            "focus": "Início da fase de Construção. Aumento de volume nos blocos de qualidade.",
-            "key_sessions": [
-              "Duplo limiar bike 2×/semana",
-              "Corrida Z2+Z3 combinada",
-              "Volume natação aumentado"
-            ],
-            "is_discharge": false,
-            "days": {}
+          {
+            "type": "warn",
+            "message": "ATL elevada (123) vs CTL (63) — monitorar recuperação"
           }
-        }
+        ]
       },
-      "sessions_w3": [
-        {
-          "day": "Seg",
-          "sport": "swim",
-          "desc": "Natação — Aula",
-          "dur": "1h07",
-          "tss": 95,
-          "zones": "92/7/1",
-          "hrv": 72,
-          "ht": "up"
+      "w2": {
+        "kpis": {
+          "ctl": 52.1,
+          "atl": 111.0,
+          "tsb": -58.9,
+          "tss_week": 805,
+          "delta_ctl": "+12",
+          "delta_atl": "+4",
+          "delta_tsb": "+7",
+          "delta_tss": "+805"
         },
-        {
-          "day": "Seg",
-          "sport": "run",
-          "desc": "Treadmill (extra)",
-          "dur": "10min",
-          "tss": 10,
-          "zones": "—",
-          "hrv": 72,
-          "ht": "nt"
+        "pmc": {
+          "labels": [
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            10.9,
+            26.3,
+            40.6,
+            52.1
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            48.4,
+            87.3,
+            106.7,
+            111.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -37.4,
+            -61.0,
+            -66.1,
+            -58.9
+          ]
         },
-        {
-          "day": "Ter",
-          "sport": "strength",
-          "desc": "Musculação — Manguito + Core",
-          "dur": "56min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 73,
-          "ht": "up"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Ter",
-          "sport": "strength",
-          "desc": "Musculação — Quad + Glúteos",
-          "dur": "1h02",
-          "tss": 32,
-          "zones": "—",
-          "hrv": 73,
-          "ht": "nt"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Ter",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Base Aeróbia",
-          "dur": "2h09",
-          "tss": 60,
-          "zones": "85/13/2",
-          "hrv": 73,
-          "ht": "nt"
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "swim",
+            "desc": "Treadmill Running",
+            "dur": "—",
+            "tss": 7,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Natação Z1 — Técnica (Sem. 2)",
+            "dur": "—",
+            "tss": 95,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Musculação — Quad + Glúteos + Mobilidade",
+            "dur": "—",
+            "tss": 32,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Musculação — Manguito + Cadeia Post. + Core",
+            "dur": "—",
+            "tss": 30,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Base Aeróbia",
+            "dur": "—",
+            "tss": 60,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Base Aeróbia",
+            "dur": "—",
+            "tss": 44,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "run",
+            "desc": "Natação Z1 — Técnica (Sem. 2)",
+            "dur": "—",
+            "tss": 92,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Musculação — Escapular + Funcional + Flexibilidade",
+            "dur": "—",
+            "tss": 29,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Ciclismo Z1+Z2 — 3×8min LT1 (Trainer)",
+            "dur": "—",
+            "tss": 78,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Base Aeróbia",
+            "dur": "—",
+            "tss": 36,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Natação Z1 — Técnica (Sem. 2)",
+            "dur": "—",
+            "tss": 91,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Longo Z1 — 3h Grupo NPC ⭐",
+            "dur": "—",
+            "tss": 134,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Corrida Longa Z1 — 100min Grupo NPC",
+            "dur": "—",
+            "tss": 77,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -59, recuperação prioritária"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          },
+          {
+            "type": "warn",
+            "message": "ATL elevada (111) vs CTL (52) — monitorar recuperação"
+          }
+        ]
+      },
+      "w3": {
+        "kpis": {
+          "ctl": 40.6,
+          "atl": 106.7,
+          "tsb": -66.1,
+          "tss_week": 833,
+          "delta_ctl": "+14",
+          "delta_atl": "+19",
+          "delta_tsb": "-5",
+          "delta_tss": "+833"
         },
-        {
-          "day": "Qua",
-          "sport": "run",
-          "desc": "Corrida Z1 — Base Aeróbia",
-          "dur": "55min",
-          "tss": 44,
-          "zones": "88/10/2",
-          "hrv": 60,
-          "ht": "dn"
+        "pmc": {
+          "labels": [
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            10.9,
+            26.3,
+            40.6
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            48.4,
+            87.3,
+            106.7
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -37.4,
+            -61.0,
+            -66.1
+          ]
         },
-        {
-          "day": "Qua",
-          "sport": "swim",
-          "desc": "Natação — Aula",
-          "dur": "1h08",
-          "tss": 92,
-          "zones": "92/7/1",
-          "hrv": 60,
-          "ht": "nt"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Qui",
-          "sport": "strength",
-          "desc": "Musculação — Escapular + Core",
-          "dur": "54min",
-          "tss": 29,
-          "zones": "—",
-          "hrv": 63,
-          "ht": "nt"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Qui",
-          "sport": "bike",
-          "desc": "Ciclismo Z1+Z2 — 3×8min LT1",
-          "dur": "1h28",
-          "tss": 78,
-          "zones": "72/23/5",
-          "hrv": 63,
-          "ht": "nt"
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 110,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 49,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 74,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 39,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "treino leve",
+            "dur": "—",
+            "tss": 30,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 90,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "3x 8m Z2",
+            "dur": "—",
+            "tss": 70,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 34,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 102,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 19,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
+            "dur": "—",
+            "tss": 81,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 136,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -66, recuperação prioritária"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          },
+          {
+            "type": "warn",
+            "message": "ATL elevada (107) vs CTL (41) — monitorar recuperação"
+          }
+        ]
+      },
+      "w4": {
+        "kpis": {
+          "ctl": 26.3,
+          "atl": 87.3,
+          "tsb": -61.0,
+          "tss_week": 772,
+          "delta_ctl": "+15",
+          "delta_atl": "+39",
+          "delta_tsb": "-24",
+          "delta_tss": "+772"
         },
-        {
-          "day": "Sex",
-          "sport": "run",
-          "desc": "Corrida Z1 — Base Aeróbia",
-          "dur": "57min",
-          "tss": 36,
-          "zones": "88/10/2",
-          "hrv": 58,
-          "ht": "dn"
+        "pmc": {
+          "labels": [
+            "2/2",
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            10.9,
+            26.3
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            48.4,
+            87.3
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -37.4,
+            -61.0
+          ]
         },
-        {
-          "day": "Sex",
-          "sport": "swim",
-          "desc": "Natação — Aula",
-          "dur": "1h09",
-          "tss": 91,
-          "zones": "92/7/1",
-          "hrv": 58,
-          "ht": "nt"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Sáb",
-          "sport": "bike",
-          "desc": "Ciclismo Longo Z1 — 3h Grupo NPC",
-          "dur": "2h51",
-          "tss": 134,
-          "zones": "80/17/3",
-          "hrv": 66,
-          "ht": "up"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Dom",
-          "sport": "run",
-          "desc": "Corrida Longa Z1 — 100min Grupo",
-          "dur": "1h40",
-          "tss": 77,
-          "zones": "88/10/2",
-          "hrv": 61,
-          "ht": "dn"
-        }
-      ]
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 94,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 43,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 49,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 38,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 58,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 67,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 69,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 41,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 18,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 78,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 162,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 55,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -61, recuperação prioritária"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          },
+          {
+            "type": "warn",
+            "message": "ATL elevada (87) vs CTL (26) — monitorar recuperação"
+          }
+        ]
+      }
     },
     "bruno": {
-      "name": "Bruno Trevisan",
-      "kpis": {
-        "ctl": 41.6,
-        "atl": 85.0,
-        "tsb": -48.4,
-        "tss_week": 0
-      },
-      "kpi_delta": {
-        "ctl": "+9.7",
-        "atl": "+8.0",
-        "tsb": "1.8",
-        "tss_week": "-670"
-      },
-      "pmc": {
-        "labels": [
-          "16/2",
-          "22/2",
-          "1/3",
-          "8/3",
-          "15/3",
-          "22/3",
-          "29/3",
-          "5/4"
-        ],
-        "ctl": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          7.5,
-          22.5,
-          31.9
-        ],
-        "atl": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          34.1,
-          74.7,
-          77.0
-        ],
-        "tsb": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          -24.9,
-          -63.7,
-          -50.2
-        ]
-      },
-      "zones": {
-        "labels": [
-          "Natação",
-          "Bike",
-          "Corrida"
-        ],
-        "z1": [
-          93,
-          85,
-          90
-        ],
-        "z2": [
-          6,
-          12,
-          9
-        ],
-        "z3": [
-          1,
-          3,
-          1
-        ]
-      },
-      "vol": {
-        "swim": 3.1,
-        "bike": 4.4,
-        "run": 2.2,
-        "strength": 3.6
-      },
-      "hrv": {
-        "labels": [
-          "30/3",
-          "31/3",
-          "1/4",
-          "2/4",
-          "3/4",
-          "4/4",
-          "5/4",
-          "6/4",
-          "7/4",
-          "8/4",
-          "9/4",
-          "10/4",
-          "11/4",
-          "12/4"
-        ],
-        "vals": [
-          55,
-          55,
-          55,
-          55,
-          55,
-          55,
-          55,
-          46.9,
-          62.5,
-          79.8,
-          37.9,
-          60.1,
-          48.2,
-          44.9
-        ],
-        "baseline": 54.7
-      },
-      "adherence": [
-        {
-          "label": "Natação",
-          "done": 3.1,
-          "target": 4.0,
-          "color": "#4a9eff"
+      "w1": {
+        "kpis": {
+          "ctl": 50.1,
+          "atl": 95.2,
+          "tsb": -45.2,
+          "tss_week": 628,
+          "delta_ctl": "+9",
+          "delta_atl": "+6",
+          "delta_tsb": "+3",
+          "delta_tss": "-43"
         },
-        {
-          "label": "Bike",
-          "done": 4.4,
-          "target": 3.5,
-          "color": "#f5a623"
+        "pmc": {
+          "labels": [
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4",
+            "13/4"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            7.5,
+            22.5,
+            31.9,
+            41.6,
+            50.1
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            34.1,
+            74.7,
+            77.0,
+            85.0,
+            95.2
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            -26.6,
+            -52.2,
+            -45.1,
+            -43.4,
+            -45.2
+          ]
         },
-        {
-          "label": "Corrida",
-          "done": 2.2,
-          "target": 1.75,
-          "color": "#4db87a"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "label": "Força",
-          "done": 3.6,
-          "target": 4.5,
-          "color": "#9b8fff"
-        }
-      ],
-      "alerts": [
-        {
-          "type": "warn",
-          "msg": "TSB −48.4 da semana passada — manter volume controlado esta semana"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "type": "ok",
-          "msg": "Joelho estável — dor máx 2/10. Manter Alfredson obrigatório"
-        },
-        {
-          "type": "ok",
-          "msg": "Início do bloco unilateral de força com profissional (8–10 semanas)"
-        },
-        {
-          "type": "warn",
-          "msg": "Bike sábado: ALARME 1h25 / SAÍDA 1h30 — não repetir semana passada"
-        },
-        {
-          "type": "info",
-          "msg": "Buenos Aires (70.3) em 25 semanas — CTL 41/102 · Sem 5 de 29"
-        }
-      ],
-      "sessions": [
-        {
-          "day": "Seg",
-          "sport": "strength",
-          "desc": "Força — Unilaterais Sessão 1",
-          "dur": "1h15",
-          "tss": 50,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Seg",
-          "sport": "swim",
-          "desc": "Natação — Aula 12h",
-          "dur": "1h00",
-          "tss": 60,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Ter",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Base Aeróbia Solo",
-          "dur": "1h10",
-          "tss": 70,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Ter",
-          "sport": "swim",
-          "desc": "Natação — Aula 12h",
-          "dur": "1h00",
-          "tss": 60,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qua",
-          "sport": "run",
-          "desc": "Corrida Z1 — Leve + Alfredson",
-          "dur": "35min",
-          "tss": 32,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qua",
-          "sport": "strength",
-          "desc": "Força — Unilaterais Sessão 2",
-          "dur": "1h15",
-          "tss": 50,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qui",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Base Aeróbia Solo",
-          "dur": "1h10",
-          "tss": 68,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Qui",
-          "sport": "swim",
-          "desc": "Natação — Aula 12h",
-          "dur": "1h00",
-          "tss": 60,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sex",
-          "sport": "run",
-          "desc": "Corrida Z1 — Leve + Alfredson",
-          "dur": "35min",
-          "tss": 33,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sex",
-          "sport": "strength",
-          "desc": "Força — Unilaterais Sessão 3",
-          "dur": "1h15",
-          "tss": 50,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sex",
-          "sport": "swim",
-          "desc": "Natação — Aula 12h",
-          "dur": "1h00",
-          "tss": 60,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Sáb",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Grupo NPC ⏱️ 90min MAX",
-          "dur": "1h30",
-          "tss": 55,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        },
-        {
-          "day": "Dom",
-          "sport": "run",
-          "desc": "Corrida Z1 — Longa 55min",
-          "dur": "55min",
-          "tss": 58,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        }
-      ],
-      "plan": {
-        "goal": {
-          "name": "70.3 Buenos Aires",
-          "date": "2026-10-04",
-          "distance": "70.3 km",
-          "location": "Buenos Aires, Argentina",
-          "priority": "A",
-          "target": "Top 5 M40-44",
-          "type": "Triatleta"
-        },
-        "phases": [
+        "adherence": [],
+        "sessions": [
           {
-            "name": "Base Aeróbia",
-            "start": "2026-03-16",
-            "end": "2026-05-10"
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Força — Unilaterais Sessão 1 (Sem. 5)",
+            "dur": "—",
+            "tss": 61,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Construção",
-            "start": "2026-05-11",
-            "end": "2026-07-05"
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Natação — Aula 12h (Sem. 5)",
+            "dur": "—",
+            "tss": 72,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Específico",
-            "start": "2026-07-06",
-            "end": "2026-08-23"
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 5)",
+            "dur": "—",
+            "tss": 53,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Taper",
-            "start": "2026-08-24",
-            "end": "2026-09-20"
+            "day": "Ter",
+            "sport": "run",
+            "desc": "Natação — Aula 12h (Sem. 5)",
+            "dur": "—",
+            "tss": 64,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           },
           {
-            "name": "Pré-Prova",
-            "start": "2026-09-21",
-            "end": "2026-10-04"
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Leve + Alfredson (Sem. 5)",
+            "dur": "—",
+            "tss": 32,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Força — Unilaterais Sessão 2 (Sem. 5)",
+            "dur": "—",
+            "tss": 26,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 5)",
+            "dur": "—",
+            "tss": 51,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "run",
+            "desc": "Natação — Aula 12h (Sem. 5)",
+            "dur": "—",
+            "tss": 73,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "bike",
+            "desc": "Força — Unilaterais Sessão 3 (Sem. 5)",
+            "dur": "—",
+            "tss": 33,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Natação — Aula 12h (Sem. 5)",
+            "dur": "—",
+            "tss": 57,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Leve + Alfredson (Sem. 5)",
+            "dur": "—",
+            "tss": 32,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Grupo NPC ⏱️ 90min MAX (Sem. 5)",
+            "dur": "—",
+            "tss": 74,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
           }
         ],
-        "weeks": {
-          "2026-03-16": {
-            "label": "Semana 1 (16–22 Mar)",
-            "phase": "Base Aeróbia",
-            "tss_target": 300,
-            "ctl_target": 15,
-            "focus": "Início do programa. Base aeróbia Z1. Joelho direito — protocolo Alfredson ativo.",
-            "key_sessions": [
-              "Corrida Z1 curta 3×/sem",
-              "Bike Z1 solo",
-              "Força Fase 1 início"
-            ],
-            "is_discharge": false,
-            "days": {}
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -45, recuperação prioritária"
           },
-          "2026-03-23": {
-            "label": "Semana 2 (23–29 Mar)",
-            "phase": "Base Aeróbia",
-            "tss_target": 420,
-            "ctl_target": 23,
-            "focus": "Aumentar volume natação e bike. Manter corrida curta — joelho em monitoramento.",
-            "key_sessions": [
-              "Bike Z1 solo 2×",
-              "Corrida Z1 leve 35min",
-              "4× natação Z1"
-            ],
-            "is_discharge": false,
-            "days": {}
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
           },
-          "2026-03-30": {
-            "label": "Semana 3 (30 Mar–5 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 500,
-            "ctl_target": 32,
-            "focus": "Consolidar base. Força Fase 1 em andamento. Monitorar joelho.",
-            "key_sessions": [
-              "Bike longo grupo NPC 90min",
-              "Corrida Z1 longa 55min",
-              "Força 3× Fase 1"
-            ],
-            "is_discharge": false,
-            "days": {}
-          },
-          "2026-04-06": {
-            "label": "Semana 4 (6–12 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 613,
-            "ctl_target": 41,
-            "focus": "Zonas recalibradas (ergoespirometria ICE 06/04). Força Fase 1 — baseline estabelecido.",
-            "key_sessions": [
-              "Bike grupo NPC 90min MAX",
-              "Corrida Z1 longa 55min",
-              "Força 3× Fase 1"
-            ],
-            "is_discharge": false,
-            "days": {
-              "2026-04-06": [
-                {
-                  "sport": "strength",
-                  "title": "Força — Sessão 1 · Fase 1",
-                  "tss": 39,
-                  "dur_h": 1.28,
-                  "completed": true
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação Z1 — Técnica",
-                  "tss": 69,
-                  "dur_h": 0.86,
-                  "completed": true
-                }
-              ],
-              "2026-04-07": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Base Solo",
-                  "tss": 72,
-                  "dur_h": 1.45,
-                  "completed": true
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação Z1 — Volume",
-                  "tss": 74,
-                  "dur_h": 0.84,
-                  "completed": true
-                }
-              ],
-              "2026-04-08": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Leve",
-                  "tss": 31,
-                  "dur_h": 0.59,
-                  "completed": true
-                },
-                {
-                  "sport": "strength",
-                  "title": "Força — Sessão 2 · Fase 1",
-                  "tss": 36,
-                  "dur_h": 1.15,
-                  "completed": true
-                }
-              ],
-              "2026-04-09": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Base Solo",
-                  "tss": 66,
-                  "dur_h": 1.34,
-                  "completed": true
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação Z1 — Técnica",
-                  "tss": 60,
-                  "dur_h": 0.77,
-                  "completed": true
-                }
-              ],
-              "2026-04-10": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Leve",
-                  "tss": 33,
-                  "dur_h": 0.59,
-                  "completed": true
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação Z1 — Volume (parcial)",
-                  "tss": 42,
-                  "dur_h": 0.6,
-                  "completed": true
-                },
-                {
-                  "sport": "strength",
-                  "title": "Força — Sessão 3 · Fase 1",
-                  "tss": 37,
-                  "dur_h": 1.19,
-                  "completed": true
-                }
-              ],
-              "2026-04-11": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Grupo NPC (1h39)",
-                  "tss": 54,
-                  "dur_h": 1.65,
-                  "completed": true
-                }
-              ],
-              "2026-04-12": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Longa 55min",
-                  "tss": 57,
-                  "dur_h": 1.05,
-                  "completed": true
-                }
-              ]
-            }
-          },
-          "2026-04-13": {
-            "label": "Semana 5 (13–19 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 606,
-            "ctl_target": 50,
-            "focus": "Início do bloco unilateral de força (8–10 semanas). Natação via aula 12h. Alarme 90min no bike de sábado.",
-            "key_sessions": [
-              "Força unilateral 3×/sem (seg/qua/sex)",
-              "Bike longo grupo NPC 90min MAX (sáb)",
-              "Corrida Z1 longa 55min (dom)"
-            ],
-            "is_discharge": false,
-            "days": {
-              "2026-04-13": [
-                {
-                  "sport": "strength",
-                  "title": "Força — Unilaterais Sessão 1",
-                  "tss": 50,
-                  "dur_h": 1.25,
-                  "completed": false
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula 12h",
-                  "tss": 60,
-                  "dur_h": 1.0,
-                  "completed": false
-                }
-              ],
-              "2026-04-14": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Base Aeróbia Solo",
-                  "tss": 70,
-                  "dur_h": 1.17,
-                  "completed": false
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula 12h",
-                  "tss": 60,
-                  "dur_h": 1.0,
-                  "completed": false
-                }
-              ],
-              "2026-04-15": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Leve + Alfredson",
-                  "tss": 32,
-                  "dur_h": 0.58,
-                  "completed": false
-                },
-                {
-                  "sport": "strength",
-                  "title": "Força — Unilaterais Sessão 2",
-                  "tss": 50,
-                  "dur_h": 1.25,
-                  "completed": false
-                }
-              ],
-              "2026-04-16": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Base Aeróbia Solo",
-                  "tss": 68,
-                  "dur_h": 1.17,
-                  "completed": false
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula 12h",
-                  "tss": 60,
-                  "dur_h": 1.0,
-                  "completed": false
-                }
-              ],
-              "2026-04-17": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Leve + Alfredson",
-                  "tss": 33,
-                  "dur_h": 0.58,
-                  "completed": false
-                },
-                {
-                  "sport": "strength",
-                  "title": "Força — Unilaterais Sessão 3",
-                  "tss": 50,
-                  "dur_h": 1.25,
-                  "completed": false
-                },
-                {
-                  "sport": "swim",
-                  "title": "Natação — Aula 12h",
-                  "tss": 60,
-                  "dur_h": 1.0,
-                  "completed": false
-                }
-              ],
-              "2026-04-18": [
-                {
-                  "sport": "bike",
-                  "title": "Ciclismo Z1 — Grupo NPC ⏱️ 90min MAX",
-                  "tss": 55,
-                  "dur_h": 1.5,
-                  "completed": false
-                }
-              ],
-              "2026-04-19": [
-                {
-                  "sport": "run",
-                  "title": "Corrida Z1 — Longa 55min",
-                  "tss": 58,
-                  "dur_h": 0.92,
-                  "completed": false
-                }
-              ]
-            }
-          },
-          "2026-04-20": {
-            "label": "Semana 6 (20–26 Abr)",
-            "phase": "Base Aeróbia",
-            "tss_target": 640,
-            "ctl_target": 58,
-            "focus": "Manter estrutura da Sem 5. Avaliar introdução de bloco Z2 bike se HRV e TSB permitirem.",
-            "key_sessions": [
-              "Bike Z1+Z2 condicional (qui)",
-              "Corrida Z1 longa 60min (dom)",
-              "Força unilateral 3×"
-            ],
-            "is_discharge": false,
-            "days": {}
-          },
-          "2026-04-27": {
-            "label": "Semana 7 (27 Abr–3 Mai)",
-            "phase": "Base Aeróbia",
-            "tss_target": 350,
-            "ctl_target": 59,
-            "focus": "Semana de descarga — primeiro ciclo completo. Joelho: reavaliar protocolo.",
-            "key_sessions": [
-              "Volume reduzido ~50%",
-              "Alfredson obrigatório diário",
-              "Avaliar joelho com profissional"
-            ],
-            "is_discharge": true,
-            "days": {}
-          },
-          "2026-05-04": {
-            "label": "Semana 8 (4–10 Mai)",
-            "phase": "Base Aeróbia",
-            "tss_target": 670,
-            "ctl_target": 65,
-            "focus": "Retomada com primeiro bloco Z1+Z2 bike. Corrida: aumentar para 45min se joelho ok.",
-            "key_sessions": [
-              "Bike Z1+Z2 3×8min (qui)",
-              "Corrida Z1 45min 3×",
-              "Força unilateral progride carga"
-            ],
-            "is_discharge": false,
-            "days": {}
-          },
-          "2026-05-11": {
-            "label": "Semana 9 (11–17 Mai)",
-            "phase": "Construção",
-            "tss_target": 710,
-            "ctl_target": 70,
-            "focus": "Início fase de Construção. Aumentar volume natação. Bike: 4×8min Z2.",
-            "key_sessions": [
-              "Bike Z1+Z2 4×8min",
-              "Natação volume crescente",
-              "Corrida Z1 50min"
-            ],
-            "is_discharge": false,
-            "days": {}
+          {
+            "type": "warn",
+            "message": "ATL elevada (95) vs CTL (50) — monitorar recuperação"
           }
-        }
+        ]
       },
-      "sessions_w3": [
-        {
-          "day": "Seg",
-          "sport": "strength",
-          "desc": "Força — Sessão 1 · Fase 1",
-          "dur": "1h17",
-          "tss": 39,
-          "zones": "—",
-          "hrv": 47,
-          "ht": "dn"
+      "w2": {
+        "kpis": {
+          "ctl": 41.6,
+          "atl": 85.0,
+          "tsb": -43.4,
+          "tss_week": 670,
+          "delta_ctl": "+10",
+          "delta_atl": "+8",
+          "delta_tsb": "+2",
+          "delta_tss": "+670"
         },
-        {
-          "day": "Seg",
-          "sport": "swim",
-          "desc": "Natação Z1 — Técnica",
-          "dur": "52min",
-          "tss": 69,
-          "zones": "93/6/1",
-          "hrv": 47,
-          "ht": "nt"
+        "pmc": {
+          "labels": [
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            7.5,
+            22.5,
+            31.9,
+            41.6
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            34.1,
+            74.7,
+            77.0,
+            85.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -26.6,
+            -52.2,
+            -45.1,
+            -43.4
+          ]
         },
-        {
-          "day": "Ter",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Base Solo",
-          "dur": "1h27",
-          "tss": 72,
-          "zones": "85/12/3",
-          "hrv": 63,
-          "ht": "up"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Ter",
-          "sport": "swim",
-          "desc": "Natação Z1 — Volume",
-          "dur": "50min",
-          "tss": 74,
-          "zones": "93/6/1",
-          "hrv": 63,
-          "ht": "nt"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Qua",
-          "sport": "run",
-          "desc": "Corrida Z1 — Leve",
-          "dur": "36min",
-          "tss": 31,
-          "zones": "90/9/1",
-          "hrv": 80,
-          "ht": "up"
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Força — Sessão 1 · Fase 1 (4×5 Carga Alta)",
+            "dur": "—",
+            "tss": 39,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Natação Z1 — Técnica",
+            "dur": "—",
+            "tss": 69,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Aeróbio Base (solo)",
+            "dur": "—",
+            "tss": 72,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "run",
+            "desc": "Natação Z1 — Volume",
+            "dur": "—",
+            "tss": 74,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Leve",
+            "dur": "—",
+            "tss": 31,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Força — Sessão 2 · Fase 1 (4×5 Carga Alta)",
+            "dur": "—",
+            "tss": 36,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Aeróbio Base (solo)",
+            "dur": "—",
+            "tss": 66,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "run",
+            "desc": "Natação Z1 — Técnica",
+            "dur": "—",
+            "tss": 60,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Leve",
+            "dur": "—",
+            "tss": 33,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Natação Z1 — Volume",
+            "dur": "—",
+            "tss": 42,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "bike",
+            "desc": "Força — Sessão 3 · Fase 1 (4×5 Carga Alta)",
+            "dur": "—",
+            "tss": 37,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC) ⏱️ 90min MAX",
+            "dur": "—",
+            "tss": 54,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Longa",
+            "dur": "—",
+            "tss": 57,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -43, recuperação prioritária"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          },
+          {
+            "type": "warn",
+            "message": "ATL elevada (85) vs CTL (42) — monitorar recuperação"
+          }
+        ]
+      },
+      "w3": {
+        "kpis": {
+          "ctl": 31.9,
+          "atl": 77.0,
+          "tsb": -45.1,
+          "tss_week": 587,
+          "delta_ctl": "+9",
+          "delta_atl": "+2",
+          "delta_tsb": "+7",
+          "delta_tss": "+587"
         },
-        {
-          "day": "Qua",
-          "sport": "strength",
-          "desc": "Força — Sessão 2 · Fase 1",
-          "dur": "1h09",
-          "tss": 36,
-          "zones": "—",
-          "hrv": 80,
-          "ht": "nt"
+        "pmc": {
+          "labels": [
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            7.5,
+            22.5,
+            31.9
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            34.1,
+            74.7,
+            77.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -26.6,
+            -52.2,
+            -45.1
+          ]
         },
-        {
-          "day": "Qui",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Base Solo",
-          "dur": "1h21",
-          "tss": 66,
-          "zones": "85/12/3",
-          "hrv": 38,
-          "ht": "dn"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Qui",
-          "sport": "swim",
-          "desc": "Natação Z1 — Técnica",
-          "dur": "46min",
-          "tss": 60,
-          "zones": "93/6/1",
-          "hrv": 38,
-          "ht": "nt"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Sex",
-          "sport": "run",
-          "desc": "Corrida Z1 — Leve",
-          "dur": "35min",
-          "tss": 33,
-          "zones": "90/9/1",
-          "hrv": 60,
-          "ht": "up"
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 40,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 62,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 64,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 67,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 44,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 76,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Leve",
+            "dur": "—",
+            "tss": 30,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 38,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
+            "dur": "—",
+            "tss": 103,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Corrida Z1 — Longa",
+            "dur": "—",
+            "tss": 47,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -45, recuperação prioritária"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          },
+          {
+            "type": "warn",
+            "message": "ATL elevada (77) vs CTL (32) — monitorar recuperação"
+          }
+        ]
+      },
+      "w4": {
+        "kpis": {
+          "ctl": 22.5,
+          "atl": 74.7,
+          "tsb": -52.2,
+          "tss_week": 738,
+          "delta_ctl": "+15",
+          "delta_atl": "+41",
+          "delta_tsb": "-26",
+          "delta_tss": "+738"
         },
-        {
-          "day": "Sex",
-          "sport": "swim",
-          "desc": "Natação Z1 — Volume (parcial)",
-          "dur": "36min",
-          "tss": 42,
-          "zones": "93/6/1",
-          "hrv": 60,
-          "ht": "nt"
+        "pmc": {
+          "labels": [
+            "2/2",
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            7.5,
+            22.5
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            34.1,
+            74.7
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -26.6,
+            -52.2
+          ]
         },
-        {
-          "day": "Sex",
-          "sport": "strength",
-          "desc": "Força — Sessão 3 · Fase 1",
-          "dur": "1h11",
-          "tss": 37,
-          "zones": "—",
-          "hrv": 60,
-          "ht": "nt"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Sáb",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Grupo NPC (1h39)",
-          "dur": "1h39",
-          "tss": 54,
-          "zones": "85/12/3",
-          "hrv": 48,
-          "ht": "dn"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Dom",
-          "sport": "run",
-          "desc": "Corrida Z1 — Longa",
-          "dur": "1h03",
-          "tss": 57,
-          "zones": "90/9/1",
-          "hrv": 45,
-          "ht": "dn"
-        }
-      ]
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 0,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 71,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 118,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 59,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 47,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 69,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 39,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 23,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 73,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 27,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 71,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 128,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Other",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Breathing",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "danger",
+            "message": "Risco de overtraining — TSB -52, recuperação prioritária"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          },
+          {
+            "type": "warn",
+            "message": "ATL elevada (75) vs CTL (22) — monitorar recuperação"
+          }
+        ]
+      }
     },
     "gabriel": {
-      "name": "Gabriel",
-      "kpis": {
-        "ctl": 104.3,
-        "atl": 65.6,
-        "tsb": 61.5,
-        "tss_week": 0
-      },
-      "kpi_delta": {
-        "ctl": "-10.4",
-        "atl": "-5.5",
-        "tsb": "+15.1",
-        "tss_week": "-249"
-      },
-      "pmc": {
-        "labels": [
-          "16/2",
-          "22/2",
-          "1/3",
-          "8/3",
-          "15/3",
-          "22/3",
-          "29/3",
-          "5/4"
+      "w1": {
+        "kpis": {
+          "ctl": 95.4,
+          "atl": 52.4,
+          "tsb": 43.0,
+          "tss_week": 112,
+          "delta_ctl": "-6",
+          "delta_atl": "+12",
+          "delta_tsb": "-18",
+          "delta_tss": "-207"
+        },
+        "pmc": {
+          "labels": [
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4",
+            "13/4"
+          ],
+          "ctl": [
+            185.8,
+            166.7,
+            148.4,
+            132.6,
+            124.2,
+            114.7,
+            104.3,
+            95.4
+          ],
+          "atl": [
+            130.9,
+            100.0,
+            73.9,
+            64.8,
+            78.2,
+            71.1,
+            65.6,
+            52.4
+          ],
+          "tsb": [
+            54.9,
+            66.6,
+            74.5,
+            67.9,
+            46.0,
+            43.5,
+            38.7,
+            43.0
+          ]
+        },
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
+        },
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
+        },
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "strength",
+            "desc": "Descanso Ativo — Recuperação Pós-Prova",
+            "dur": "—",
+            "tss": 9,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "swim",
+            "desc": "Corrida Z1 Muito Leve — Recuperação",
+            "dur": "—",
+            "tss": 35,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Ativação Leve Trainer",
+            "dur": "—",
+            "tss": 30,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Corrida Z1 + Strides Leves — Reativação (Sem. 5)",
+            "dur": "—",
+            "tss": 38,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
         ],
-        "ctl": [
-          198.3,
-          206.5,
-          185.8,
-          166.7,
-          148.4,
-          132.6,
-          124.2,
-          114.7
-        ],
-        "atl": [
-          125.1,
-          231.1,
-          130.9,
-          100.0,
-          73.9,
-          64.8,
-          78.2,
-          71.1
-        ],
-        "tsb": [
-          57.2,
-          -39.8,
-          37.6,
-          106.0,
-          80.3,
-          85.2,
-          49.1,
-          46.4
+        "alerts": [
+          {
+            "type": "ok",
+            "message": "Forma positiva — TSB +43"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
         ]
       },
-      "zones": {
-        "labels": [
-          "Bike",
-          "Corrida"
+      "w2": {
+        "kpis": {
+          "ctl": 104.3,
+          "atl": 65.6,
+          "tsb": 38.7,
+          "tss_week": 319,
+          "delta_ctl": "-10",
+          "delta_atl": "-6",
+          "delta_tsb": "-5",
+          "delta_tss": "+319"
+        },
+        "pmc": {
+          "labels": [
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4"
+          ],
+          "ctl": [
+            206.5,
+            185.8,
+            166.7,
+            148.4,
+            132.6,
+            124.2,
+            114.7,
+            104.3
+          ],
+          "atl": [
+            231.1,
+            130.9,
+            100.0,
+            73.9,
+            64.8,
+            78.2,
+            71.1,
+            65.6
+          ],
+          "tsb": [
+            -24.6,
+            54.9,
+            66.6,
+            74.5,
+            67.9,
+            46.0,
+            43.5,
+            38.7
+          ]
+        },
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
+        },
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
+        },
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Ter",
+            "sport": "swim",
+            "desc": "Corrida Z1 + Strides Leves",
+            "dur": "—",
+            "tss": 37,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Cycling",
+            "dur": "—",
+            "tss": 18,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 24,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Cycling",
+            "dur": "—",
+            "tss": 21,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 20,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 64,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 13,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Transition",
+            "dur": "—",
+            "tss": 1,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Cycling",
+            "dur": "—",
+            "tss": 48,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Transition",
+            "dur": "—",
+            "tss": 15,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 34,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 13,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 11,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
         ],
-        "z1": [
-          60,
-          55
-        ],
-        "z2": [
-          30,
-          32
-        ],
-        "z3": [
-          10,
-          13
+        "alerts": [
+          {
+            "type": "ok",
+            "message": "Forma positiva — TSB +39"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
         ]
       },
-      "vol": {
-        "swim": 0.0,
-        "bike": 2.4,
-        "run": 1.7,
-        "strength": 0.0
-      },
-      "hrv": {
-        "labels": [
-          "30/3",
-          "31/3",
-          "1/4",
-          "2/4",
-          "3/4",
-          "4/4",
-          "5/4",
-          "6/4",
-          "7/4",
-          "8/4",
-          "9/4",
-          "10/4",
-          "11/4",
-          "12/4"
+      "w3": {
+        "kpis": {
+          "ctl": 114.7,
+          "atl": 71.1,
+          "tsb": 43.5,
+          "tss_week": 435,
+          "delta_ctl": "-10",
+          "delta_atl": "-7",
+          "delta_tsb": "-2",
+          "delta_tss": "+435"
+        },
+        "pmc": {
+          "labels": [
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3"
+          ],
+          "ctl": [
+            203.2,
+            206.5,
+            185.8,
+            166.7,
+            148.4,
+            132.6,
+            124.2,
+            114.7
+          ],
+          "atl": [
+            146.0,
+            231.1,
+            130.9,
+            100.0,
+            73.9,
+            64.8,
+            78.2,
+            71.1
+          ],
+          "tsb": [
+            57.2,
+            -24.6,
+            54.9,
+            66.6,
+            74.5,
+            67.9,
+            46.0,
+            43.5
+          ]
+        },
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
+        },
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
+        },
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 49,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Seg",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 26,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 83,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 6,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 56,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sex",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 40,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Ciclismo Z1 — Longo Moderado (grupo NPC)",
+            "dur": "—",
+            "tss": 93,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 15,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "run",
+            "desc": "Open Water Swimming",
+            "dur": "—",
+            "tss": 33,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Track Running",
+            "dur": "—",
+            "tss": 13,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 23,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
         ],
-        "vals": [
-          48,
-          48,
-          48,
-          48,
-          48,
-          48,
-          48,
-          48,
-          54,
-          42,
-          48,
-          52,
-          41,
-          45
-        ],
-        "baseline": 47.6
+        "alerts": [
+          {
+            "type": "ok",
+            "message": "Forma positiva — TSB +44"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
+        ]
       },
-      "adherence": [
-        {
-          "label": "Corrida",
-          "done": 1.7,
-          "target": 1.5,
-          "color": "#4db87a"
+      "w4": {
+        "kpis": {
+          "ctl": 124.2,
+          "atl": 78.2,
+          "tsb": 46.0,
+          "tss_week": 537,
+          "delta_ctl": "-8",
+          "delta_atl": "+13",
+          "delta_tsb": "-22",
+          "delta_tss": "+537"
         },
-        {
-          "label": "Bike",
-          "done": 2.4,
-          "target": 2.5,
-          "color": "#f5a623"
+        "pmc": {
+          "labels": [
+            "2/2",
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3"
+          ],
+          "ctl": [
+            224.1,
+            203.2,
+            206.5,
+            185.8,
+            166.7,
+            148.4,
+            132.6,
+            124.2
+          ],
+          "atl": [
+            201.2,
+            146.0,
+            231.1,
+            130.9,
+            100.0,
+            73.9,
+            64.8,
+            78.2
+          ],
+          "tsb": [
+            22.9,
+            57.2,
+            -24.6,
+            54.9,
+            66.6,
+            74.5,
+            67.9,
+            46.0
+          ]
         },
-        {
-          "label": "Natação",
-          "done": 0.0,
-          "target": 0.6,
-          "color": "#4a9eff"
-        }
-      ],
-      "alerts": [
-        {
-          "type": "ok",
-          "msg": "Semana de recuperação pós-duatlo 12/04 — volume leve, sem qualidade"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "type": "warn",
-          "msg": "Prioridade: sono ≥7.5h/noite — foi deficitário no taper"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "type": "info",
-          "msg": "Sem prova-alvo definida — definir calendário para próximo ciclo"
-        }
-      ],
-      "sessions": [
-        {
-          "day": "Seg",
-          "sport": "run",
-          "desc": "Descanso Ativo — Recuperação Pós-Prova",
-          "dur": "30min",
-          "tss": 5,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
+        "adherence": [],
+        "sessions": [
+          {
+            "day": "Seg",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 54,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Ter",
+            "sport": "bike",
+            "desc": "Indoor Cycling",
+            "dur": "—",
+            "tss": 29,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 48,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qua",
+            "sport": "bike",
+            "desc": "Strength",
+            "dur": "—",
+            "tss": 42,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Qui",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 70,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 110,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "run",
+            "desc": "Lap Swimming",
+            "dur": "—",
+            "tss": 32,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Cycling",
+            "dur": "—",
+            "tss": 17,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 2,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Cycling",
+            "dur": "—",
+            "tss": 23,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Sáb",
+            "sport": "bike",
+            "desc": "Road Cycling",
+            "dur": "—",
+            "tss": 19,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "swim",
+            "desc": "Running",
+            "dur": "—",
+            "tss": 58,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          },
+          {
+            "day": "Dom",
+            "sport": "run",
+            "desc": "Open Water Swimming",
+            "dur": "—",
+            "tss": 35,
+            "zones": "—",
+            "hrv": 0,
+            "ht": "nt"
+          }
+        ],
+        "alerts": [
+          {
+            "type": "ok",
+            "message": "Forma positiva — TSB +46"
+          },
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
+        ]
+      }
+    },
+    "rafael": {
+      "w1": {
+        "kpis": {
+          "ctl": 0.0,
+          "atl": 0.0,
+          "tsb": 0.0,
+          "tss_week": 0,
+          "delta_ctl": "+0",
+          "delta_atl": "+0",
+          "delta_tsb": "+0",
+          "delta_tss": "+0"
         },
-        {
-          "day": "Ter",
-          "sport": "run",
-          "desc": "Corrida Z1 Muito Leve — Recuperação",
-          "dur": "35min",
-          "tss": 20,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
+        "pmc": {
+          "labels": [
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4",
+            "13/4"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
         },
-        {
-          "day": "Qua",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Ativação Leve Trainer",
-          "dur": "45min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Qui",
-          "sport": "swim",
-          "desc": "Natação Z1 Técnica — Recuperação",
-          "dur": "40min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Sex",
-          "sport": "run",
-          "desc": "Corrida Z1 + Strides — Reativação",
-          "dur": "40min",
-          "tss": 30,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
+        "adherence": [],
+        "sessions": [],
+        "alerts": [
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
+        ]
+      },
+      "w2": {
+        "kpis": {
+          "ctl": 0.0,
+          "atl": 0.0,
+          "tsb": 0.0,
+          "tss_week": 0,
+          "delta_ctl": "+0",
+          "delta_atl": "+0",
+          "delta_tsb": "+0",
+          "delta_tss": "+0"
         },
-        {
-          "day": "Sáb",
-          "sport": "bike",
-          "desc": "Ciclismo Z1 — Grupo NPC Retomada",
-          "dur": "2h15",
-          "tss": 110,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
+        "pmc": {
+          "labels": [
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3",
+            "6/4"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
         },
-        {
-          "day": "Dom",
-          "sport": "run",
-          "desc": "Corrida Z1 Longa — Retomada Pós-Prova",
-          "dur": "1h00",
-          "tss": 45,
-          "zones": "—",
-          "hrv": 0,
-          "ht": "nt"
-        }
-      ],
-      "plan": null,
-      "sessions_w3": [
-        {
-          "day": "Seg",
-          "sport": "run",
-          "desc": "Corrida Z1 + Strides",
-          "dur": "39min",
-          "tss": 37,
-          "zones": "88/10/2",
-          "hrv": 54,
-          "ht": "up"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Sáb",
-          "sport": "bike",
-          "desc": "Cycling (pré-prova)",
-          "dur": "18min",
-          "tss": 18,
-          "zones": "60/30/10",
-          "hrv": 41,
-          "ht": "dn"
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
         },
-        {
-          "day": "Sáb",
-          "sport": "run",
-          "desc": "Running (pré-prova)",
-          "dur": "25min",
-          "tss": 24,
-          "zones": "55/32/13",
-          "hrv": 41,
-          "ht": "nt"
+        "adherence": [],
+        "sessions": [],
+        "alerts": [
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
+        ]
+      },
+      "w3": {
+        "kpis": {
+          "ctl": 0.0,
+          "atl": 0.0,
+          "tsb": 0.0,
+          "tss_week": 0,
+          "delta_ctl": "+0",
+          "delta_atl": "+0",
+          "delta_tsb": "+0",
+          "delta_tss": "+0"
         },
-        {
-          "day": "Dom",
-          "sport": "bike",
-          "desc": "Duatlo — Segmento Bike",
-          "dur": "28min",
-          "tss": 48,
-          "zones": "55/32/13",
-          "hrv": 45,
-          "ht": "dn"
+        "pmc": {
+          "labels": [
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3",
+            "30/3"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
         },
-        {
-          "day": "Dom",
-          "sport": "run",
-          "desc": "Duatlo — Corrida 1 + Corrida 2",
-          "dur": "~26min",
-          "tss": 37,
-          "zones": "55/32/13",
-          "hrv": 45,
-          "ht": "nt"
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
         },
-        {
-          "day": "Dom",
-          "sport": "bike",
-          "desc": "Aquecimento/Desaquecimento",
-          "dur": "~56min",
-          "tss": 85,
-          "zones": "70/25/5",
-          "hrv": 45,
-          "ht": "nt"
-        }
-      ]
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
+        },
+        "adherence": [],
+        "sessions": [],
+        "alerts": [
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
+        ]
+      },
+      "w4": {
+        "kpis": {
+          "ctl": 0.0,
+          "atl": 0.0,
+          "tsb": 0.0,
+          "tss_week": 0,
+          "delta_ctl": "+0",
+          "delta_atl": "+0",
+          "delta_tsb": "+0",
+          "delta_tss": "+0"
+        },
+        "pmc": {
+          "labels": [
+            "2/2",
+            "9/2",
+            "16/2",
+            "23/2",
+            "2/3",
+            "9/3",
+            "16/3",
+            "23/3"
+          ],
+          "ctl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "atl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "tsb": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "zones": {},
+        "volume": {
+          "swim": 0.0,
+          "bike": 0.0,
+          "run": 0.0,
+          "strength": 0.0
+        },
+        "hrv": {
+          "vals": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "baseline": 0,
+          "labels": [
+            "5/4",
+            "6/4",
+            "7/4",
+            "8/4",
+            "9/4",
+            "10/4",
+            "11/4",
+            "12/4",
+            "13/4",
+            "14/4",
+            "15/4",
+            "16/4",
+            "17/4",
+            "18/4"
+          ]
+        },
+        "adherence": [],
+        "sessions": [],
+        "alerts": [
+          {
+            "type": "info",
+            "message": "Buenos Aires (70.3) em 24 semanas"
+          }
+        ]
+      }
     }
   }
 }
