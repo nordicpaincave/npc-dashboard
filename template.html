@@ -156,6 +156,7 @@
         <option value="bruno">Bruno Trevisan</option>
         <option value="jean">Jean Romano</option>
         <option value="gabriel">Gabriel</option>
+        <option value="rafael">Rafael Lemos</option>
       </select>
       <select id="sel-sport" onchange="updateDash()">
         <option value="all">Todos os esportes</option>
@@ -255,6 +256,7 @@
         <button class="tab-btn active" onclick="setCalAthlete('bruno',this)">Bruno</button>
         <button class="tab-btn" onclick="setCalAthlete('jean',this)">Jean</button>
         <button class="tab-btn" onclick="setCalAthlete('gabriel',this)">Gabriel</button>
+        <button class="tab-btn" onclick="setCalAthlete('rafael',this)">Rafael</button>
       </div>
       <span style="font-size:11px;color:var(--text3)">Sólido = realizado · Tracejado = planejado</span>
     </div>
@@ -269,6 +271,7 @@
         <button class="tab-btn active" onclick="setMacroAthlete('bruno',this)">Bruno</button>
         <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean</button>
         <button class="tab-btn" onclick="setMacroAthlete('gabriel',this)">Gabriel</button>
+        <button class="tab-btn" onclick="setMacroAthlete('rafael',this)">Rafael</button>
       </div>
     </div>
     <div id="macro-body"></div>
@@ -279,9 +282,9 @@
 
 <script>
 const DB = __NPC_DATA__;
-const ATHLETES = ['bruno','jean','gabriel'];
-const NAMES    = {bruno:'Bruno',jean:'Jean',gabriel:'Gabriel'};
-const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a'};
+const ATHLETES = ['bruno','jean','gabriel','rafael'];
+const NAMES    = {bruno:'Bruno',jean:'Jean',gabriel:'Gabriel',rafael:'Rafael'};
+const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc'};
 const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força'};
 const DAYS_LABEL  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
@@ -304,7 +307,7 @@ const MACRO_PLAN = {
      objectives:['CTL alvo: +3–4 pts/semana','Introduzir sessões Z2 (limiar) 2x/semana','Manter Z1 ≥ 65% do tempo total','Força: transição para unilateral'],
      key_sessions:['Duplo limiar: bike + corrida no mesmo dia','Natação CSS semanal','Longa Z1 com bloco final Z2']},
     {name:'Específico',color:'#EF9F27',weeks:[11,20],goal:'Intensidade específica de prova e pico de CTL',
-     objectives:['CTL pico: 120 (Jean) / 102 (Bruno) / 90 (Gabriel)','Simulados de prova parcial','Trabalho de ritmo de prova Z2–Z3','Reduzir força para manutenção'],
+     objectives:['CTL pico: 120 (Jean) / 102 (Bruno) / 90 (Gabriel) / 95 (Rafael)','Simulados de prova parcial','Trabalho de ritmo de prova Z2–Z3','Reduzir força para manutenção'],
      key_sessions:['Brick bike+corrida semanal','Natação em águas abertas (quando disponível)','Intervalos longos Z2 no bike (2×20min FTP)']},
     {name:'Competição',color:'#D85A30',weeks:[21,26],goal:'Manutenção de CTL e afinação da forma',
      objectives:['Manter CTL ± 5 pts','TSB alvo entre -5 e +5','Provas de teste (Olympic ou sprint)','Reduzir volume, manter intensidade'],
@@ -313,7 +316,7 @@ const MACRO_PLAN = {
      objectives:['Reduzir volume 40–50%','TSB alvo: +5 a +15 na largada','Manter 2 sessões de qualidade/semana','Foco em sono e nutrição'],
      key_sessions:['Bike ativação 60min c/ 3×5min LT2','Corrida 30min c/ strides','Natação técnica 2×1.500m']},
     {name:'Prova',color:'#ff5252',weeks:[29,29],goal:'70.3 Buenos Aires — 04 de outubro de 2026',
-     objectives:['Natação: 1.9km','Bike: 90km','Corrida: 21.1km','Meta: Top 5 M40-44 + vaga Mundial (Jean) / sub-5h (Bruno) / sub-4h50 (Gabriel)'],
+     objectives:['Natação: 1.9km','Bike: 90km','Corrida: 21.1km','Meta: Top 5 M40-44 + vaga Mundial (Jean) / sub-5h (Bruno) / sub-4h50 (Gabriel) / sub-5h30 (Rafael)'],
      key_sessions:['Sábado: check-in e reconhecimento do percurso','Domingo 07h: largada']},
   ]
 };

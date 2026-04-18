@@ -16,6 +16,7 @@ ATHLETES = {
     "bruno":   {"id": 6285028, "name": "Bruno Trevisan"},
     "jean":    {"id": 6286348, "name": "Jean Romano"},
     "gabriel": {"id": 5775491, "name": "Gabriel"},
+    "rafael":  {"id": None,    "name": "Rafael Lemos"},
 }
 TP_BASE = "https://tpapi.trainingpeaks.com"
 
@@ -75,6 +76,18 @@ PROTOTYPE = {
             {"day":"Sex","sport":"swim","desc":"Endurance — 4.000m Z1/Z2","dur":"1h20","tss":65,"zones":"70/26/4"},
             {"day":"Sáb","sport":"run","desc":"Longa Z1/Z2 — 18km progressivo","dur":"1h45","tss":100,"zones":"65/28/7"},
         ]
+    },
+    "rafael": {
+        "kpis":{"ctl":0,"atl":0,"tsb":0,"tss_week":0},
+        "kpi_delta":{"ctl":"—","atl":"—","tsb":"—","tss_week":"—"},
+        "pmc":{"labels":["S1","S2","S3","S4","S5","S6","S7","S8"],
+               "ctl":[0,0,0,0,0,0,0,0],"atl":[0,0,0,0,0,0,0,0],"tsb":[0,0,0,0,0,0,0,0]},
+        "zones":{"labels":["Natação","Bike","Corrida"],"z1":[80,80,80],"z2":[15,15,15],"z3":[5,5,5]},
+        "vol":{"swim":0,"bike":0,"run":0,"strength":0},
+        "hrv":{"labels":[],"vals":[],"baseline":0,"sleep":[],"resting_hr":[],"body_battery":[]},
+        "adherence":[],
+        "alerts":[{"type":"info","msg":"TP ID pendente — dados disponíveis após integração"}],
+        "sessions":[],"planned":{},"week_notes":{}
     },
     "gabriel": {
         "kpis":{"ctl":58,"atl":72,"tsb":-14,"tss_week":380},
@@ -646,6 +659,10 @@ def build_db():
     db = {}
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
+        if cfg.get("id") is None:
+            print(f"    sem TP ID — usando protótipo vazio")
+            db[key] = json.loads(json.dumps(PROTOTYPE[key]))
+            continue
         try:
             raw_w  = fetch_workouts(cfg["id"], days=75)
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
