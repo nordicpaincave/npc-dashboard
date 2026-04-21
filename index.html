@@ -196,9 +196,13 @@
     </div>
     <div class="row2">
       <div class="card">
-        <div class="card-title">Distribuição de zonas (%)</div>
-        <div class="legend" id="zone-legend"></div>
-        <div style="position:relative;height:150px"><canvas id="zone-chart"></canvas></div>
+        <div class="card-title">Distribuição de zonas — por modalidade</div>
+        <div class="legend" style="margin-bottom:10px">
+          <span><span class="dot" style="background:#2a5080"></span>Z1</span>
+          <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
+          <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>
+        </div>
+        <div id="zone-by-sport"></div>
       </div>
       <div class="card">
         <div class="card-title-row">
@@ -277,7 +281,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 21/04/2026 15:55 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 21/04/2026 16:02 (Supabase)</div>
 </div>
 
 <script>
@@ -463,16 +467,6 @@ const DB = {
     "sessions": [
       {
         "day": "Seg",
-        "sport": "bike",
-        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
-        "dur": "57min",
-        "tss": 30,
-        "zones": "—",
-        "hrv": 73,
-        "ht": "up"
-      },
-      {
-        "day": "Seg",
         "sport": "swim",
         "desc": "Natação — Aula (Sem. 6)",
         "dur": "1h19",
@@ -482,13 +476,13 @@ const DB = {
         "ht": "up"
       },
       {
-        "day": "Ter",
+        "day": "Seg",
         "sport": "bike",
-        "desc": "Ciclismo Z1 — Base (1h30 MAX) (Sem. 6)",
-        "dur": "1h32",
-        "tss": 80,
+        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
+        "dur": "57min",
+        "tss": 30,
         "zones": "—",
-        "hrv": 77,
+        "hrv": 73,
         "ht": "up"
       },
       {
@@ -497,6 +491,16 @@ const DB = {
         "desc": "Musculação — Quad + Glúteos + Mobilidade (Sem. 6)",
         "dur": "1h06",
         "tss": 38,
+        "zones": "—",
+        "hrv": 77,
+        "ht": "up"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base (1h30 MAX) (Sem. 6)",
+        "dur": "1h32",
+        "tss": 80,
         "zones": "—",
         "hrv": 77,
         "ht": "up"
@@ -1245,22 +1249,38 @@ function renderWellness(d) {
   }
 }
 
-// ── Zones ──────────────────────────────────────────────────────────
+// ── Zones por modalidade ───────────────────────────────────────────
 function renderZone(d) {
-  dc('zone');
-  document.getElementById('zone-legend').innerHTML=`
-    <span><span class="dot" style="background:#2a5080"></span>Z1</span>
-    <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
-    <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;
-  if(!d.zones.labels.length){
-    document.getElementById('zone-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Dados de zona indisponíveis</p>';return;
+  const el = document.getElementById('zone-by-sport');
+  if(!el) return;
+  const zones = d.zones || {};
+  const SPORT_LABELS = {swim:'Natação',bike:'Bike',run:'Corrida'};
+  const SPORT_ICONS  = {swim:'🏊',bike:'🚴',run:'🏃'};
+
+  if(!Object.keys(zones).length){
+    el.innerHTML='<p style="color:var(--text3);font-size:12px;padding:.5rem 0">Dados de zona indisponíveis</p>';
+    return;
   }
-  charts['zone']=new Chart(document.getElementById('zone-chart'),{type:'bar',data:{labels:d.zones.labels,datasets:[
-    {label:'Z1',data:d.zones.z1,backgroundColor:'#2a5080',borderRadius:3},
-    {label:'Z2',data:d.zones.z2,backgroundColor:'#4a9eff',borderRadius:3},
-    {label:'Z3',data:d.zones.z3,backgroundColor:'#ff7c3a',borderRadius:3},
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}},
-    scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{stacked:true,max:100,ticks:{color:'#565c70',font:tf,callback:v=>v+'%'},grid:{color:gc}}}}});
+
+  let html = '';
+  for(const [sp, label] of Object.entries(SPORT_LABELS)){
+    const z = zones[sp];
+    if(!z) continue;
+    const z1 = z.z1||0, z2 = z.z2||0, z3 = z.z3||0;
+    html += `
+    <div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:11px;font-weight:600;color:var(--text2)">${SPORT_ICONS[sp]} ${label}</span>
+        <span style="font-size:10px;color:var(--text3)">Z1 ${z1}% · Z2 ${z2}% · Z3 ${z3}%</span>
+      </div>
+      <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;gap:1px">
+        ${z1>0?`<div style="flex:${z1};background:#2a5080;border-radius:3px 0 0 3px" title="Z1: ${z1}%"></div>`:''}
+        ${z2>0?`<div style="flex:${z2};background:#4a9eff" title="Z2: ${z2}%"></div>`:''}
+        ${z3>0?`<div style="flex:${z3};background:#ff7c3a;border-radius:0 3px 3px 0" title="Z3: ${z3}%"></div>`:''}
+      </div>
+    </div>`;
+  }
+  el.innerHTML = html;
 }
 
 // ── Volume ─────────────────────────────────────────────────────────
