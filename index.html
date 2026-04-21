@@ -281,7 +281,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 21/04/2026 16:02 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 21/04/2026 16:10 (Supabase)</div>
 </div>
 
 <script>
@@ -342,22 +342,16 @@ const DB = {
       ]
     },
     "zones": {
-      "labels": [
-        "Natação",
-        "Bike"
-      ],
-      "z1": [
-        90,
-        90
-      ],
-      "z2": [
-        8,
-        8
-      ],
-      "z3": [
-        2,
-        2
-      ]
+      "swim": {
+        "z1": 90,
+        "z2": 8,
+        "z3": 2
+      },
+      "bike": {
+        "z1": 90,
+        "z2": 8,
+        "z3": 2
+      }
     },
     "vol": {
       "swim": 1.3,
@@ -564,12 +558,7 @@ const DB = {
         -18.0
       ]
     },
-    "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
-    },
+    "zones": {},
     "vol": {
       "swim": 0.0,
       "bike": 0.0,
@@ -760,18 +749,11 @@ const DB = {
       ]
     },
     "zones": {
-      "labels": [
-        "Corrida"
-      ],
-      "z1": [
-        90
-      ],
-      "z2": [
-        8
-      ],
-      "z3": [
-        2
-      ]
+      "run": {
+        "z1": 90,
+        "z2": 8,
+        "z3": 2
+      }
     },
     "vol": {
       "swim": 0.0,
@@ -944,12 +926,7 @@ const DB = {
         0.0
       ]
     },
-    "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
-    },
+    "zones": {},
     "vol": {
       "swim": 0.0,
       "bike": 0.0,
