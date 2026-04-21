@@ -102,7 +102,7 @@
       <div class="header-title">Ecossistema Técnico</div>
       <div class="header-sub">NPC Endurance · Método Norueguês · Curitiba</div>
     </div>
-    <div class="updated">Atualizado: Abr 2026</div>
+    <div class="updated">Atualizado: 21 Abr 2026</div>
   </div>
 
   <div class="legend">
@@ -175,7 +175,7 @@
         </div>
         <div class="card c-teal clickable" onclick="openModal('db-wellness')">
           <div class="card-title">wellness_logs</div>
-          <div class="card-sub">HRV · sono · FC repouso (156 registros)</div>
+          <div class="card-sub">HRV · sono · FC repouso (170+ registros)</div>
         </div>
         <div class="card c-teal clickable" onclick="openModal('db-analyses')">
           <div class="card-title">weekly_analyses</div>
@@ -215,6 +215,11 @@
         <div class="card-title">npc_review_anamnesis.py</div>
         <div class="card-sub">Parecer IA + aprovação interativa</div>
         <div class="card-tag">API Anthropic</div>
+      </div>
+      <div class="card c-purple clickable" onclick="openModal('approve')">
+        <div class="card-title">npc_approve_athlete.py</div>
+        <div class="card-sub">Anamnese aprovada → atleta no banco</div>
+        <div class="card-tag">onboarding completo</div>
       </div>
     </div>
   </div>
@@ -264,11 +269,6 @@
           <div class="card-title">TP ID Rafael</div>
           <div class="card-sub">Descomentear config.py + sync --full</div>
           <div class="card-tag">aguardando TP ID</div>
-        </div>
-        <div class="card c-amber">
-          <div class="card-title">npc_approve_athlete.py</div>
-          <div class="card-sub">Anamnese aprovada → cria atleta no banco</div>
-          <div class="card-tag">fechar ciclo</div>
         </div>
         <div class="card c-amber">
           <div class="card-title">Relatório PDF análise</div>
@@ -345,13 +345,13 @@ const INFO = {
   },
   'db-analyses': {
     title: 'weekly_analyses — Histórico de coaching',
-    desc: 'Tabela criada nesta sessão. Salva análises semanais com CTL/ATL/TSB snapshot, HRV, TSS planejado vs realizado, status, destaques, alertas e flags para a próxima prescrição.',
+    desc: 'Histórico de coaching. 3 análises salvas (Jean, Bruno, Gabriel sem. 5). Incluso no npc_context_loader — disponível automaticamente em todas as prescrições.',
     code: 'python npc_save_analysis.py\n→ 3 análises salvas (Jean, Bruno, Gabriel sem. 5)'
   },
   'db-anamnese': {
     title: 'athlete_anamnesis — Fichas de anamnese',
     desc: 'Tabela com 40+ campos cobrindo saúde, histórico esportivo, lesões, exames, hábitos e objetivos. Status automático: pendente_revisao / pendente_atestado / aprovado / reprovado.',
-    code: 'Status atual:\n→ Simony Huck: pendente_revisao'
+    code: 'Status atual:\n→ Simony Huck: aprovado (ID: e0a0ac85)'
   },
   'db-macro': {
     title: 'sports + macro_plan',
@@ -367,6 +367,11 @@ const INFO = {
     title: 'npc_context_loader.py',
     desc: 'Lê todos os dados do Supabase e gera um bloco de texto formatado para colar no Claude Desktop. Inclui passaporte fisiológico, fitness trend, wellness 14 dias, resumo 4 semanas e histórico de análises.',
     code: 'python npc_context_loader.py --output contexto_npc.txt\npython npc_context_loader.py --athlete bruno'
+  },
+  approve: {
+    title: 'npc_approve_athlete.py — Onboarding completo',
+    desc: 'Lê fichas de anamnese aprovadas (status=aprovado, sem athlete_id) e cria o registro na tabela athletes. Vincula automaticamente a ficha ao atleta criado. Já usado com sucesso para a Simony Huck (TP ID 6350244).',
+    code: 'python npc_approve_athlete.py\n→ Simony Huck criada: e0a0ac85-da3c-47ff-b0be-b4069bd2e1ce\n→ sync.py --full --athlete simony ✅'
   },
   review: {
     title: 'npc_review_anamnesis.py',
