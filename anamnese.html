@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPC Endurance — Ficha de Anamnese</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0d14;--bg2:#111520;--bg3:#181e2e;--bg4:#1e2538;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --text:#e8eaf0;--text2:#8b92a8;--text3:#50586e;
+      --orange:#f5620a;--orange2:rgba(245,98,10,0.12);
+      --blue:#3d8ef0;--blue2:rgba(61,142,240,0.1);
+      --green:#2db87a;--green2:rgba(45,184,122,0.1);
+      --red:#f04060;--red2:rgba(240,64,96,0.1);
+      --amber:#f5a623;--amber2:rgba(245,166,35,0.1);
+      --radius:10px;--radius-lg:16px;
+    }
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+
+    /* Header */
+    .header{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+    .logo-badge{font-size:11px;font-weight:600;letter-spacing:.12em;background:var(--orange);color:#fff;padding:5px 10px;border-radius:6px}
+    .header-title{font-size:15px;font-weight:600}
+    .header-sub{font-size:12px;color:var(--text2);margin-top:1px}
+    .progress-bar{flex:1;height:3px;background:var(--bg3);border-radius:2px;margin-left:24px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease}
+    .progress-label{font-size:11px;color:var(--text3);margin-left:10px;white-space:nowrap;font-family:'DM Mono',monospace}
+
+    /* Layout */
+    .page{max-width:720px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+
+    /* Step */
+    .step{display:none;animation:fadeIn .3s ease}
+    .step.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    .step-header{margin-bottom:2rem}
+    .step-number{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--orange);text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:6px}
+    .step-title{font-size:24px;font-weight:600;line-height:1.3;margin-bottom:8px}
+    .step-desc{font-size:14px;color:var(--text2);line-height:1.6}
+
+    /* Form elements */
+    .field{margin-bottom:1.5rem}
+    .field-row{display:grid;gap:16px;margin-bottom:1.5rem}
+    .field-row.cols2{grid-template-columns:1fr 1fr}
+    .field-row.cols3{grid-template-columns:1fr 1fr 1fr}
+    label{display:block;font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+    .required::after{content:' *';color:var(--orange)}
+    input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea{
+      width:100%;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);
+      color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;
+      outline:none;transition:border .15s,box-shadow .15s;appearance:none;-webkit-appearance:none
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(245,98,10,.12)}
+    input::placeholder,textarea::placeholder{color:var(--text3)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b92a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+    select option{background:var(--bg2)}
+    textarea{resize:vertical;min-height:90px}
+
+    /* Checkbox group */
+    .check-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+    .check-item{display:flex;align-items:center;gap:10px;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 13px;cursor:pointer;transition:border .15s,background .15s;user-select:none}
+    .check-item:hover{border-color:var(--border2)}
+    .check-item.selected{border-color:var(--orange);background:var(--orange2)}
+    .check-item input[type=checkbox]{display:none}
+    .check-box{width:16px;height:16px;border:1.5px solid var(--border2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .check-item.selected .check-box{background:var(--orange);border-color:var(--orange)}
+    .check-box::after{content:'';width:8px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:none}
+    .check-item.selected .check-box::after{display:block}
+    .check-label{font-size:13px;color:var(--text)}
+
+    /* Range slider */
+    .range-wrap{display:flex;align-items:center;gap:14px}
+    input[type=range]{flex:1;-webkit-appearance:none;height:4px;background:var(--bg4);border-radius:2px;outline:none;cursor:pointer}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--orange);cursor:pointer;border:2px solid var(--bg)}
+    .range-val{font-size:18px;font-weight:600;width:28px;text-align:center;font-family:'DM Mono',monospace;color:var(--orange)}
+    .range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px}
+
+    /* Alert */
+    .alert{border-radius:var(--radius);padding:14px 16px;margin-bottom:1.5rem;font-size:13px;line-height:1.6;display:flex;gap:12px;align-items:flex-start}
+    .alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+    .alert.warn{background:var(--amber2);border:0.5px solid rgba(245,166,35,.3);color:#f5c060}
+    .alert.info{background:var(--blue2);border:0.5px solid rgba(61,142,240,.3);color:#7bbdff}
+    .alert.danger{background:var(--red2);border:0.5px solid rgba(240,64,96,.3);color:#ff8080}
+    .alert.ok{background:var(--green2);border:0.5px solid rgba(45,184,122,.3);color:#6fcf97}
+
+    /* Exames */
+    .exam-row{display:grid;grid-template-columns:1fr 160px 200px;gap:12px;align-items:center;padding:12px 0;border-bottom:0.5px solid var(--border)}
+    .exam-row:last-child{border-bottom:none}
+    .exam-name{font-size:13px;font-weight:500}
+    .exam-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+    /* Termo */
+    .termo-box{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem;max-height:260px;overflow-y:auto;font-size:12px;color:var(--text2);line-height:1.8}
+    .termo-box h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:.75rem}
+    .termo-box p{margin-bottom:.75rem}
+
+    /* Navegação */
+    .nav{display:flex;justify-content:space-between;align-items:center;margin-top:2.5rem;padding-top:1.5rem;border-top:0.5px solid var(--border)}
+    .btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:11px 24px;border-radius:var(--radius);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+    .btn-primary{background:var(--orange);color:#fff}
+    .btn-primary:hover{background:#e05500;transform:translateY(-1px)}
+    .btn-primary:disabled{background:var(--bg4);color:var(--text3);cursor:not-allowed;transform:none}
+    .btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2)}
+    .btn-ghost:hover{border-color:var(--border2);background:var(--bg3);color:var(--text)}
+    .btn-lg{padding:14px 32px;font-size:15px;width:100%;justify-content:center}
+
+    /* Sucesso */
+    .success{text-align:center;padding:3rem 0;display:none}
+    .success-icon{font-size:56px;margin-bottom:1.5rem}
+    .success-title{font-size:26px;font-weight:600;margin-bottom:.75rem}
+    .success-sub{font-size:15px;color:var(--text2);max-width:420px;margin:0 auto}
+
+    /* Condicao medica */
+    #aviso-medico{display:none}
+
+    @media(max-width:600px){
+      .field-row.cols2,.field-row.cols3{grid-template-columns:1fr}
+      .exam-row{grid-template-columns:1fr;gap:8px}
+      .check-group{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo-badge">NPC</div>
+  <div>
+    <div class="header-title">Ficha de Anamnese</div>
+    <div class="header-sub">NPC Endurance · Método Norueguês</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:12%"></div></div>
+  <div class="progress-label" id="prog-label">1 / 8</div>
+</div>
+
+<div class="page">
+  <form id="form-anamnese" novalidate>
+
+  <!-- STEP 1: Identificação -->
+  <div class="step active" id="step-1">
+    <div class="step-header">
+      <div class="step-number">Bloco 01</div>
+      <div class="step-title">Identificação</div>
+      <div class="step-desc">Dados pessoais básicos para seu cadastro no sistema NPC Endurance.</div>
+    </div>
+    <div class="field">
+      <label class="required">Nome completo</label>
+      <input type="text" id="nome_completo" placeholder="Seu nome como no documento" required>
+    </div>
+    <div class="field-row cols3">
+      <div class="field">
+        <label class="required">Data de nascimento</label>
+        <input type="date" id="data_nascimento" required>
+      </div>
+      <div class="field">
+        <label>CPF</label>
+        <input type="text" id="cpf" placeholder="000.000.000-00">
+      </div>
+      <div class="field">
+        <label>Telefone / WhatsApp</label>
+        <input type="tel" id="telefone" placeholder="(00) 00000-0000">
+      </div>
+    </div>
+    <div class="field-row cols2">
+      <div class="field">
+        <label class="required">Email</label>
+        <input type="email" id="email" placeholder="seu@email.com" required>
+      </div>
+      <div class="field">
+        <label>Cidade</label>
+        <input type="text" id="cidade" placeholder="Curitiba, PR">
+      </div>
+    </div>
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Peso (kg)</label>
+        <input type="number" id="peso_kg" placeholder="70.5" step="0.1" min="30" max="200">
+      </div>
+      <div class="field">
+        <label>Altura (cm)</label>
+        <input type="number" id="altura_cm" placeholder="175" min="100" max="250">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Saúde geral -->
+  <div class="step" id="step-2">
+    <div class="step-header">
+      <div class="step-number">Bloco 02</div>
+      <div class="step-title">Saúde Geral</div>
+      <div class="step-desc">Estas informações são fundamentais para um planejamento seguro. Responda com honestidade.</div>
+    </div>
+    <div class="field">
+      <label>Possui alguma das condições abaixo? <span style="color:var(--text3)">(selecione todas que se aplicam)</span></label>
+      <div class="check-group" id="condicoes-group">
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Diabetes"><div class="check-box"></div><span class="check-label">Diabetes</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Hipertensão"><div class="check-box"></div><span class="check-label">Hipertensão</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Arritmia cardíaca"><div class="check-box"></div><span class="check-label">Arritmia cardíaca</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Doença cardíaca"><div class="check-box"></div><span class="check-label">Doença cardíaca</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Asma"><div class="check-box"></div><span class="check-label">Asma</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Hipotireoidismo"><div class="check-box"></div><span class="check-label">Hipotireoidismo</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Anemia"><div class="check-box"></div><span class="check-label">Anemia</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'condicao')">
+          <input type="checkbox" value="Nenhuma"><div class="check-box"></div><span class="check-label">Nenhuma</span>
+        </label>
+      </div>
+    </div>
+    <div id="aviso-medico" class="alert warn">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Atenção:</strong> Com base nas condições informadas, será necessário apresentar um <strong>atestado médico de aptidão para exercícios físicos de alta intensidade</strong> (emitido por cardiologista ou clínico geral) antes de iniciar o programa. Você poderá concluir este cadastro normalmente — nossa equipe entrará em contato.</div>
+    </div>
+    <div class="field">
+      <label>Outras condições não listadas acima</label>
+      <input type="text" id="condicoes_outras" placeholder="Descreva se houver">
+    </div>
+    <div class="field">
+      <label>Medicamentos em uso contínuo</label>
+      <input type="text" id="medicamentos" placeholder="Nome do medicamento e dosagem, ou 'Nenhum'">
+    </div>
+    <div class="field">
+      <label>Alergias conhecidas</label>
+      <input type="text" id="alergias" placeholder="Alimentos, medicamentos, outros — ou 'Nenhuma'">
+    </div>
+    <div class="field">
+      <label>Cirurgias nos últimos 2 anos</label>
+      <textarea id="cirurgias_recentes" placeholder="Tipo de cirurgia, data aproximada e situação atual — ou 'Nenhuma'"></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 3: Histórico esportivo -->
+  <div class="step" id="step-3">
+    <div class="step-header">
+      <div class="step-number">Bloco 03</div>
+      <div class="step-title">Histórico Esportivo</div>
+      <div class="step-desc">Seu background esportivo nos ajuda a calibrar o ponto de partida do seu plano.</div>
+    </div>
+    <div class="field">
+      <label>Modalidades que pratica atualmente <span style="color:var(--text3)">(selecione todas)</span></label>
+      <div class="check-group">
+        <label class="check-item" onclick="toggleCheck(this,'modalidade')">
+          <input type="checkbox" value="Corrida"><div class="check-box"></div><span class="check-label">🏃 Corrida</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'modalidade')">
+          <input type="checkbox" value="Ciclismo"><div class="check-box"></div><span class="check-label">🚴 Ciclismo</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'modalidade')">
+          <input type="checkbox" value="Natação"><div class="check-box"></div><span class="check-label">🏊 Natação</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'modalidade')">
+          <input type="checkbox" value="Triathlon"><div class="check-box"></div><span class="check-label">🏅 Triathlon</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'modalidade')">
+          <input type="checkbox" value="Duathlon"><div class="check-box"></div><span class="check-label">⚡ Duathlon</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this,'modalidade')">
+          <input type="checkbox" value="Musculação"><div class="check-box"></div><span class="check-label">💪 Musculação</span>
+        </label>
+      </div>
+    </div>
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Anos de prática no esporte principal</label>
+        <select id="anos_pratica">
+          <option value="">Selecione</option>
+          <option value="0">Iniciante (menos de 1 ano)</option>
+          <option value="1">1–2 anos</option>
+          <option value="3">3–5 anos</option>
+          <option value="6">6–10 anos</option>
+          <option value="11">Mais de 10 anos</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Volume semanal atual (horas)</label>
+        <select id="volume_semanal_horas">
+          <option value="">Selecione</option>
+          <option value="2">Menos de 3h</option>
+          <option value="4">3–5h</option>
+          <option value="7">6–8h</option>
+          <option value="10">9–12h</option>
+          <option value="14">Mais de 12h</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Última prova realizada</label>
+        <input type="text" id="ultima_prova_resultado" placeholder="Ex: Maratona de Curitiba 2025 — 4h12">
+      </div>
+      <div class="field">
+        <label>Data da última prova</label>
+        <input type="date" id="ultima_prova_data">
+      </div>
+    </div>
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Próxima prova alvo</label>
+        <input type="text" id="proxima_prova" placeholder="Ex: 70.3 Buenos Aires">
+      </div>
+      <div class="field">
+        <label>Data da próxima prova</label>
+        <input type="date" id="proxima_prova_data">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Lesões -->
+  <div class="step" id="step-4">
+    <div class="step-header">
+      <div class="step-number">Bloco 04</div>
+      <div class="step-title">Histórico de Lesões</div>
+      <div class="step-desc">Lesões anteriores são um fator importante no planejamento de carga e progressão.</div>
+    </div>
+    <div class="field">
+      <label>Lesões nos últimos 2 anos</label>
+      <textarea id="lesoes_recentes" placeholder="Descreva a região afetada, tipo de lesão, tratamento realizado e situação atual. Ex: Joelho direito — tendinite patelar — fisioterapia por 3 meses — resolvida. Ou 'Nenhuma'." style="min-height:120px"></textarea>
+    </div>
+    <div class="field">
+      <label>Dores ou desconfortos recorrentes</label>
+      <textarea id="dores_recorrentes" placeholder="Qualquer dor que apareça com frequência durante ou após treinos. Ex: Dor lombar após corridas longas. Ou 'Nenhuma'."></textarea>
+    </div>
+    <div class="alert info">
+      <span class="alert-icon">ℹ️</span>
+      <div>Informações de lesão nos permitem adaptar o protocolo de treino, incluir exercícios preventivos e ajustar a progressão de carga para evitar recidivas.</div>
+    </div>
+  </div>
+
+  <!-- STEP 5: Exames -->
+  <div class="step" id="step-5">
+    <div class="step-header">
+      <div class="step-number">Bloco 05</div>
+      <div class="step-title">Exames Recentes</div>
+      <div class="step-desc">Preencha os exames que tiver disponíveis. Campos em branco indicam que o exame não foi realizado recentemente.</div>
+    </div>
+    <div class="alert info">
+      <span class="alert-icon">ℹ️</span>
+      <div>Não é obrigatório ter todos os exames. Se não tiver algum, deixe em branco. Recomendamos que atletas acima de 35 anos realizem pelo menos hemograma, ferritina e ECG antes de iniciar.</div>
+    </div>
+    <div class="exam-row">
+      <div><div class="exam-name">Hemograma completo</div><div class="exam-sub">Série vermelha, branca e plaquetas</div></div>
+      <input type="date" id="exame_hemograma_data" placeholder="Data">
+      <input type="text" id="exame_hemograma_res" placeholder="Resultado resumido">
+    </div>
+    <div class="exam-row">
+      <div><div class="exam-name">Ferritina</div><div class="exam-sub">Reserva de ferro — ng/mL</div></div>
+      <input type="date" id="exame_ferritina_data">
+      <input type="text" id="exame_ferritina_res" placeholder="Ex: 42 ng/mL">
+    </div>
+    <div class="exam-row">
+      <div><div class="exam-name">Vitamina D (25-OH)</div><div class="exam-sub">ng/mL</div></div>
+      <input type="date" id="exame_vitamina_d_data">
+      <input type="text" id="exame_vitamina_d_res" placeholder="Ex: 38 ng/mL">
+    </div>
+    <div class="exam-row">
+      <div><div class="exam-name">TSH</div><div class="exam-sub">Função tireoidiana</div></div>
+      <input type="date" id="exame_tsh_data">
+      <input type="text" id="exame_tsh_res" placeholder="Ex: 2.1 mUI/L">
+    </div>
+    <div class="exam-row">
+      <div><div class="exam-name">ECG em repouso</div><div class="exam-sub">Eletrocardiograma</div></div>
+      <input type="date" id="exame_ecg_data">
+      <input type="text" id="exame_ecg_res" placeholder="Normal / Alteração">
+    </div>
+    <div class="exam-row">
+      <div><div class="exam-name">Teste ergométrico / Ergoespirometria</div><div class="exam-sub">VO2max, limiares</div></div>
+      <input type="date" id="exame_esforco_data">
+      <input type="text" id="exame_esforco_res" placeholder="Ex: VO2max 52, LT1 148bpm">
+    </div>
+  </div>
+
+  <!-- STEP 6: Hábitos -->
+  <div class="step" id="step-6">
+    <div class="step-header">
+      <div class="step-number">Bloco 06</div>
+      <div class="step-title">Hábitos e Rotina</div>
+      <div class="step-desc">Sono, estresse e alimentação impactam diretamente a recuperação e a adaptação ao treino.</div>
+    </div>
+    <div class="field">
+      <label>Média de horas de sono por noite</label>
+      <div class="range-wrap">
+        <input type="range" id="sono_horas" min="4" max="10" step="0.5" value="7" oninput="document.getElementById('sono-val').textContent=this.value">
+        <span class="range-val" id="sono-val">7</span>
+      </div>
+      <div class="range-labels"><span>4h</span><span>7h</span><span>10h</span></div>
+    </div>
+    <div class="field" style="margin-top:1.5rem">
+      <label>Nível de estresse geral (1 = muito baixo · 10 = muito alto)</label>
+      <div class="range-wrap">
+        <input type="range" id="nivel_estresse" min="1" max="10" step="1" value="5" oninput="document.getElementById('stress-val').textContent=this.value">
+        <span class="range-val" id="stress-val">5</span>
+      </div>
+      <div class="range-labels"><span>1 — Tranquilo</span><span>5 — Moderado</span><span>10 — Intenso</span></div>
+    </div>
+    <div class="field-row cols2" style="margin-top:1.5rem">
+      <div class="field">
+        <label>Tipo de trabalho / atividade diária</label>
+        <select id="tipo_trabalho">
+          <option value="">Selecione</option>
+          <option value="Sedentário (escritório)">Sedentário (escritório)</option>
+          <option value="Moderado (em pé / caminhando)">Moderado (em pé / caminhando)</option>
+          <option value="Ativo (trabalho físico)">Ativo (trabalho físico)</option>
+          <option value="Muito ativo (esforço contínuo)">Muito ativo (esforço contínuo)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Alimentação</label>
+        <select id="alimentacao">
+          <option value="">Selecione</option>
+          <option value="Onívoro">Onívoro</option>
+          <option value="Flexitariano">Flexitariano</option>
+          <option value="Vegetariano">Vegetariano</option>
+          <option value="Vegano">Vegano</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Restrições alimentares ou intolerâncias</label>
+      <input type="text" id="restricoes_alimentares" placeholder="Ex: Intolerância à lactose, glúten, frutos do mar — ou 'Nenhuma'">
+    </div>
+  </div>
+
+  <!-- STEP 7: Objetivos -->
+  <div class="step" id="step-7">
+    <div class="step-header">
+      <div class="step-number">Bloco 07</div>
+      <div class="step-title">Objetivos</div>
+      <div class="step-desc">Quanto mais específico você for, mais personalizado será seu plano.</div>
+    </div>
+    <div class="field">
+      <label class="required">Objetivo principal</label>
+      <textarea id="objetivo_principal" placeholder="Ex: Completar meu primeiro 70.3 em menos de 5 horas até outubro de 2026. Quero melhorar minha corrida e ter mais consistência nos treinos." style="min-height:110px" required></textarea>
+    </div>
+    <div class="field">
+      <label>Prazo desejado</label>
+      <input type="text" id="objetivo_prazo" placeholder="Ex: 6 meses, outubro de 2026, sem prazo definido">
+    </div>
+    <div class="field">
+      <label>O que você já tentou anteriormente?</label>
+      <textarea id="tentativas_anteriores" placeholder="Planilhas genéricas, apps de treino, treinador anterior... O que funcionou e o que não funcionou?"></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 8: Termo -->
+  <div class="step" id="step-8">
+    <div class="step-header">
+      <div class="step-number">Bloco 08</div>
+      <div class="step-title">Termo de Consentimento</div>
+      <div class="step-desc">Leia com atenção antes de assinar.</div>
+    </div>
+    <div class="termo-box">
+      <h4>TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO — NPC ENDURANCE</h4>
+      <p>Eu, o(a) atleta identificado(a) neste formulário, declaro ter lido e compreendido as informações abaixo, e manifesto meu consentimento livre e esclarecido para participar do programa de coaching esportivo da NPC Endurance.</p>
+      <p><strong>1. Natureza do serviço.</strong> O serviço prestado pela NPC Endurance consiste em coaching esportivo e assessoria de treinamento para atletas de endurance (corrida, ciclismo, triathlon e modalidades afins). Não se trata de serviço médico, fisioterapêutico ou de saúde.</p>
+      <p><strong>2. Aptidão física.</strong> Declaro que estou ciente dos riscos inerentes à prática de atividades físicas de média e alta intensidade, e que me considero apto(a) fisicamente para a prática esportiva. Fui orientado(a) a buscar avaliação médica antes de iniciar o programa, especialmente na presença de qualquer condição de saúde pré-existente.</p>
+      <p><strong>3. Veracidade das informações.</strong> Declaro que todas as informações fornecidas neste formulário são verdadeiras e completas. Estou ciente de que omitir informações relevantes sobre minha saúde pode comprometer a segurança do meu plano de treino.</p>
+      <p><strong>4. Responsabilidade.</strong> Reconheço que o coaching esportivo é uma atividade de suporte e orientação, e que sou responsável pela execução dos treinos e pela comunicação de qualquer sintoma ou desconforto ao treinador. A NPC Endurance não se responsabiliza por lesões decorrentes de execução incorreta ou não comunicação de condições de saúde.</p>
+      <p><strong>5. Dados pessoais.</strong> Autorizo o armazenamento e uso dos dados fornecidos neste formulário exclusivamente para fins de planejamento de treinamento personalizado, em conformidade com a LGPD (Lei 13.709/2018). Os dados não serão compartilhados com terceiros.</p>
+      <p><strong>6. Revogação.</strong> Este consentimento pode ser revogado a qualquer momento mediante comunicação por escrito à NPC Endurance, sem qualquer penalidade.</p>
+    </div>
+    <div class="field">
+      <label class="required">Assinatura digital <span style="color:var(--text3);text-transform:none;font-size:11px">(digite seu nome completo como confirmação)</span></label>
+      <input type="text" id="termo_assinatura" placeholder="Digite seu nome completo" required>
+    </div>
+    <div class="field">
+      <label class="check-item" onclick="toggleTermoCheck()" id="termo-check-item" style="display:flex;gap:12px;align-items:flex-start;padding:14px">
+        <input type="checkbox" id="termo_aceito" style="display:none">
+        <div class="check-box" id="termo-check-box" style="margin-top:2px;flex-shrink:0"></div>
+        <span class="check-label" style="font-size:13px;line-height:1.5">Li e concordo com o Termo de Consentimento Livre e Esclarecido acima, e confirmo que todas as informações fornecidas neste formulário são verdadeiras.</span>
+      </label>
+    </div>
+    <div id="submit-error" class="alert danger" style="display:none">
+      <span class="alert-icon">⚠️</span>
+      <div id="submit-error-msg">Preencha todos os campos obrigatórios.</div>
+    </div>
+    <button type="button" class="btn btn-primary btn-lg" onclick="submitForm()" id="btn-submit">
+      Enviar ficha de anamnese →
+    </button>
+  </div>
+
+  </form>
+
+  <!-- Sucesso -->
+  <div class="success" id="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Ficha enviada com sucesso!</div>
+    <div class="success-sub">Recebemos seus dados. Nossa equipe irá analisar e entrar em contato em breve para dar início ao seu plano de treino personalizado.</div>
+  </div>
+
+  <!-- Navegação -->
+  <div class="nav" id="nav-bar">
+    <button type="button" class="btn btn-ghost" id="btn-back" onclick="goStep(-1)" style="visibility:hidden">← Anterior</button>
+    <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(1)">Próximo →</button>
+  </div>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://espohjzpsxxmheiubgfv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_mb8bo5_9-TudHmNEB1_4gw_ipqg93_I';
+
+// ── Estado ────────────────────────────────────────────────────────
+let currentStep = 1;
+const TOTAL_STEPS = 8;
+
+// ── Navegação ────────────────────────────────────────────────────
+function goStep(dir) {
+  if(dir === 1 && !validateStep(currentStep)) return;
+  const next = currentStep + dir;
+  if(next < 1 || next > TOTAL_STEPS) return;
+
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  currentStep = next;
+  document.getElementById(`step-${currentStep}`).classList.add('active');
+
+  // Progresso
+  const pct = Math.round((currentStep / TOTAL_STEPS) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${currentStep} / ${TOTAL_STEPS}`;
+
+  // Botões
+  document.getElementById('btn-back').style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+  const btnNext = document.getElementById('btn-next');
+  const navBar  = document.getElementById('nav-bar');
+  if(currentStep === TOTAL_STEPS) {
+    btnNext.style.display = 'none';
+    navBar.style.justifyContent = 'flex-start';
+  } else {
+    btnNext.style.display = '';
+    navBar.style.justifyContent = 'space-between';
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Validação por step ────────────────────────────────────────────
+function validateStep(step) {
+  if(step === 1) {
+    if(!v('nome_completo')) { alert('Por favor, informe seu nome completo.'); return false; }
+    if(!v('email') || !v('email').includes('@')) { alert('Informe um email válido.'); return false; }
+    if(!v('data_nascimento')) { alert('Informe sua data de nascimento.'); return false; }
+  }
+  if(step === 7) {
+    if(!v('objetivo_principal')) { alert('Por favor, descreva seu objetivo principal.'); return false; }
+  }
+  return true;
+}
+
+function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+
+// ── Checkboxes ────────────────────────────────────────────────────
+function toggleCheck(el, group) {
+  const cb = el.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('selected', cb.checked);
+
+  // Verifica condições médicas
+  if(group === 'condicao') {
+    const condicoesMedicas = ['Diabetes','Hipertensão','Arritmia cardíaca','Doença cardíaca','Asma'];
+    const selecionadas = getChecked('condicao');
+    const temCondicao = selecionadas.some(c => condicoesMedicas.includes(c));
+    document.getElementById('aviso-medico').style.display = temCondicao ? 'flex' : 'none';
+
+    // Se "Nenhuma" selecionada, desseleciona as outras
+    if(cb.value === 'Nenhuma' && cb.checked) {
+      document.querySelectorAll('#condicoes-group .check-item input').forEach(c => {
+        if(c.value !== 'Nenhuma') { c.checked = false; c.closest('.check-item').classList.remove('selected'); }
+      });
+    } else if(cb.value !== 'Nenhuma' && cb.checked) {
+      const nenhuma = document.querySelector('#condicoes-group input[value="Nenhuma"]');
+      if(nenhuma) { nenhuma.checked = false; nenhuma.closest('.check-item').classList.remove('selected'); }
+    }
+  }
+}
+
+function toggleTermoCheck() {
+  const cb = document.getElementById('termo_aceito');
+  const item = document.getElementById('termo-check-item');
+  const box  = document.getElementById('termo-check-box');
+  cb.checked = !cb.checked;
+  item.classList.toggle('selected', cb.checked);
+  if(cb.checked) {
+    box.style.background = 'var(--orange)';
+    box.style.borderColor = 'var(--orange)';
+  } else {
+    box.style.background = '';
+    box.style.borderColor = '';
+  }
+}
+
+function getChecked(group) {
+  const selector = group === 'condicao' ? '#condicoes-group input:checked'
+                 : group === 'modalidade' ? '.check-group input[value]:checked'
+                 : `.check-item input:checked`;
+  return Array.from(document.querySelectorAll(selector)).map(c => c.value);
+}
+
+// ── Submit ────────────────────────────────────────────────────────
+async function submitForm() {
+  // Validações finais
+  if(!v('termo_assinatura')) {
+    showError('Digite seu nome completo como assinatura digital.');
+    return;
+  }
+  if(!document.getElementById('termo_aceito').checked) {
+    showError('É necessário aceitar o Termo de Consentimento para prosseguir.');
+    return;
+  }
+
+  const btnSubmit = document.getElementById('btn-submit');
+  btnSubmit.disabled = true;
+  btnSubmit.textContent = 'Enviando...';
+
+  const condicoes = getChecked('condicao').filter(c => c !== 'Nenhuma');
+  const condicoesMedicas = ['Diabetes','Hipertensão','Arritmia cardíaca','Doença cardíaca','Asma'];
+  const temCondicao = condicoes.some(c => condicoesMedicas.includes(c));
+
+  const payload = {
+    nome_completo:          v('nome_completo'),
+    data_nascimento:        v('data_nascimento') || null,
+    cpf:                    v('cpf') || null,
+    email:                  v('email'),
+    telefone:               v('telefone') || null,
+    cidade:                 v('cidade') || null,
+    peso_kg:                parseFloat(v('peso_kg')) || null,
+    altura_cm:              parseInt(v('altura_cm')) || null,
+    condicoes_medicas:      condicoes.length ? condicoes : null,
+    condicoes_outras:       v('condicoes_outras') || null,
+    medicamentos:           v('medicamentos') || null,
+    alergias:               v('alergias') || null,
+    cirurgias_recentes:     v('cirurgias_recentes') || null,
+    acompanhamento_medico:  false,
+    modalidades:            getChecked('modalidade').length ? getChecked('modalidade') : null,
+    anos_pratica:           parseInt(v('anos_pratica')) || null,
+    volume_semanal_horas:   parseFloat(v('volume_semanal_horas')) || null,
+    ultima_prova_data:      v('ultima_prova_data') || null,
+    ultima_prova_resultado: v('ultima_prova_resultado') || null,
+    proxima_prova:          v('proxima_prova') || null,
+    proxima_prova_data:     v('proxima_prova_data') || null,
+    lesoes_recentes:        v('lesoes_recentes') || null,
+    dores_recorrentes:      v('dores_recorrentes') || null,
+    exame_hemograma_data:   v('exame_hemograma_data') || null,
+    exame_hemograma_res:    v('exame_hemograma_res') || null,
+    exame_ferritina_data:   v('exame_ferritina_data') || null,
+    exame_ferritina_res:    v('exame_ferritina_res') || null,
+    exame_vitamina_d_data:  v('exame_vitamina_d_data') || null,
+    exame_vitamina_d_res:   v('exame_vitamina_d_res') || null,
+    exame_tsh_data:         v('exame_tsh_data') || null,
+    exame_tsh_res:          v('exame_tsh_res') || null,
+    exame_ecg_data:         v('exame_ecg_data') || null,
+    exame_ecg_res:          v('exame_ecg_res') || null,
+    exame_esforco_data:     v('exame_esforco_data') || null,
+    exame_esforco_res:      v('exame_esforco_res') || null,
+    sono_horas:             parseFloat(document.getElementById('sono_horas').value),
+    nivel_estresse:         parseInt(document.getElementById('nivel_estresse').value),
+    tipo_trabalho:          v('tipo_trabalho') || null,
+    alimentacao:            v('alimentacao') || null,
+    restricoes_alimentares: v('restricoes_alimentares') || null,
+    objetivo_principal:     v('objetivo_principal'),
+    objetivo_prazo:         v('objetivo_prazo') || null,
+    tentativas_anteriores:  v('tentativas_anteriores') || null,
+    termo_aceito:           true,
+    termo_assinatura:       v('termo_assinatura'),
+    termo_data:             new Date().toISOString().split('T')[0],
+    tem_condicao_medica:    temCondicao,
+    status:                 temCondicao ? 'pendente_atestado' : 'pendente_revisao',
+  };
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/athlete_anamnesis`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if(res.ok || res.status === 201) {
+      document.getElementById('form-anamnese').style.display = 'none';
+      document.getElementById('nav-bar').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    } else {
+      const err = await res.text();
+      showError(`Erro ao enviar: ${res.status}. Tente novamente ou entre em contato.`);
+      console.error(err);
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'Enviar ficha de anamnese →';
+    }
+  } catch(e) {
+    showError('Erro de conexão. Verifique sua internet e tente novamente.');
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = 'Enviar ficha de anamnese →';
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('submit-error');
+  document.getElementById('submit-error-msg').textContent = msg;
+  el.style.display = 'flex';
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+</script>
+</body>
+</html>
