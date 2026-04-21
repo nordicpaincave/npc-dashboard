@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPC Endurance — Ecossistema Técnico</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0d14;--bg2:#111520;--bg3:#181e2e;--bg4:#1e2538;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --text:#e8eaf0;--text2:#8b92a8;--text3:#50586e;
+      --orange:#f5620a;--blue:#3d8ef0;--teal:#1d9e75;--purple:#7f77dd;--amber:#ef9f27;--red:#e24b4a;
+    }
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+    .page{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+    /* Header */
+    .header{display:flex;align-items:center;gap:14px;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border)}
+    .badge{font-size:11px;font-weight:600;letter-spacing:.12em;background:var(--orange);color:#fff;padding:5px 10px;border-radius:6px}
+    .header-title{font-size:20px;font-weight:600}
+    .header-sub{font-size:12px;color:var(--text2);margin-top:2px}
+    .updated{font-size:11px;color:var(--text3);margin-left:auto;font-family:'DM Mono',monospace}
+
+    /* Section */
+    .section{margin-bottom:2rem}
+    .section-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:'';flex:1;height:0.5px;background:var(--border)}
+
+    /* Grid */
+    .grid{display:grid;gap:10px}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    @media(max-width:680px){.grid-3,.grid-4{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+    @media(max-width:420px){.grid-3,.grid-4,.grid-2{grid-template-columns:1fr}}
+
+    /* Card */
+    .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:.875rem 1rem;transition:border .15s,transform .12s;cursor:default}
+    .card:hover{border-color:var(--border2);transform:translateY(-1px)}
+    .card.clickable{cursor:pointer}
+    .card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+    .card-sub{font-size:11px;color:var(--text3)}
+    .card-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-top:6px;font-family:'DM Mono',monospace}
+
+    /* Color variants */
+    .c-blue{border-color:rgba(61,142,240,.25);background:rgba(61,142,240,.06)}
+    .c-blue .card-title{color:#7bbdff}
+    .c-blue .card-tag{background:rgba(61,142,240,.15);color:#7bbdff}
+
+    .c-teal{border-color:rgba(29,158,117,.25);background:rgba(29,158,117,.06)}
+    .c-teal .card-title{color:#5dcaa5}
+    .c-teal .card-tag{background:rgba(29,158,117,.15);color:#5dcaa5}
+
+    .c-purple{border-color:rgba(127,119,221,.25);background:rgba(127,119,221,.06)}
+    .c-purple .card-title{color:#afa9ec}
+    .c-purple .card-tag{background:rgba(127,119,221,.15);color:#afa9ec}
+
+    .c-amber{border-color:rgba(239,159,39,.25);background:rgba(239,159,39,.06)}
+    .c-amber .card-title{color:#f5c060}
+    .c-amber .card-tag{background:rgba(239,159,39,.15);color:#f5c060}
+
+    /* Arrow connector */
+    .connector{display:flex;justify-content:center;align-items:center;height:28px;color:var(--text3);font-size:16px}
+
+    /* Supabase container */
+    .db-container{background:var(--bg3);border:0.5px solid var(--border2);border-radius:12px;padding:1rem 1rem .75rem}
+    .db-label{font-size:10px;font-weight:600;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;font-family:'DM Mono',monospace}
+
+    /* AI container */
+    .ai-container{background:rgba(127,119,221,.05);border:0.5px solid rgba(127,119,221,.2);border-radius:12px;padding:1rem 1rem .75rem}
+    .ai-label{font-size:10px;font-weight:600;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;font-family:'DM Mono',monospace}
+
+    /* Pending container */
+    .pending-container{background:rgba(239,159,39,.04);border:0.5px solid rgba(239,159,39,.2);border-radius:12px;padding:1rem 1rem .75rem}
+    .pending-label{font-size:10px;font-weight:600;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px}
+
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+    .modal-overlay.open{opacity:1;pointer-events:all}
+    .modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:14px;padding:1.5rem;max-width:480px;width:90%;transform:translateY(8px);transition:transform .2s}
+    .modal-overlay.open .modal{transform:translateY(0)}
+    .modal-title{font-size:16px;font-weight:600;margin-bottom:.5rem}
+    .modal-sub{font-size:12px;color:var(--text2);margin-bottom:1rem;line-height:1.6}
+    .modal-code{background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:.75rem;font-family:'DM Mono',monospace;font-size:11px;color:#5dcaa5;margin-bottom:1rem;overflow-x:auto}
+    .modal-close{font-size:12px;color:var(--text3);cursor:pointer;padding:6px 12px;border:0.5px solid var(--border);border-radius:6px;background:transparent;font-family:'DM Sans',sans-serif}
+    .modal-close:hover{border-color:var(--border2);color:var(--text)}
+
+    /* Legend */
+    .legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:1.75rem}
+    .leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+    .leg-dot{width:10px;height:10px;border-radius:3px}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">NPC</div>
+    <div>
+      <div class="header-title">Ecossistema Técnico</div>
+      <div class="header-sub">NPC Endurance · Método Norueguês · Curitiba</div>
+    </div>
+    <div class="updated">Atualizado: Abr 2026</div>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#3d8ef0"></div>Fontes de dados</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#1d9e75"></div>Sincronização / Banco</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#7f77dd"></div>Outputs / IA</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ef9f27"></div>Pendente</div>
+  </div>
+
+  <!-- FONTES -->
+  <div class="section">
+    <div class="section-label">Fontes de dados</div>
+    <div class="grid grid-3">
+      <div class="card c-blue clickable" onclick="openModal('tp')">
+        <div class="card-title">TrainingPeaks</div>
+        <div class="card-sub">Treinos · carga · PMC</div>
+        <div class="card-tag">API + cookie auth</div>
+      </div>
+      <div class="card c-blue clickable" onclick="openModal('garmin')">
+        <div class="card-title">Garmin Health</div>
+        <div class="card-sub">HRV · sono · FC repouso</div>
+        <div class="card-tag">consolidatedtimedmetrics</div>
+      </div>
+      <div class="card c-blue clickable" onclick="openModal('form')">
+        <div class="card-title">Formulário de anamnese</div>
+        <div class="card-sub">Preenchimento pelo atleta</div>
+        <div class="card-tag">Vercel → Supabase</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- SYNC -->
+  <div class="section">
+    <div class="section-label">Sincronização — Python · Windows</div>
+    <div class="grid grid-3">
+      <div class="card c-teal clickable" onclick="openModal('sync')">
+        <div class="card-title">sync.py</div>
+        <div class="card-sub">Incremental (14 dias) ou full (90 dias)</div>
+        <div class="card-tag">Task Scheduler 5h30</div>
+      </div>
+      <div class="card c-teal clickable" onclick="openModal('transformers')">
+        <div class="card-title">transformers.py</div>
+        <div class="card-sub">TP → Supabase · sport · wellness · notas</div>
+        <div class="card-tag">sport IDs corrigidos</div>
+      </div>
+      <div class="card c-teal clickable" onclick="openModal('scheduler')">
+        <div class="card-title">npc_update_dashboard.bat</div>
+        <div class="card-sub">Build → inject → git push automático</div>
+        <div class="card-tag">git pull --rebase</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- BANCO -->
+  <div class="section">
+    <div class="db-container">
+      <div class="db-label">Supabase (PostgreSQL) — banco de dados</div>
+      <div class="grid grid-4" style="margin-bottom:10px">
+        <div class="card c-teal clickable" onclick="openModal('db-athletes')">
+          <div class="card-title">athletes</div>
+          <div class="card-sub">passaportes · zonas · LT1/LT2/FTP</div>
+        </div>
+        <div class="card c-teal clickable" onclick="openModal('db-workouts')">
+          <div class="card-title">workouts · load</div>
+          <div class="card-sub">294 treinos · CTL/ATL/TSB diário</div>
+        </div>
+        <div class="card c-teal clickable" onclick="openModal('db-wellness')">
+          <div class="card-title">wellness_logs</div>
+          <div class="card-sub">HRV · sono · FC repouso (156 registros)</div>
+        </div>
+        <div class="card c-teal clickable" onclick="openModal('db-analyses')">
+          <div class="card-title">weekly_analyses</div>
+          <div class="card-sub">histórico decisões coaching</div>
+        </div>
+      </div>
+      <div class="grid grid-2">
+        <div class="card c-teal clickable" onclick="openModal('db-anamnese')">
+          <div class="card-title">athlete_anamnesis</div>
+          <div class="card-sub">fichas + termo de consentimento</div>
+        </div>
+        <div class="card c-teal clickable" onclick="openModal('db-macro')">
+          <div class="card-title">sports · macro_plan</div>
+          <div class="card-sub">29 semanas · fases · CTL alvo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- OUTPUTS -->
+  <div class="section">
+    <div class="section-label">Outputs</div>
+    <div class="grid grid-3">
+      <div class="card c-purple clickable" onclick="openModal('dashboard')">
+        <div class="card-title">Dashboard NPC</div>
+        <div class="card-sub">CTL · ATL · TSB · HRV · zonas · volume</div>
+        <div class="card-tag">npc-dashboard-seven.vercel.app</div>
+      </div>
+      <div class="card c-purple clickable" onclick="openModal('context')">
+        <div class="card-title">npc_context_loader.py</div>
+        <div class="card-sub">Contexto completo → Claude Desktop</div>
+        <div class="card-tag">passaporte + carga + HRV + análises</div>
+      </div>
+      <div class="card c-purple clickable" onclick="openModal('review')">
+        <div class="card-title">npc_review_anamnesis.py</div>
+        <div class="card-sub">Parecer IA + aprovação interativa</div>
+        <div class="card-tag">API Anthropic</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- IA -->
+  <div class="section">
+    <div class="ai-container">
+      <div class="ai-label">Camada de IA — Claude (Anthropic)</div>
+      <div class="grid grid-3">
+        <div class="card c-purple clickable" onclick="openModal('skill-analise')">
+          <div class="card-title">Skill: análise</div>
+          <div class="card-sub">Execução vs prescrição · HRV · carga</div>
+          <div class="card-tag">Modo Supabase ✓</div>
+        </div>
+        <div class="card c-purple clickable" onclick="openModal('skill-prescricao')">
+          <div class="card-title">Skill: prescrição</div>
+          <div class="card-sub">Semana personalizada + PDF NPC</div>
+          <div class="card-tag">Modo Supabase ✓</div>
+        </div>
+        <div class="card c-purple clickable" onclick="openModal('skill-export')">
+          <div class="card-title">Skill: exportação</div>
+          <div class="card-sub">Treinos estruturados → TrainingPeaks</div>
+          <div class="card-tag">tp_create_workout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDENTE -->
+  <div class="section" style="margin-top:2rem">
+    <div class="pending-container">
+      <div class="pending-label">Pendente — próximas implementações</div>
+      <div class="grid grid-3">
+        <div class="card c-amber">
+          <div class="card-title">Supabase Auth</div>
+          <div class="card-sub">Login por atleta · dashboard restrito</div>
+          <div class="card-tag">Opção 3</div>
+        </div>
+        <div class="card c-amber">
+          <div class="card-title">Estilos de comunicação</div>
+          <div class="card-sub">Tom por atleta · regionalismos</div>
+          <div class="card-tag">campo JSON no Supabase</div>
+        </div>
+        <div class="card c-amber">
+          <div class="card-title">TP ID Rafael</div>
+          <div class="card-sub">Descomentear config.py + sync --full</div>
+          <div class="card-tag">aguardando TP ID</div>
+        </div>
+        <div class="card c-amber">
+          <div class="card-title">npc_approve_athlete.py</div>
+          <div class="card-sub">Anamnese aprovada → cria atleta no banco</div>
+          <div class="card-tag">fechar ciclo</div>
+        </div>
+        <div class="card c-amber">
+          <div class="card-title">Relatório PDF análise</div>
+          <div class="card-sub">Geração via Supabase + ReportLab</div>
+          <div class="card-tag">npc_theme.py</div>
+        </div>
+        <div class="card c-amber">
+          <div class="card-title">Gabriel sem natação</div>
+          <div class="card-sub">Remover natação dos sports_allowed</div>
+          <div class="card-tag">update Supabase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-sub" id="modal-desc"></div>
+    <div class="modal-code" id="modal-code" style="display:none"></div>
+    <button class="modal-close" onclick="closeModal()">Fechar</button>
+  </div>
+</div>
+
+<script>
+const INFO = {
+  tp: {
+    title: 'TrainingPeaks — Autenticação',
+    desc: 'Não usamos OAuth oficial. O MCP do Claude Desktop faz login e salva o cookie de sessão no Windows Credential Manager. O tp_client.py lê esse cookie e troca por um Bearer token via GET /users/v3/token. O cookie expira periodicamente — reautenticar no Claude Desktop resolve.',
+    code: 'GET /users/v3/token\n→ Authorization: Bearer {token}\n→ Endpoints: workouts/v6, fitness/v1, metrics/v3'
+  },
+  garmin: {
+    title: 'Garmin Health — Wellness',
+    desc: 'HRV (type 60), FC repouso (type 5) e sono (type 6) vêm via endpoint consolidatedtimedmetrics do TP. O Garmin sincroniza automaticamente com o TP. Atualiza diariamente às 5h30.',
+    code: 'GET /metrics/v3/athletes/{id}/consolidatedtimedmetrics/{start}/{end}'
+  },
+  form: {
+    title: 'Formulário de Anamnese',
+    desc: '8 blocos: identificação, saúde, histórico esportivo, lesões, exames, hábitos, objetivos e termo de consentimento. Usa a publishable key do Supabase (segura para uso público). Status automático: pendente_revisao ou pendente_atestado.',
+    code: 'npc-dashboard-seven.vercel.app/anamnese.html'
+  },
+  sync: {
+    title: 'sync.py — Pipeline de sincronização',
+    desc: 'Sync incremental: últimos 14 dias. Sync full: últimos 90 dias. Roda automaticamente via Task Scheduler às 5h30. Sincroniza treinos, carga PMC e wellness para todos os atletas.',
+    code: 'python sync.py              # incremental\npython sync.py --full       # completo\npython sync.py --athlete bruno  # só 1 atleta'
+  },
+  transformers: {
+    title: 'transformers.py — Transformação de dados',
+    desc: 'Converte o formato do TP para o schema do Supabase. Sport IDs foram corrigidos (1=Swim, 2=Bike, 3=Run). Wellness usa source="trainingpeaks". Comentários do atleta lidos via workoutComments array.',
+    code: 'SPORT_ID_MAP_TP = {1:"Swim", 2:"Bike", 3:"Run"}\nsource: "trainingpeaks"  # não "garmin_health"'
+  },
+  scheduler: {
+    title: 'Automação — Task Scheduler',
+    desc: 'Duas tarefas registradas no Windows: sync às 5h30 e dashboard às 5h45. O bat faz git pull --rebase antes do commit para evitar conflitos. Log em C:\\npc_sync\\npc_dashboard.log.',
+    code: 'NPC Sync Semanal    → 5h30 diário\nNPC Dashboard Update → 5h45 diário'
+  },
+  'db-athletes': {
+    title: 'Tabela athletes + physiological_passports',
+    desc: '4 atletas cadastrados: Jean Romano, Bruno Romero, Gabriel Antunes, Rafael Lemos (sem TP ID ainda). Passaportes com LT1, LT2, FTP, CSS, VO2max para cada modalidade.',
+    code: 'Jean:   FTP 304W · LT1 144bpm · LT2 170bpm\nBruno:  FTP 281W · LT1 138bpm · LT2 176bpm\nGabriel: estimativas de campo'
+  },
+  'db-workouts': {
+    title: 'Treinos + Carga PMC',
+    desc: '294 treinos sincronizados (Jean 58, Bruno 71, Gabriel 165). 155 registros de CTL/ATL/TSB diário. Zonas Z1/Z2/Z3 estimadas por FC média quando não disponíveis.',
+    code: 'executed_workouts: 294 registros\ntraining_load_daily: 155 registros'
+  },
+  'db-wellness': {
+    title: 'Wellness — HRV, sono, FC repouso',
+    desc: '156 registros de wellness (Jean 32, Bruno 33, Gabriel 91). Dados reais do Garmin Health via endpoint consolidatedtimedmetrics. Baseline calculado como média de 14 dias.',
+    code: 'wellness_logs: 156 registros\ntype 60 = HRV · type 5 = FC · type 6 = sono'
+  },
+  'db-analyses': {
+    title: 'weekly_analyses — Histórico de coaching',
+    desc: 'Tabela criada nesta sessão. Salva análises semanais com CTL/ATL/TSB snapshot, HRV, TSS planejado vs realizado, status, destaques, alertas e flags para a próxima prescrição.',
+    code: 'python npc_save_analysis.py\n→ 3 análises salvas (Jean, Bruno, Gabriel sem. 5)'
+  },
+  'db-anamnese': {
+    title: 'athlete_anamnesis — Fichas de anamnese',
+    desc: 'Tabela com 40+ campos cobrindo saúde, histórico esportivo, lesões, exames, hábitos e objetivos. Status automático: pendente_revisao / pendente_atestado / aprovado / reprovado.',
+    code: 'Status atual:\n→ Simony Huck: pendente_revisao'
+  },
+  'db-macro': {
+    title: 'sports + macro_plan',
+    desc: 'Tabela sports com 10 modalidades (run, bike, swim, triathlon, duathlon, strength, trail_run, open_water, aquathlon, physio). Plano macro de 29 semanas com CTL alvo por fase.',
+    code: 'Prova alvo: 70.3 Buenos Aires\nData: 04/10/2026 · Jean + Bruno + Rafael'
+  },
+  dashboard: {
+    title: 'Dashboard NPC Endurance',
+    desc: 'Hospedado no Vercel, atualizado automaticamente às 5h45. Mostra CTL/ATL/TSB com PMC 75 dias, HRV 14 dias com baseline, sono, FC repouso, zonas Z1/Z2/Z3 por modalidade e volume semanal.',
+    code: 'npc-dashboard-seven.vercel.app\nnpc-dashboard-seven.vercel.app/anamnese.html'
+  },
+  context: {
+    title: 'npc_context_loader.py',
+    desc: 'Lê todos os dados do Supabase e gera um bloco de texto formatado para colar no Claude Desktop. Inclui passaporte fisiológico, fitness trend, wellness 14 dias, resumo 4 semanas e histórico de análises.',
+    code: 'python npc_context_loader.py --output contexto_npc.txt\npython npc_context_loader.py --athlete bruno'
+  },
+  review: {
+    title: 'npc_review_anamnesis.py',
+    desc: 'Lista fichas pendentes, chama a API do Claude (claude-sonnet-4) para gerar um parecer completo com perfil, pontos favoráveis, alertas, análise de exames e recomendações. Permite aprovar/reprovar interativamente.',
+    code: 'python npc_review_anamnesis.py\npython npc_review_anamnesis.py --no-ai  # sem IA\npython npc_review_anamnesis.py --all    # todas'
+  },
+  'skill-analise': {
+    title: 'Skill: Análise de Treinos',
+    desc: 'Analisa execução vs prescrição, cruza com HRV/sono, avalia carga e gera relatório semanal. Modo Supabase: lê diretamente do contexto colado sem chamadas MCP. Modo Completo: usa MCP TrainingPeaks.',
+    code: 'Modos: Supabase (preferencial) · MCP · Leve (print)'
+  },
+  'skill-prescricao': {
+    title: 'Skill: Prescrição de Treinos',
+    desc: 'Gera semana personalizada respeitando passaporte fisiológico, disponibilidade, restrições e plano macro. Gera PDF com identidade visual NPC. Modo Supabase: contexto colado substitui Etapa 0 do MCP.',
+    code: 'npc_theme.py → PDF com branding NPC\nEtapa -1: calcular datas → obrigatório'
+  },
+  'skill-export': {
+    title: 'Skill: Exportação para TP',
+    desc: 'Único ponto que ainda usa o MCP TrainingPeaks — para criar treinos estruturados no calendário do atleta. Regra crítica: soma dos duration_seconds dos steps deve ser igual ao duration_minutes × 60.',
+    code: 'tp_create_workout(sport, date, structure)\n→ structure: steps com duration_seconds exatos'
+  }
+};
+
+function openModal(key) {
+  const d = INFO[key];
+  if(!d) return;
+  document.getElementById('modal-title').textContent = d.title;
+  document.getElementById('modal-desc').textContent = d.desc;
+  const code = document.getElementById('modal-code');
+  if(d.code){ code.textContent = d.code; code.style.display='block'; }
+  else { code.style.display='none'; }
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if(!e || e.target.id === 'modal' || e.target.classList.contains('modal-close')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal({target:{id:'modal'}}); });
+</script>
+</body>
+</html>
