@@ -129,6 +129,15 @@
     .phase-meta span b{color:var(--text);font-weight:600}
     .phase-goals{font-size:13px;color:var(--text2);line-height:1.8}
     .phase-goals li{margin-bottom:4px}
+    /* Indicators */
+    .ind-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+    .ind-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem}
+    .ind-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+    .ind-value{font-size:17px;font-weight:700;margin-bottom:10px}
+    .ind-track{position:relative;height:7px;border-radius:4px;margin-bottom:6px}
+    .ind-pointer{position:absolute;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+    .ind-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+    @media(max-width:640px){.ind-grid{grid-template-columns:1fr}}
     /* Footer */
     .footer{margin-top:3rem;padding-top:1rem;border-top:0.5px solid var(--border);text-align:center;font-size:11px;color:var(--text3)}
     @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.row3,.cmp-grid{grid-template-columns:1fr 1fr}.well-grid,.row4{grid-template-columns:repeat(2,1fr)}.cal-days{grid-template-columns:repeat(4,1fr)}}
@@ -149,7 +158,6 @@
       <div class="tab-group">
         <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
         <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
-        <button class="tab-btn" onclick="setView('calendario',this)">Calendário</button>
         <button class="tab-btn" onclick="setView('macro',this)">Plano Macro</button>
       </div>
       <select id="sel-athlete" onchange="updateDash()">
@@ -158,13 +166,6 @@
         <option value="gabriel">Gabriel</option>
         <option value="rafael">Rafael Lemos</option>
       </select>
-      <select id="sel-sport" onchange="updateDash()">
-        <option value="all">Todos os esportes</option>
-        <option value="swim">Natação</option>
-        <option value="bike">Ciclismo</option>
-        <option value="run">Corrida</option>
-        <option value="strength">Força</option>
-      </select>
     </div>
   </div>
 
@@ -172,6 +173,7 @@
   <div id="view-individual">
     <div id="alerts-bar" class="alerts"></div>
     <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="ind-grid" id="ind-grid"></div>
     <div class="card row1">
       <div class="card-title">Tendência de carga — CTL / ATL / TSB (75 dias)</div>
       <div class="legend" id="pmc-legend"></div>
@@ -196,13 +198,9 @@
     </div>
     <div class="row2">
       <div class="card">
-        <div class="card-title">Distribuição de zonas — por modalidade</div>
-        <div class="legend" style="margin-bottom:10px">
-          <span><span class="dot" style="background:#2a5080"></span>Z1</span>
-          <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
-          <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>
-        </div>
-        <div id="zone-by-sport"></div>
+        <div class="card-title">Distribuição de zonas (%)</div>
+        <div class="legend" id="zone-legend"></div>
+        <div style="position:relative;height:150px"><canvas id="zone-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title-row">
@@ -281,7 +279,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 20:06 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 20:21 (Supabase)</div>
 </div>
 
 <script>
@@ -1208,7 +1206,7 @@ function fmtH(h) {
 }
 function totalH(vol) { return Object.values(vol).reduce((a,b)=>a+b,0); }
 function getA()  { return document.getElementById('sel-athlete').value; }
-function getSp() { return document.getElementById('sel-sport').value; }
+
 function dc(id)  { if(charts[id]){charts[id].destroy();delete charts[id];} }
 
 // ── View toggle ────────────────────────────────────────────────────
@@ -1217,14 +1215,38 @@ function setView(v, btn) {
   document.querySelectorAll('.tab-group:first-child .tab-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
   ['individual','comparativo','calendario','macro'].forEach(id=>{
-    document.getElementById('view-'+id).style.display = v===id ? 'block':'none';
+    const el = document.getElementById('view-'+id);
+    if(el) el.style.display = v===id ? 'block':'none';
   });
-  const isInd = v==='individual';
-  document.getElementById('sel-athlete').disabled = !isInd && v!=='individual';
-  document.getElementById('sel-sport').disabled   = v!=='individual';
   if(v==='comparativo') renderComparativo();
   if(v==='calendario')  renderCalendar(calAthlete);
   if(v==='macro')       renderMacro(macroAthlete);
+}
+
+// ── Indicators ─────────────────────────────────────────────────────
+function renderIndicators(d) {
+  const ind = d.indicators || {};
+  const defs = [
+    {key:'fitness', title:'Fitness — Ramp Rate'},
+    {key:'form',    title:'Form — TSB'},
+    {key:'fatigue', title:'Fatigue — Direção'},
+  ];
+  const gradients = {
+    fitness: 'linear-gradient(to right,#4a9eff,#4db87a,#f5a623)',
+    form:    'linear-gradient(to right,#ff5252,#4db87a,#4a9eff)',
+    fatigue: 'linear-gradient(to right,#4db87a,#f5a623,#ff5252)',
+  };
+  document.getElementById('ind-grid').innerHTML = defs.map(def => {
+    const i = ind[def.key] || {label:'—', color:'#8b90a0', pos:50, start:'', end:''};
+    return `<div class="ind-card">
+      <div class="ind-label">${def.title}</div>
+      <div class="ind-value" style="color:${i.color}">${i.label}</div>
+      <div class="ind-track" style="background:${gradients[def.key]}">
+        <div class="ind-pointer" style="left:${i.pos}%"></div>
+      </div>
+      <div class="ind-ends"><span>${i.start}</span><span>${i.end}</span></div>
+    </div>`;
+  }).join('');
 }
 
 // ── Main ───────────────────────────────────────────────────────────
@@ -1235,6 +1257,7 @@ function updateDash() {
   const d = DB[getA()];
   renderAlerts(d);
   renderKPIs(d);
+  renderIndicators(d);
   renderPMC(d);
   renderWellness(d);
   renderZone(d);
@@ -1361,38 +1384,22 @@ function renderWellness(d) {
   }
 }
 
-// ── Zones por modalidade ───────────────────────────────────────────
+// ── Zones ──────────────────────────────────────────────────────────
 function renderZone(d) {
-  const el = document.getElementById('zone-by-sport');
-  if(!el) return;
-  const zones = d.zones || {};
-  const SPORT_LABELS = {swim:'Natação',bike:'Bike',run:'Corrida'};
-  const SPORT_ICONS  = {swim:'🏊',bike:'🚴',run:'🏃'};
-
-  if(!Object.keys(zones).length){
-    el.innerHTML='<p style="color:var(--text3);font-size:12px;padding:.5rem 0">Dados de zona indisponíveis</p>';
-    return;
+  dc('zone');
+  document.getElementById('zone-legend').innerHTML=`
+    <span><span class="dot" style="background:#2a5080"></span>Z1</span>
+    <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
+    <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;
+  if(!d.zones.labels.length){
+    document.getElementById('zone-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Dados de zona indisponíveis</p>';return;
   }
-
-  let html = '';
-  for(const [sp, label] of Object.entries(SPORT_LABELS)){
-    const z = zones[sp];
-    if(!z) continue;
-    const z1 = z.z1||0, z2 = z.z2||0, z3 = z.z3||0;
-    html += `
-    <div style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
-        <span style="font-size:11px;font-weight:600;color:var(--text2)">${SPORT_ICONS[sp]} ${label}</span>
-        <span style="font-size:10px;color:var(--text3)">Z1 ${z1}% · Z2 ${z2}% · Z3 ${z3}%</span>
-      </div>
-      <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;gap:1px">
-        ${z1>0?`<div style="flex:${z1};background:#2a5080;border-radius:3px 0 0 3px" title="Z1: ${z1}%"></div>`:''}
-        ${z2>0?`<div style="flex:${z2};background:#4a9eff" title="Z2: ${z2}%"></div>`:''}
-        ${z3>0?`<div style="flex:${z3};background:#ff7c3a;border-radius:0 3px 3px 0" title="Z3: ${z3}%"></div>`:''}
-      </div>
-    </div>`;
-  }
-  el.innerHTML = html;
+  charts['zone']=new Chart(document.getElementById('zone-chart'),{type:'bar',data:{labels:d.zones.labels,datasets:[
+    {label:'Z1',data:d.zones.z1,backgroundColor:'#2a5080',borderRadius:3},
+    {label:'Z2',data:d.zones.z2,backgroundColor:'#4a9eff',borderRadius:3},
+    {label:'Z3',data:d.zones.z3,backgroundColor:'#ff7c3a',borderRadius:3},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{stacked:true,max:100,ticks:{color:'#565c70',font:tf,callback:v=>v+'%'},grid:{color:gc}}}}});
 }
 
 // ── Volume ─────────────────────────────────────────────────────────
@@ -1427,8 +1434,7 @@ function renderAdherence(d) {
 
 // ── Sessions ───────────────────────────────────────────────────────
 function renderSessions(d) {
-  const sel=getSp();
-  const rows=(d.sessions||[]).filter(s=>sel==='all'||s.sport===sel);
+  const rows=(d.sessions||[]);
   document.getElementById('sessions-body').innerHTML=rows.length
     ? rows.map(s=>`<tr><td style="font-weight:600">${s.day}</td><td><span class="badge b-${s.sport}">${SPORT_LABEL[s.sport]||s.sport}</span></td><td style="color:#8b90a0">${s.desc}</td><td>${s.dur}</td><td style="font-weight:600">${s.tss}</td><td style="color:#565c70">${s.zones}</td></tr>`).join('')
     : '<tr><td colspan="6" style="color:var(--text3);padding:1rem 0">Nenhuma sessão encontrada</td></tr>';
