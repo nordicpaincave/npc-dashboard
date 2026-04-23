@@ -279,7 +279,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 20:32 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 20:35 (Supabase)</div>
 </div>
 
 <script>
@@ -456,34 +456,42 @@ const DB = {
     "alerts": [
       {
         "type": "danger",
-        "msg": "Risco de overtraining — TSB -50, recuperação prioritária"
+        "msg": "Sobrecarga elevada — TSB -50: monitorar HRV diariamente e proteger o sono"
+      },
+      {
+        "type": "info",
+        "msg": "HRV preservado (77 ms) apesar da fadiga: sistema nervoso respondendo bem"
+      },
+      {
+        "type": "warn",
+        "msg": "Ramp rate elevado — CTL subiu 9.1 pts em 7 dias: risco de overuse se mantido"
+      },
+      {
+        "type": "warn",
+        "msg": "Carga aguda muito acima da crônica — ATL 118 vs CTL 68: semana de pico, planejar descarga"
       },
       {
         "type": "info",
         "msg": "Buenos Aires (70.3) em 23 semanas"
-      },
-      {
-        "type": "warn",
-        "msg": "ATL elevada (118) vs CTL (68) — monitorar recuperação"
       }
     ],
     "sessions": [
-      {
-        "day": "Seg",
-        "sport": "bike",
-        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
-        "dur": "57min",
-        "tss": 30,
-        "zones": "—",
-        "hrv": 73,
-        "ht": "up"
-      },
       {
         "day": "Seg",
         "sport": "swim",
         "desc": "Natação — Aula (Sem. 6)",
         "dur": "1h19",
         "tss": 96,
+        "zones": "—",
+        "hrv": 73,
+        "ht": "up"
+      },
+      {
+        "day": "Seg",
+        "sport": "bike",
+        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
+        "dur": "57min",
+        "tss": 30,
         "zones": "—",
         "hrv": 73,
         "ht": "up"
@@ -510,20 +518,20 @@ const DB = {
       },
       {
         "day": "Qua",
-        "sport": "swim",
-        "desc": "Natação — Aula (Sem. 6)",
-        "dur": "1h07",
-        "tss": 93,
+        "sport": "run",
+        "desc": "Corrida Z1 — Base Aeróbia (Sem. 6)",
+        "dur": "55min",
+        "tss": 40,
         "zones": "—",
         "hrv": 77,
         "ht": "up"
       },
       {
         "day": "Qua",
-        "sport": "run",
-        "desc": "Corrida Z1 — Base Aeróbia (Sem. 6)",
-        "dur": "55min",
-        "tss": 40,
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 6)",
+        "dur": "1h07",
+        "tss": 93,
         "zones": "—",
         "hrv": 77,
         "ht": "up"
@@ -539,7 +547,29 @@ const DB = {
         "ht": "dn"
       }
     ],
-    "indicators": {},
+    "indicators": {
+      "form": {
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 3,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Going Hard",
+        "color": "#f5a623",
+        "pos": 93,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Stable",
+        "color": "#8b90a0",
+        "pos": 50,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   },
@@ -720,16 +750,20 @@ const DB = {
     ],
     "alerts": [
       {
-        "type": "danger",
-        "msg": "Risco de overtraining — TSB -30, recuperação prioritária"
+        "type": "warn",
+        "msg": "Fadiga acumulada — TSB -30: HRV estável, monitorar próximas 48h"
+      },
+      {
+        "type": "info",
+        "msg": "HRV preservado (56 ms) apesar da fadiga: sistema nervoso respondendo bem"
+      },
+      {
+        "type": "warn",
+        "msg": "Carga aguda muito acima da crônica — ATL 81 vs CTL 51: semana de pico, planejar descarga"
       },
       {
         "type": "info",
         "msg": "Buenos Aires (70.3) em 23 semanas"
-      },
-      {
-        "type": "warn",
-        "msg": "ATL elevada (81) vs CTL (51) — monitorar recuperação"
       }
     ],
     "sessions": [
@@ -776,9 +810,9 @@ const DB = {
       {
         "day": "Qua",
         "sport": "bike",
-        "desc": "Força — Unilaterais Sessão 1 (Sem. 6)",
-        "dur": "54min",
-        "tss": 28,
+        "desc": "Other",
+        "dur": "5min",
+        "tss": 2,
         "zones": "—",
         "hrv": 49.7,
         "ht": "dn"
@@ -796,9 +830,9 @@ const DB = {
       {
         "day": "Qua",
         "sport": "bike",
-        "desc": "Other",
-        "dur": "5min",
-        "tss": 2,
+        "desc": "Força — Unilaterais Sessão 1 (Sem. 6)",
+        "dur": "54min",
+        "tss": 28,
         "zones": "—",
         "hrv": 49.7,
         "ht": "dn"
@@ -824,7 +858,29 @@ const DB = {
         "ht": "up"
       }
     ],
-    "indicators": {},
+    "indicators": {
+      "form": {
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 3,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Going Hard",
+        "color": "#f5a623",
+        "pos": 69,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Increasing",
+        "color": "#ff7c3a",
+        "pos": 96,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   },
@@ -977,6 +1033,14 @@ const DB = {
     ],
     "alerts": [
       {
+        "type": "ok",
+        "msg": "Forma positiva — TSB +48 com 89% de aderência: semana excelente"
+      },
+      {
+        "type": "warn",
+        "msg": "HRV 78% do baseline nos últimos 3 dias: priorizar sono e recuperação"
+      },
+      {
         "type": "info",
         "msg": "Buenos Aires (70.3) em 23 semanas"
       }
@@ -1003,7 +1067,29 @@ const DB = {
         "ht": "up"
       }
     ],
-    "indicators": {},
+    "indicators": {
+      "form": {
+        "label": "Recharging",
+        "color": "#4a9eff",
+        "pos": 97,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Recovering",
+        "color": "#4a9eff",
+        "pos": 3,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Increasing",
+        "color": "#ff7c3a",
+        "pos": 71,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   },
@@ -1148,7 +1234,29 @@ const DB = {
       }
     ],
     "sessions": [],
-    "indicators": {},
+    "indicators": {
+      "form": {
+        "label": "Optimal",
+        "color": "#4db87a",
+        "pos": 58,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Keeping Fit",
+        "color": "#4db87a",
+        "pos": 33,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Stable",
+        "color": "#8b90a0",
+        "pos": 50,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   }
