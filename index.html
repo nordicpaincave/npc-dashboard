@@ -279,7 +279,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 20:35 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 20:42 (Supabase)</div>
 </div>
 
 <script>
@@ -340,21 +340,26 @@ const DB = {
       ]
     },
     "zones": {
-      "swim": {
-        "z1": 90,
-        "z2": 8,
-        "z3": 2
-      },
-      "bike": {
-        "z1": 90,
-        "z2": 8,
-        "z3": 2
-      },
-      "run": {
-        "z1": 90,
-        "z2": 8,
-        "z3": 2
-      }
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        90,
+        90,
+        90
+      ],
+      "z2": [
+        8,
+        8,
+        8
+      ],
+      "z3": [
+        2,
+        2,
+        2
+      ]
     },
     "vol": {
       "swim": 2.4,
@@ -629,21 +634,26 @@ const DB = {
       ]
     },
     "zones": {
-      "swim": {
-        "z1": 80,
-        "z2": 15,
-        "z3": 5
-      },
-      "bike": {
-        "z1": 90,
-        "z2": 8,
-        "z3": 2
-      },
-      "run": {
-        "z1": 90,
-        "z2": 8,
-        "z3": 2
-      }
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        80,
+        90,
+        90
+      ],
+      "z2": [
+        15,
+        8,
+        8
+      ],
+      "z3": [
+        5,
+        2,
+        2
+      ]
     },
     "vol": {
       "swim": 1.6,
@@ -940,11 +950,18 @@ const DB = {
       ]
     },
     "zones": {
-      "run": {
-        "z1": 90,
-        "z2": 8,
-        "z3": 2
-      }
+      "labels": [
+        "Corrida"
+      ],
+      "z1": [
+        90
+      ],
+      "z2": [
+        8
+      ],
+      "z3": [
+        2
+      ]
     },
     "vol": {
       "swim": 0.0,
@@ -1148,7 +1165,12 @@ const DB = {
         0.0
       ]
     },
-    "zones": {},
+    "zones": {
+      "labels": [],
+      "z1": [],
+      "z2": [],
+      "z3": []
+    },
     "vol": {
       "swim": 0.0,
       "bike": 0.0,
