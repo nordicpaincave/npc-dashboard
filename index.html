@@ -279,7 +279,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 21:18 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 21:21 (Supabase)</div>
 </div>
 
 <script>
@@ -340,16 +340,32 @@ const DB = {
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        65,
+        82,
+        82
+      ],
+      "z2": [
+        30,
+        16,
+        16
+      ],
+      "z3": [
+        5,
+        2,
+        2
+      ]
     },
     "vol": {
-      "swim": 0.0,
-      "bike": 0.0,
-      "run": 0.0,
-      "strength": 0.0
+      "swim": 2.4,
+      "bike": 3.2,
+      "run": 0.9,
+      "strength": 2.1
     },
     "hrv": {
       "labels": [
@@ -422,7 +438,32 @@ const DB = {
       "last_sleep": 7.9,
       "last_rhr": 46
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 2.4,
+        "target": 2.6,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 3.2,
+        "target": 3.5,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 0.9,
+        "target": 1.0,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 2.1,
+        "target": 2.3,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
       {
         "type": "danger",
@@ -445,7 +486,78 @@ const DB = {
         "msg": "Buenos Aires (70.3) em 23 semanas"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 6)",
+        "dur": "1h19",
+        "tss": 96,
+        "zones": "—",
+        "hrv": 73,
+        "ht": "up"
+      },
+      {
+        "day": "Seg",
+        "sport": "strength",
+        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
+        "dur": "57min",
+        "tss": 30,
+        "zones": "—",
+        "hrv": 73,
+        "ht": "up"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base (1h30 MAX) (Sem. 6)",
+        "dur": "1h32",
+        "tss": 80,
+        "zones": "—",
+        "hrv": 77,
+        "ht": "up"
+      },
+      {
+        "day": "Ter",
+        "sport": "strength",
+        "desc": "Musculação — Quad + Glúteos + Mobilidade (Sem. 6)",
+        "dur": "1h06",
+        "tss": 38,
+        "zones": "—",
+        "hrv": 77,
+        "ht": "up"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Corrida Z1 — Base Aeróbia (Sem. 6)",
+        "dur": "55min",
+        "tss": 40,
+        "zones": "—",
+        "hrv": 77,
+        "ht": "up"
+      },
+      {
+        "day": "Qua",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 6)",
+        "dur": "1h07",
+        "tss": 93,
+        "zones": "—",
+        "hrv": 77,
+        "ht": "up"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Ciclismo Z1+Z2 — 4×8min LT1 (Sem. 6)",
+        "dur": "1h41",
+        "tss": 91,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
+      }
+    ],
     "indicators": {
       "form": {
         "label": "Overloading",
@@ -528,16 +640,32 @@ const DB = {
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        20,
+        82,
+        95
+      ],
+      "z2": [
+        65,
+        16,
+        4
+      ],
+      "z3": [
+        15,
+        2,
+        1
+      ]
     },
     "vol": {
-      "swim": 0.0,
-      "bike": 0.0,
-      "run": 0.0,
-      "strength": 0.0
+      "swim": 1.6,
+      "bike": 1.2,
+      "run": 1.4,
+      "strength": 0.9
     },
     "hrv": {
       "labels": [
@@ -610,7 +738,32 @@ const DB = {
       "last_sleep": 7.8,
       "last_rhr": 45
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 1.6,
+        "target": 1.8,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 1.2,
+        "target": 1.3,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 1.4,
+        "target": 1.5,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 0.9,
+        "target": 1.0,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
       {
         "type": "warn",
@@ -629,7 +782,68 @@ const DB = {
         "msg": "Buenos Aires (70.3) em 23 semanas"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Trilha Z1 — Recuperação Ativa Viagem (Sem. 6)",
+        "dur": "41min",
+        "tss": 2,
+        "zones": "—",
+        "hrv": 85.2,
+        "ht": "up"
+      },
+      {
+        "day": "Qua",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 6)",
+        "dur": "43min",
+        "tss": 55,
+        "zones": "—",
+        "hrv": 49.7,
+        "ht": "dn"
+      },
+      {
+        "day": "Qua",
+        "sport": "strength",
+        "desc": "Força — Unilaterais Sessão 1 (Sem. 6)",
+        "dur": "54min",
+        "tss": 28,
+        "zones": "—",
+        "hrv": 49.7,
+        "ht": "dn"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Corrida Z1 — Leve + Alfredson (Sem. 6)",
+        "dur": "40min",
+        "tss": 31,
+        "zones": "—",
+        "hrv": 49.7,
+        "ht": "dn"
+      },
+      {
+        "day": "Qui",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 6)",
+        "dur": "51min",
+        "tss": 71,
+        "zones": "—",
+        "hrv": 64.2,
+        "ht": "up"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 6)",
+        "dur": "1h10",
+        "tss": 59,
+        "zones": "—",
+        "hrv": 64.2,
+        "ht": "up"
+      }
+    ],
     "indicators": {
       "form": {
         "label": "Overloading",
@@ -712,15 +926,23 @@ const DB = {
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Corrida"
+      ],
+      "z1": [
+        95
+      ],
+      "z2": [
+        4
+      ],
+      "z3": [
+        1
+      ]
     },
     "vol": {
       "swim": 0.0,
       "bike": 0.0,
-      "run": 0.0,
+      "run": 0.8,
       "strength": 0.0
     },
     "hrv": {
@@ -794,8 +1016,19 @@ const DB = {
       "last_sleep": 7.5,
       "last_rhr": 58
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Corrida",
+        "done": 0.8,
+        "target": 0.9,
+        "color": "#4db87a"
+      }
+    ],
     "alerts": [
+      {
+        "type": "ok",
+        "msg": "Forma positiva — TSB +48 com 89% de aderência: semana excelente"
+      },
       {
         "type": "warn",
         "msg": "HRV 78% do baseline nos últimos 3 dias: priorizar sono e recuperação"
@@ -805,7 +1038,28 @@ const DB = {
         "msg": "Buenos Aires (70.3) em 23 semanas"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Corrida Z1 — Retomada Progressiva (Sem. 6)",
+        "dur": "50min",
+        "tss": 35,
+        "zones": "—",
+        "hrv": 46,
+        "ht": "up"
+      },
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Treino",
+        "dur": "1min",
+        "tss": 1,
+        "zones": "—",
+        "hrv": 46,
+        "ht": "up"
+      }
+    ],
     "indicators": {
       "form": {
         "label": "Recharging",
