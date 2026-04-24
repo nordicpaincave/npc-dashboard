@@ -131,12 +131,16 @@
     .phase-goals li{margin-bottom:4px}
     /* Indicators */
     .ind-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
-    .ind-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem}
+    .ind-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;position:relative;cursor:default}
+    .ind-card:hover{border-color:var(--border2)}
     .ind-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
     .ind-value{font-size:17px;font-weight:700;margin-bottom:10px}
     .ind-track{position:relative;height:7px;border-radius:4px;margin-bottom:6px}
     .ind-pointer{position:absolute;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
     .ind-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+    .ind-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .ind-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .ind-card:hover .ind-tooltip{display:block}
     @media(max-width:640px){.ind-grid{grid-template-columns:1fr}}
     /* Footer */
     .footer{margin-top:3rem;padding-top:1rem;border-top:0.5px solid var(--border);text-align:center;font-size:11px;color:var(--text3)}
@@ -279,7 +283,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 21:21 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 21:30 (Supabase)</div>
 </div>
 
 <script>
@@ -664,7 +668,7 @@ const DB = {
     "vol": {
       "swim": 1.6,
       "bike": 1.2,
-      "run": 1.4,
+      "run": 0.7,
       "strength": 0.9
     },
     "hrv": {
@@ -753,8 +757,8 @@ const DB = {
       },
       {
         "label": "Corrida",
-        "done": 1.4,
-        "target": 1.5,
+        "done": 0.7,
+        "target": 0.8,
         "color": "#4db87a"
       },
       {
@@ -784,16 +788,6 @@ const DB = {
     ],
     "sessions": [
       {
-        "day": "Seg",
-        "sport": "run",
-        "desc": "Trilha Z1 — Recuperação Ativa Viagem (Sem. 6)",
-        "dur": "41min",
-        "tss": 2,
-        "zones": "—",
-        "hrv": 85.2,
-        "ht": "up"
-      },
-      {
         "day": "Qua",
         "sport": "swim",
         "desc": "Natação — Aula 12h (Sem. 6)",
@@ -805,20 +799,20 @@ const DB = {
       },
       {
         "day": "Qua",
-        "sport": "strength",
-        "desc": "Força — Unilaterais Sessão 1 (Sem. 6)",
-        "dur": "54min",
-        "tss": 28,
+        "sport": "run",
+        "desc": "Corrida Z1 — Leve + Alfredson (Sem. 6)",
+        "dur": "40min",
+        "tss": 31,
         "zones": "—",
         "hrv": 49.7,
         "ht": "dn"
       },
       {
         "day": "Qua",
-        "sport": "run",
-        "desc": "Corrida Z1 — Leve + Alfredson (Sem. 6)",
-        "dur": "40min",
-        "tss": 31,
+        "sport": "strength",
+        "desc": "Força — Unilaterais Sessão 1 (Sem. 6)",
+        "dur": "54min",
+        "tss": 28,
         "zones": "—",
         "hrv": 49.7,
         "ht": "dn"
@@ -1337,9 +1331,12 @@ function setView(v, btn) {
 function renderIndicators(d) {
   const ind = d.indicators || {};
   const defs = [
-    {key:'fitness', title:'Fitness — Ramp Rate'},
-    {key:'form',    title:'Form — TSB'},
-    {key:'fatigue', title:'Fatigue — Direção'},
+    {key:'fitness', title:'Fitness — Ramp Rate',
+     tooltip:'Velocidade de ganho de fitness (variação do CTL em 7 dias).<br><b>Recovering</b>: CTL caindo — corpo em recuperação.<br><b>Keeping Fit</b>: CTL estável ou crescendo saudável (0–3 pts/semana).<br><b>Going Hard</b>: CTL subindo rápido (>3 pts) — monitorar fadiga acumulada.'},
+    {key:'form',    title:'Form — TSB',
+     tooltip:'Forma atual = Fitness (CTL) − Fadiga (ATL).<br><b>Overloading</b>: TSB negativo elevado — atleta fatigado, risco de overtraining.<br><b>Optimal</b>: TSB entre −15 e +5 — janela ideal de treino produtivo.<br><b>Recharging</b>: TSB positivo — atleta fresco, pronto para competir.'},
+    {key:'fatigue', title:'Fatigue — Direção',
+     tooltip:'Direção da fadiga aguda hoje vs ontem (variação do ATL).<br><b>Decreasing</b>: ATL caindo — fadiga reduzindo, recuperação em curso.<br><b>Stable</b>: ATL estável — carga de treino constante.<br><b>Increasing</b>: ATL subindo — mais carga acumulada nas últimas 24h.'},
   ];
   const gradients = {
     fitness: 'linear-gradient(to right,#4a9eff,#4db87a,#f5a623)',
@@ -1349,6 +1346,7 @@ function renderIndicators(d) {
   document.getElementById('ind-grid').innerHTML = defs.map(def => {
     const i = ind[def.key] || {label:'—', color:'#8b90a0', pos:50, start:'', end:''};
     return `<div class="ind-card">
+      <div class="ind-tooltip">${def.tooltip}</div>
       <div class="ind-label">${def.title}</div>
       <div class="ind-value" style="color:${i.color}">${i.label}</div>
       <div class="ind-track" style="background:${gradients[def.key]}">
