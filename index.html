@@ -287,7 +287,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 24/04/2026 14:19 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 24/04/2026 14:28 (Supabase)</div>
 </div>
 
 <script>
@@ -1860,20 +1860,32 @@ const DB = {
     },
     "adherence": [
       {
+        "label": "Bike",
+        "done": 0.0,
+        "target": 2.8,
+        "color": "#f5a623"
+      },
+      {
         "label": "Corrida",
         "done": 0.8,
-        "target": 0.8,
+        "target": 2.4,
         "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 0.0,
+        "target": 1.0,
+        "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
-        "type": "ok",
-        "msg": "Forma positiva — TSB +54 com 100% de aderência: semana excelente"
+        "type": "warn",
+        "msg": "HRV 80% do baseline nos últimos 3 dias: priorizar sono e recuperação"
       },
       {
         "type": "warn",
-        "msg": "HRV 80% do baseline nos últimos 3 dias: priorizar sono e recuperação"
+        "msg": "Aderência baixa — 11% do plano executado: identificar causa (lesão, agenda, motivação)"
       },
       {
         "type": "info",
@@ -1881,6 +1893,16 @@ const DB = {
       }
     ],
     "sessions": [
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Treino",
+        "dur": "1min",
+        "tss": 1,
+        "zones": "—",
+        "hrv": 46,
+        "ht": "up"
+      },
       {
         "day": "Seg",
         "sport": "run",
@@ -1893,10 +1915,50 @@ const DB = {
       },
       {
         "day": "Seg",
+        "sport": "strength",
+        "desc": "Força — Retomada + Mobilidade (Sem. 6)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 46,
+        "ht": "up"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Retomada Volume (Sem. 6)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 44,
+        "ht": "up"
+      },
+      {
+        "day": "Qua",
         "sport": "run",
-        "desc": "Treino",
-        "dur": "1min",
-        "tss": 1,
+        "desc": "Corrida Z1 — Base Aeróbia (Sem. 6)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 24,
+        "ht": "dn"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia (Sem. 6)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 34,
+        "ht": "dn"
+      },
+      {
+        "day": "Sex",
+        "sport": "run",
+        "desc": "Corrida Z1 + Strides Leves (Sem. 6)",
+        "dur": "—",
+        "tss": 0,
         "zones": "—",
         "hrv": 46,
         "ht": "up"
