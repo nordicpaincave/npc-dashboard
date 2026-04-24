@@ -42,7 +42,11 @@
     .a-info .alert-icon{background:rgba(74,158,255,.2);color:var(--blue)}
     /* KPI */
     .kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
-    .kpi{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem}
+    .kpi{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;position:relative;cursor:default}
+    .kpi:hover{border-color:var(--border2)}
+    .kpi-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .kpi-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .kpi:hover .kpi-tooltip{display:block}
     .kpi.hl{border-color:var(--border2);background:var(--bg3)}
     .kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
     .kpi-value{font-size:26px;font-weight:600;color:var(--text);line-height:1}
@@ -283,7 +287,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 21:30 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 23/04/2026 21:35 (Supabase)</div>
 </div>
 
 <script>
@@ -1384,6 +1388,13 @@ function renderAlerts(d) {
 }
 
 // ── KPIs ───────────────────────────────────────────────────────────
+const KPI_TOOLTIPS = {
+  ctl: 'Chronic Training Load — mede o fitness acumulado nas últimas 6 semanas (média exponencial de TSS diário). Quanto maior, melhor a base aeróbia. Cresce lentamente com treino consistente.',
+  atl: 'Acute Training Load — mede a fadiga das últimas 7–10 dias. Sobe rápido com treino intenso e cai rápido com descanso. ATL muito acima da CTL indica risco de overtraining.',
+  tsb: 'Training Stress Balance — a "forma" do atleta: CTL − ATL. Positivo = atleta fresco, ideal para competir. Negativo = fatigado, mas é onde o treino acontece. Janela ideal de treino: entre −15 e +5.',
+  tss_week: 'Training Stress Score semanal — carga total de treino acumulada na semana. Calculado a partir da intensidade e duração de cada sessão. Serve para comparar semanas e calibrar a progressão de carga.',
+};
+
 function renderKPIs(d) {
   const total = totalH(d.vol);
   const parts = ['swim','bike','run','strength']
@@ -1395,7 +1406,8 @@ function renderKPIs(d) {
       const val=d.kpis[def.key], delta=d.kpi_delta[def.key];
       const dir=String(delta).startsWith('+')?'up':String(delta).startsWith('-')?'dn':'nt';
       const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
-      return `<div class="kpi"><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
+      const tip=KPI_TOOLTIPS[def.key]||'';
+      return `<div class="kpi"><div class="kpi-tooltip">${tip}</div><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
     }).join('') +
     `<div class="kpi hl"><div class="kpi-label">Total de horas</div><div class="kpi-value">${fmtH(total)}</div><div class="kpi-sub">${parts}</div></div>`;
 }
