@@ -297,7 +297,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:22 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:45 (Supabase)</div>
 </div>
 
 <script>
@@ -3804,9 +3804,11 @@ function renderWellness(d) {
   // Sleep chart
   dc('sleep');
   if(sleep.some(v=>v>0)) {
+    const sleepAvg = +(sleep.filter(v=>v>0).reduce((a,b)=>a+b,0)/sleep.filter(v=>v>0).length).toFixed(1);
     charts['sleep']=new Chart(document.getElementById('sleep-chart'),{type:'bar',data:{labels,datasets:[
-      {label:'Sono',data:sleep,backgroundColor:'rgba(74,158,255,.4)',borderColor:'#4a9eff',borderWidth:1,borderRadius:3},
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      {label:'Sono',data:sleep,backgroundColor:'rgba(74,158,255,.4)',borderColor:'#4a9eff',borderWidth:1,borderRadius:3,order:2},
+      {label:`Média ${sleepAvg}h`,data:Array(labels.length).fill(sleepAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},suggestedMin:5,suggestedMax:10}}}});
   } else {
@@ -3816,9 +3818,11 @@ function renderWellness(d) {
   // Resting HR chart
   dc('hr');
   if(rhr.some(v=>v>0)) {
+    const rhrAvg = Math.round(rhr.filter(v=>v>0).reduce((a,b)=>a+b,0)/rhr.filter(v=>v>0).length);
     charts['hr']=new Chart(document.getElementById('hr-chart'),{type:'line',data:{labels,datasets:[
-      {label:'FC repouso',data:rhr,borderColor:'#ff5252',backgroundColor:'rgba(255,82,82,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true},
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      {label:'FC repouso',data:rhr,borderColor:'#ff5252',backgroundColor:'rgba(255,82,82,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true,order:2},
+      {label:`Média ${rhrAvg} bpm`,data:Array(labels.length).fill(rhrAvg),borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
       scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+' bpm'}}}}});
   } else {
@@ -3828,10 +3832,12 @@ function renderWellness(d) {
   // Body Battery chart
   dc('batt');
   if(batt.some(v=>v>0)) {
+    const battAvg = Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length);
     charts['batt']=new Chart(document.getElementById('batt-chart'),{type:'bar',data:{labels,datasets:[
-      {label:'Body Battery',data:batt,backgroundColor:batt.map(v=>v>=70?'rgba(77,184,122,.6)':v>=40?'rgba(245,166,35,.6)':'rgba(255,82,82,.6)'),borderRadius:3},
+      {label:'Body Battery',data:batt,backgroundColor:batt.map(v=>v>=70?'rgba(77,184,122,.6)':v>=40?'rgba(245,166,35,.6)':'rgba(255,82,82,.6)'),borderRadius:3,order:2},
+      {label:`Média ${battAvg}`,data:Array(labels.length).fill(battAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:c=>`Body Battery: ${c.raw.toFixed(0)}`}}},
+      tooltip:{filter:i=>i.datasetIndex===0,callbacks:{label:c=>`Body Battery: ${c.raw.toFixed(0)}`}}},
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},min:0,max:100}}}});
   } else {
