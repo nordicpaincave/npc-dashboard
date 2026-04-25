@@ -301,7 +301,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:48 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 18:08 (Supabase)</div>
 </div>
 
 <script>
@@ -3560,30 +3560,74 @@ let macroAthlete = 'bruno';
 const gc = 'rgba(255,255,255,0.06)';
 const tf = {size:11,family:'system-ui'};
 
-// ── Plano macro 29 semanas ─────────────────────────────────────────
+// ── Plano macro 29 semanas — Método Norueguês ──────────────────────
 const MACRO_PLAN = {
-  race_date: '2026-10-04',
+  race_date:   '2026-10-04',
   total_weeks: 29,
+  // Semanas de descarga (redução 45–55% de volume, intensidade mantida)
+  deload_weeks: [7, 12, 15, 19, 23],
   phases: [
-    {name:'Base 1',color:'#378ADD',weeks:[1,4],goal:'Construção aeróbica — Z1 predominante, adaptação ao volume',
-     objectives:['CTL alvo: +2–3 pts/semana','Z1 ≥ 75% do tempo total','Sem intervalos acima de LT2','Iniciar protocolo de força bilateral'],
-     key_sessions:['Bike Z1 longa (3h+) aos sábados','Corrida Z1 progressiva (18–22km) aos domingos','Natação volume 3x/semana']},
-    {name:'Base 2',color:'#1D9E75',weeks:[5,10],goal:'Consolidação do volume e introdução do limiar duplo',
-     objectives:['CTL alvo: +3–4 pts/semana','Introduzir sessões Z2 (limiar) 2x/semana','Manter Z1 ≥ 65% do tempo total','Força: transição para unilateral'],
-     key_sessions:['Duplo limiar: bike + corrida no mesmo dia','Natação CSS semanal','Longa Z1 com bloco final Z2']},
-    {name:'Específico',color:'#EF9F27',weeks:[11,20],goal:'Intensidade específica de prova e pico de CTL',
-     objectives:['CTL pico: 120 (Jean) / 102 (Bruno) / 90 (Gabriel) / 95 (Rafael)','Simulados de prova parcial','Trabalho de ritmo de prova Z2–Z3','Reduzir força para manutenção'],
-     key_sessions:['Brick bike+corrida semanal','Natação em águas abertas (quando disponível)','Intervalos longos Z2 no bike (2×20min FTP)']},
-    {name:'Competição',color:'#D85A30',weeks:[21,26],goal:'Manutenção de CTL e afinação da forma',
-     objectives:['Manter CTL ± 5 pts','TSB alvo entre -5 e +5','Provas de teste (Olympic ou sprint)','Reduzir volume, manter intensidade'],
-     key_sessions:['Provas simuladas a cada 2 semanas','Sessões curtas de qualidade','Trabalho técnico de transição']},
-    {name:'Taper',color:'#9b8fff',weeks:[27,28],goal:'Polimento final — forma máxima para Buenos Aires',
-     objectives:['Reduzir volume 40–50%','TSB alvo: +5 a +15 na largada','Manter 2 sessões de qualidade/semana','Foco em sono e nutrição'],
+    {name:'Fundação',  color:'#378ADD', weeks:[1,6],
+     goal:'Base aeróbia Z1 — tolerância de carga e construção de volume',
+     objectives:['Distribuição permanente: ~80% Z1, 18-20% Z2, <2% Z3','Ramp rate: +3–5 pts CTL/semana','Força 3×/semana — programa bilateral Fase 1','Natação: 4–10km/semana com foco técnico'],
+     key_sessions:['Bike Z1 longo sábado (90min → 3h)','Corrida Z1 longa domingo (40–100min)','Natação técnica 3–4×/semana']},
+    {name:'Limiar I',  color:'#1D9E75', weeks:[8,14],
+     goal:'Duplo limiar 2×/semana — qualidade antes de volume',
+     objectives:['Entrada do duplo limiar na semana 8','Run limiar: 2×10min → 2×14min Z2','Bike limiar: 3×8min → 3×12min Z2','Brick introduzido na semana 10','CSS natação integrado'],
+     key_sessions:['Duplo limiar bike (2× por semana)','Corrida limiar progressiva','Bike longo Z1 sábados (3h)','Brick bike+run sem 10+']},
+    {name:'Limiar II', color:'#EF9F27', weeks:[16,21],
+     goal:'Threshold 3×/semana — volume máximo do ciclo',
+     objectives:['Limiar 3× por semana','Volume: 3×15min Z2 + 2×8min Z3 no pico','Brick race-distance semana 18','Open water toda semana','Força reduzida para 1×/semana'],
+     key_sessions:['Bike 90km + Run 21km (dias separados, sem 18)','Brick completo sem 21','OWS semanal — sighting e viragem de boia']},
+    {name:'Específico',color:'#D85A30', weeks:[22,23],
+     goal:'Simulações parciais — ritmo e nutrição de prova',
+     objectives:['Simulações de percurso','Testar nutrição de prova (60–80g CHO/h bike)','Manter limiar 2×/semana','Força: apenas manutenção'],
+     key_sessions:['Simulação 1: Swim 1.9km + Bike 90km (sep.)','Ajuste de kit e transição']},
+    {name:'Pico',      color:'#c084fc', weeks:[24,25],
+     goal:'Simulações completas — sessão mais importante do ciclo',
+     objectives:['Simulação 1 semana 24: S+B+R dias separados','Simulação 2 semana 25: brick completo 1.9+90+21','Kit de prova completo','Nutrição de prova testada e validada'],
+     key_sessions:['★ Sem 24: Swim 1.9km OWS + Bike 90km + Run 21km','★ Sem 25: Brick completo com transições']},
+    {name:'Taper',     color:'#f472b6', weeks:[26,28],
+     goal:'Volume cai — intensidade NUNCA cai',
+     objectives:['Sem 26: −30% volume, 1 duplo limiar mantido','Sem 27: −45% volume, TSB começa a subir','Sem 28: −60% volume, apenas ativações e strides','TSB alvo na largada: +10 a +15'],
      key_sessions:['Bike ativação 60min c/ 3×5min LT2','Corrida 30min c/ strides','Natação técnica 2×1.500m']},
-    {name:'Prova',color:'#ff5252',weeks:[29,29],goal:'70.3 Buenos Aires — 04 de outubro de 2026',
-     objectives:['Natação: 1.9km','Bike: 90km','Corrida: 21.1km','Meta: Top 5 M40-44 + vaga Mundial (Jean) / sub-5h (Bruno) / sub-4h50 (Gabriel) / sub-5h30 (Rafael)'],
-     key_sessions:['Sábado: check-in e reconhecimento do percurso','Domingo 07h: largada']},
-  ]
+    {name:'Prova',     color:'#ff5252', weeks:[29,29],
+     goal:'70.3 Buenos Aires — 04 de outubro de 2026',
+     objectives:['Natação 1.9km · Bike 90km · Corrida 21.1km','Jean: Top 5 M40-44 + vaga Mundial','Bruno: Top 5 M40-44 + vaga Mundial','TSB alvo largada: +10 a +15'],
+     key_sessions:['Qua/Qui: chegada em Buenos Aires','Sáb: swim adaptação 15min + bike 20min + run 15min','Dom 07h: largada']},
+  ],
+  // Dados por semana (foco, TSS alvo Jean, TSS alvo Bruno, CTL alvo Jean, CTL alvo Bruno)
+  weeks_data: {
+    1:  {focus:'Adaptação — tolerância de carga',         tss_j:250,  tss_b:210,  ctl_j:20,  ctl_b:15},
+    2:  {focus:'Construção gradual de volume Z1',         tss_j:420,  tss_b:370,  ctl_j:28,  ctl_b:22},
+    3:  {focus:'Volume Z1 estabilizando — primeiras longas', tss_j:510, tss_b:450, ctl_j:36, ctl_b:30},
+    4:  {focus:'Volume Z1 crescendo — base sólida',       tss_j:640,  tss_b:590,  ctl_j:46,  ctl_b:38},
+    5:  {focus:'Pico de fase — maior semana até agora',   tss_j:720,  tss_b:640,  ctl_j:55,  ctl_b:46},
+    6:  {focus:'Consolidação — preparar 1ª descarga',     tss_j:760,  tss_b:680,  ctl_j:71,  ctl_b:53},
+    7:  {focus:'■ Recuperação ativa — absorção de carga', tss_j:400,  tss_b:360,  ctl_j:75,  ctl_b:56, deload:true},
+    8:  {focus:'★ Primeiro duplo limiar — baixo volume',  tss_j:660,  tss_b:590,  ctl_j:80,  ctl_b:61},
+    9:  {focus:'Limiar progressivo — qualidade > volume', tss_j:700,  tss_b:630,  ctl_j:85,  ctl_b:66},
+    10: {focus:'Brick semanal instaurado',                tss_j:740,  tss_b:670,  ctl_j:89,  ctl_b:70},
+    11: {focus:'Pico do bloco — maior volume com limiar', tss_j:790,  tss_b:710,  ctl_j:94,  ctl_b:74},
+    12: {focus:'■ Recuperação — check-in de forma',      tss_j:430,  tss_b:390,  ctl_j:96,  ctl_b:76, deload:true},
+    13: {focus:'Relançamento pós-descarga',               tss_j:770,  tss_b:690,  ctl_j:100, ctl_b:79},
+    14: {focus:'Fechamento bloco 1 — pico de eficiência', tss_j:820,  tss_b:740,  ctl_j:106, ctl_b:82},
+    15: {focus:'■ Descanso antes do novo patamar',       tss_j:440,  tss_b:400,  ctl_j:108, ctl_b:84, deload:true},
+    16: {focus:'★ Threshold 3×/semana — novo patamar',   tss_j:820,  tss_b:750,  ctl_j:111, ctl_b:87},
+    17: {focus:'Volume crescente — adaptação ao nível',   tss_j:860,  tss_b:780,  ctl_j:113, ctl_b:90},
+    18: {focus:'Brick race-distance — próximo da prova',  tss_j:890,  tss_b:810,  ctl_j:116, ctl_b:93},
+    19: {focus:'■ Recuperação crítica antes do pico',    tss_j:460,  tss_b:420,  ctl_j:117, ctl_b:95, deload:true},
+    20: {focus:'Volume pico aproximando-se',              tss_j:910,  tss_b:830,  ctl_j:120, ctl_b:97},
+    21: {focus:'Pico de volume da fase limiar',           tss_j:950,  tss_b:860,  ctl_j:124, ctl_b:99},
+    22: {focus:'★ Início específico — simulações parciais', tss_j:930, tss_b:850, ctl_j:125, ctl_b:101},
+    23: {focus:'■ Recuperação pré-pico',                 tss_j:490,  tss_b:450,  ctl_j:126, ctl_b:102, deload:true},
+    24: {focus:'★ SIMULAÇÃO 1 — distância de prova',     tss_j:970,  tss_b:880,  ctl_j:126, ctl_b:102},
+    25: {focus:'★ SIMULAÇÃO 2 — sessão de pico',         tss_j:960,  tss_b:870,  ctl_j:125, ctl_b:101},
+    26: {focus:'Volume cai, intensidade mantida',         tss_j:680,  tss_b:620,  ctl_j:121, ctl_b:98},
+    27: {focus:'Frescor em construção',                   tss_j:500,  tss_b:460,  ctl_j:115, ctl_b:93},
+    28: {focus:'Afiação final',                           tss_j:340,  tss_b:310,  ctl_j:109, ctl_b:88},
+    29: {focus:'Chegada em Buenos Aires — ativação',      tss_j:200,  tss_b:185,  ctl_j:104, ctl_b:84},
+  }
 };
 
 function getPhaseForWeek(w) {
@@ -4039,12 +4083,17 @@ function renderMacro(athleteKey) {
   // Week dots
   let weeksHtml = '<div class="macro-weeks">';
   for(let w = 1; w <= totalW; w++) {
-    const phase = getPhaseForWeek(w);
-    const color = phase ? phase.color : '#565c70';
+    const phase    = getPhaseForWeek(w);
+    const color    = phase ? phase.color : '#565c70';
     const isCurrent = w === currentWeek;
     const isPast    = w < currentWeek;
+    const isDeload  = MACRO_PLAN.deload_weeks.includes(w);
     const dates     = weekDates(w);
-    weeksHtml += `<div class="macro-week ${isPast?'past':''} ${isCurrent?'current':''}" style="background:${color};color:#fff;opacity:${isPast?0.45:1}" onclick="toggleWeek(${w},'${athleteKey}')" title="S${w} · ${dates.label}">${w}</div>`;
+    const bg = isDeload ? `repeating-linear-gradient(45deg,${color}88,${color}88 3px,${color}44 3px,${color}44 6px)` : color;
+    weeksHtml += `<div class="macro-week ${isPast?'past':''} ${isCurrent?'current':''}" 
+      style="background:${isDeload?color+'66':color};color:#fff;opacity:${isPast?0.45:1};${isDeload?'border:1.5px dashed '+color+'cc;':''}" 
+      onclick="toggleWeek(${w},'${athleteKey}')" 
+      title="S${w}${isDeload?' ■ DESCARGA':''} · ${dates.label}">${w}</div>`;
   }
   weeksHtml += '</div>';
 
@@ -4098,13 +4147,20 @@ function toggleWeek(weekNum, athleteKey) {
 
   const phase   = getPhaseForWeek(weekNum);
   const dates   = weekDates(weekNum);
+  const wd      = MACRO_PLAN.weeks_data[weekNum] || {};
   const notes   = (DB[athleteKey] || {}).week_notes || {};
   const note    = notes[weekNum];
   const curWeek = currentRaceWeek();
   const isPast  = weekNum < curWeek;
   const isCur   = weekNum === curWeek;
+  const isDeload = !!wd.deload;
 
-  // Fecha se clicou na mesma semana
+  // CTL atual do atleta (do DB)
+  const d = DB[athleteKey];
+  const ctlActual = (d && isCur) ? d.kpis.ctl : null;
+  const ctlTarget = athleteKey === 'jean' ? wd.ctl_j : athleteKey === 'bruno' ? wd.ctl_b : null;
+  const tssTarget = athleteKey === 'jean' ? wd.tss_j : athleteKey === 'bruno' ? wd.tss_b : null;
+
   if (panel.dataset.openWeek === String(weekNum)) {
     panel.innerHTML = '';
     panel.dataset.openWeek = '';
@@ -4122,9 +4178,36 @@ function toggleWeek(weekNum, athleteKey) {
     ? `<span style="background:rgba(255,255,255,.08);color:var(--text3);font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">concluída</span>`
     : '';
 
+  const deloadBadge = isDeload
+    ? `<span style="background:rgba(255,124,58,.15);color:#ff7c3a;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:4px">■ DESCARGA</span>`
+    : '';
+
+  // CTL status vs target
+  let ctlHtml = '';
+  if (ctlTarget) {
+    if (ctlActual && isCur) {
+      const diff = (ctlActual - ctlTarget).toFixed(1);
+      const color = diff > 0 ? '#4db87a' : diff < -5 ? '#ff5252' : '#f5a623';
+      const sign  = diff > 0 ? '+' : '';
+      ctlHtml = `
+        <div style="margin-top:1rem;padding:12px;background:var(--bg3);border-radius:var(--radius);display:flex;gap:2rem;flex-wrap:wrap">
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL atual</div><div style="font-size:20px;font-weight:700">${ctlActual}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">${ctlTarget}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">Vs plano</div><div style="font-size:20px;font-weight:700;color:${color}">${sign}${diff}</div></div>
+          ${tssTarget ? `<div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">TSS alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">~${tssTarget}</div></div>` : ''}
+        </div>`;
+    } else {
+      ctlHtml = `
+        <div style="margin-top:1rem;padding:12px;background:var(--bg3);border-radius:var(--radius);display:flex;gap:2rem;flex-wrap:wrap">
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">${ctlTarget}</div></div>
+          ${tssTarget ? `<div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">TSS alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">~${tssTarget}</div></div>` : ''}
+        </div>`;
+    }
+  }
+
   const noteHtml = note
     ? `<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Nota do coach — TrainingPeaks</div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Nota do coach</div>
         <pre style="font-family:var(--font-sans);font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.7">${note.body}</pre>
       </div>`
     : `<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);font-size:12px;color:var(--text3)">
@@ -4135,9 +4218,11 @@ function toggleWeek(weekNum, athleteKey) {
     <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:.75rem">
       <h3 style="color:${phase?.color||'var(--text)'}">Semana ${weekNum}</h3>
       <span style="font-size:13px;color:var(--text2)">${dates.label}</span>
-      ${statusBadge}
+      ${statusBadge}${deloadBadge}
       ${phase ? `<span style="font-size:11px;background:${phase.color}22;color:${phase.color};padding:2px 8px;border-radius:4px">${phase.name}</span>` : ''}
     </div>
+    ${wd.focus ? `<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem">📌 ${wd.focus}</div>` : ''}
+    ${ctlHtml}
     ${noteHtml}
   </div>`;
 }
