@@ -93,7 +93,11 @@
     .section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin:0 0 .875rem}
     /* Wellness mini cards */
     .well-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
-    .well-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem}
+    .well-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;position:relative;cursor:default}
+    .well-card:hover{border-color:var(--border2)}
+    .well-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .well-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .well-card:hover .well-tooltip{display:block}
     .well-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
     .well-value{font-size:22px;font-weight:600;color:var(--text);line-height:1}
     .well-sub{font-size:10px;color:var(--text2);margin-top:4px}
@@ -297,7 +301,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:45 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:48 (Supabase)</div>
 </div>
 
 <script>
@@ -3765,21 +3769,25 @@ function renderWellness(d) {
 
   document.getElementById('well-grid').innerHTML = `
     <div class="well-card">
+      <div class="well-tooltip">Variabilidade da frequência cardíaca — mede a capacidade de recuperação do sistema nervoso autônomo. Quanto maior e mais próximo do baseline, melhor a recuperação. Queda >10% por 2+ dias = sinal de alerta.</div>
       <div class="well-label">HRV (último)</div>
       <div class="well-value">${lastHrv || '—'}</div>
       <div class="well-sub">Baseline: ${hrv.baseline || '—'}</div>
     </div>
     <div class="well-card">
+      <div class="well-tooltip">Duração do sono da última noite via Garmin Health. O ideal para atletas é 7h30–9h. Sono insuficiente (<7h) prejudica a síntese proteica, aumenta o cortisol e compromete a adaptação ao treino.</div>
       <div class="well-label">Sono (última noite)</div>
       <div class="well-value">${lastSleep ? lastSleep.toFixed(1)+'h' : '—'}</div>
       <div class="well-sub">Via Garmin Health</div>
     </div>
     <div class="well-card">
+      <div class="well-tooltip">Frequência cardíaca em repouso — reflete o nível de fadiga acumulada e adaptação cardiovascular. Valores elevados vs. a média do atleta (>5 bpm acima) indicam estresse ou recuperação insuficiente. Tende a diminuir com o aumento do fitness.</div>
       <div class="well-label">FC Repouso</div>
       <div class="well-value">${lastHR || '—'}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
       <div class="well-sub">Último registro</div>
     </div>
     <div class="well-card">
+      <div class="well-tooltip">Estimativa Garmin de energia disponível (0–100). Acima de 75 = bem recuperado. Entre 40–75 = recuperação parcial. Abaixo de 40 = fadiga elevada. Útil para calibrar a intensidade do treino do dia.</div>
       <div class="well-label">Body Battery</div>
       <div class="well-value">${lastBatt || '—'}</div>
       <div class="well-sub">Média 14 dias: ${batt.filter(v=>v>0).length ? Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length) : '—'}</div>
