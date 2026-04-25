@@ -287,7 +287,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 11:51 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 11:54 (Supabase)</div>
 </div>
 
 <script>
@@ -616,21 +616,26 @@ const DB = {
       ]
     },
     "zones": {
-      "swim": {
-        "z1": 50,
-        "z2": 42,
-        "z3": 8
-      },
-      "bike": {
-        "z1": 82,
-        "z2": 16,
-        "z3": 2
-      },
-      "run": {
-        "z1": 68,
-        "z2": 28,
-        "z3": 4
-      }
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        50,
+        82,
+        68
+      ],
+      "z2": [
+        42,
+        16,
+        28
+      ],
+      "z3": [
+        8,
+        2,
+        4
+      ]
     },
     "vol": {
       "swim": 3.6,
@@ -865,6 +870,29 @@ const DB = {
         "ht": "dn"
       }
     ],
+    "indicators": {
+      "form": {
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 3,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Going Hard",
+        "color": "#f5a623",
+        "pos": 93,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Increasing",
+        "color": "#ff7c3a",
+        "pos": 63,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   },
@@ -1192,21 +1220,26 @@ const DB = {
       ]
     },
     "zones": {
-      "swim": {
-        "z1": 20,
-        "z2": 65,
-        "z3": 15
-      },
-      "bike": {
-        "z1": 88,
-        "z2": 10,
-        "z3": 2
-      },
-      "run": {
-        "z1": 75,
-        "z2": 22,
-        "z3": 3
-      }
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        20,
+        88,
+        75
+      ],
+      "z2": [
+        65,
+        10,
+        22
+      ],
+      "z3": [
+        15,
+        2,
+        3
+      ]
     },
     "vol": {
       "swim": 2.5,
@@ -1421,6 +1454,29 @@ const DB = {
         "ht": "up"
       }
     ],
+    "indicators": {
+      "form": {
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 3,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Going Hard",
+        "color": "#f5a623",
+        "pos": 69,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Decreasing",
+        "color": "#4db87a",
+        "pos": 36,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   },
@@ -1748,11 +1804,18 @@ const DB = {
       ]
     },
     "zones": {
-      "run": {
-        "z1": 95,
-        "z2": 4,
-        "z3": 1
-      }
+      "labels": [
+        "Corrida"
+      ],
+      "z1": [
+        95
+      ],
+      "z2": [
+        4
+      ],
+      "z3": [
+        1
+      ]
     },
     "vol": {
       "swim": 0.0,
@@ -1939,6 +2002,29 @@ const DB = {
         "ht": "dn"
       }
     ],
+    "indicators": {
+      "form": {
+        "label": "Recharging",
+        "color": "#4a9eff",
+        "pos": 97,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Recovering",
+        "color": "#4a9eff",
+        "pos": 3,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Increasing",
+        "color": "#ff7c3a",
+        "pos": 97,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   },
@@ -2265,7 +2351,12 @@ const DB = {
         null
       ]
     },
-    "zones": {},
+    "zones": {
+      "labels": [],
+      "z1": [],
+      "z2": [],
+      "z3": []
+    },
     "vol": {
       "swim": 0.0,
       "bike": 0.0,
@@ -2346,6 +2437,29 @@ const DB = {
     "adherence": [],
     "alerts": [],
     "sessions": [],
+    "indicators": {
+      "form": {
+        "label": "Optimal",
+        "color": "#4db87a",
+        "pos": 58,
+        "start": "Overloading",
+        "end": "Recharging"
+      },
+      "fitness": {
+        "label": "Keeping Fit",
+        "color": "#4db87a",
+        "pos": 33,
+        "start": "Recovering",
+        "end": "Going Hard"
+      },
+      "fatigue": {
+        "label": "Stable",
+        "color": "#8b90a0",
+        "pos": 50,
+        "start": "Decreasing",
+        "end": "Increasing"
+      }
+    },
     "planned": {},
     "week_notes": {}
   }
