@@ -269,6 +269,8 @@
         <button class="tab-btn" onclick="setCalAthlete('jean',this)">Jean</button>
         <button class="tab-btn" onclick="setCalAthlete('gabriel',this)">Gabriel</button>
         <button class="tab-btn" onclick="setCalAthlete('rafael',this)">Rafael</button>
+        <button class="tab-btn" onclick="setCalAthlete('simony',this)">Simony</button>
+        <button class="tab-btn" onclick="setCalAthlete('clara',this)">Clara</button>
       </div>
       <span style="font-size:11px;color:var(--text3)">Sólido = realizado · Tracejado = planejado</span>
     </div>
@@ -284,12 +286,14 @@
         <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean</button>
         <button class="tab-btn" onclick="setMacroAthlete('gabriel',this)">Gabriel</button>
         <button class="tab-btn" onclick="setMacroAthlete('rafael',this)">Rafael</button>
+        <button class="tab-btn" onclick="setMacroAthlete('simony',this)">Simony</button>
+        <button class="tab-btn" onclick="setMacroAthlete('clara',this)">Clara</button>
       </div>
     </div>
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 12:07 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 12:17 (Supabase)</div>
 </div>
 
 <script>
@@ -763,16 +767,6 @@ const DB = {
     "sessions": [
       {
         "day": "Seg",
-        "sport": "strength",
-        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
-        "dur": "57min",
-        "tss": 30,
-        "zones": "—",
-        "hrv": 73,
-        "ht": "up"
-      },
-      {
-        "day": "Seg",
         "sport": "swim",
         "desc": "Natação — Aula (Sem. 6)",
         "dur": "1h19",
@@ -782,13 +776,13 @@ const DB = {
         "ht": "up"
       },
       {
-        "day": "Ter",
-        "sport": "bike",
-        "desc": "Ciclismo Z1 — Base (1h30 MAX) (Sem. 6)",
-        "dur": "1h32",
-        "tss": 80,
+        "day": "Seg",
+        "sport": "strength",
+        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 6)",
+        "dur": "57min",
+        "tss": 30,
         "zones": "—",
-        "hrv": 77,
+        "hrv": 73,
         "ht": "up"
       },
       {
@@ -802,11 +796,11 @@ const DB = {
         "ht": "up"
       },
       {
-        "day": "Qua",
-        "sport": "swim",
-        "desc": "Natação — Aula (Sem. 6)",
-        "dur": "1h07",
-        "tss": 93,
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base (1h30 MAX) (Sem. 6)",
+        "dur": "1h32",
+        "tss": 80,
         "zones": "—",
         "hrv": 77,
         "ht": "up"
@@ -822,14 +816,14 @@ const DB = {
         "ht": "up"
       },
       {
-        "day": "Qui",
-        "sport": "strength",
-        "desc": "Musculação — Escapular + Funcional + Flexibilidade (Sem. 6)",
-        "dur": "1h02",
-        "tss": 34,
+        "day": "Qua",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 6)",
+        "dur": "1h07",
+        "tss": 93,
         "zones": "—",
-        "hrv": 0,
-        "ht": "dn"
+        "hrv": 77,
+        "ht": "up"
       },
       {
         "day": "Qui",
@@ -842,13 +836,13 @@ const DB = {
         "ht": "dn"
       },
       {
-        "day": "Sex",
-        "sport": "swim",
-        "desc": "Natação — Aula (Sem. 6)",
-        "dur": "1h09",
-        "tss": 102,
+        "day": "Qui",
+        "sport": "strength",
+        "desc": "Musculação — Escapular + Funcional + Flexibilidade (Sem. 6)",
+        "dur": "1h02",
+        "tss": 34,
         "zones": "—",
-        "hrv": 55,
+        "hrv": 0,
         "ht": "dn"
       },
       {
@@ -857,6 +851,16 @@ const DB = {
         "desc": "Corrida Z1+Z2 — 3×10min LT1 — NOVO (Sem. 6)",
         "dur": "1h10",
         "tss": 55,
+        "zones": "—",
+        "hrv": 55,
+        "ht": "dn"
+      },
+      {
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 6)",
+        "dur": "1h09",
+        "tss": 102,
         "zones": "—",
         "hrv": 55,
         "ht": "dn"
@@ -1367,16 +1371,6 @@ const DB = {
     "sessions": [
       {
         "day": "Qua",
-        "sport": "swim",
-        "desc": "Natação — Aula 12h (Sem. 6)",
-        "dur": "43min",
-        "tss": 55,
-        "zones": "—",
-        "hrv": 49.7,
-        "ht": "dn"
-      },
-      {
-        "day": "Qua",
         "sport": "run",
         "desc": "Corrida Z1 — Leve + Alfredson (Sem. 6)",
         "dur": "40min",
@@ -1396,14 +1390,14 @@ const DB = {
         "ht": "dn"
       },
       {
-        "day": "Qui",
+        "day": "Qua",
         "sport": "swim",
         "desc": "Natação — Aula 12h (Sem. 6)",
-        "dur": "51min",
-        "tss": 71,
+        "dur": "43min",
+        "tss": 55,
         "zones": "—",
-        "hrv": 64.2,
-        "ht": "up"
+        "hrv": 49.7,
+        "ht": "dn"
       },
       {
         "day": "Qui",
@@ -1411,6 +1405,16 @@ const DB = {
         "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 6)",
         "dur": "1h10",
         "tss": 59,
+        "zones": "—",
+        "hrv": 64.2,
+        "ht": "up"
+      },
+      {
+        "day": "Qui",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 6)",
+        "dur": "51min",
+        "tss": 71,
         "zones": "—",
         "hrv": 64.2,
         "ht": "up"
@@ -3449,9 +3453,9 @@ const DB = {
     "week_notes": {}
   }
 };
-const ATHLETES = ['bruno','jean','gabriel','rafael'];
-const NAMES    = {bruno:'Bruno',jean:'Jean',gabriel:'Gabriel',rafael:'Rafael'};
-const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc'};
+const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
+const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
+const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc',simony:'#f472b6',clara:'#fb923c'};
 const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força'};
 const DAYS_LABEL  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
@@ -3759,32 +3763,35 @@ function renderSessions(d) {
 
 // ── Comparativo ────────────────────────────────────────────────────
 function renderComparativo() {
+  const activeAthletes = ATHLETES.filter(id => DB[id] && DB[id].kpis);
   const loadMap=[{key:'ctl',label:'CTL'},{key:'atl',label:'ATL'},{key:'tsb',label:'TSB'},{key:'tss_week',label:'TSS semana'}];
-  document.getElementById('cmp-load').innerHTML=ATHLETES.map(id=>{
+  document.getElementById('cmp-load').innerHTML=activeAthletes.map(id=>{
     const d=DB[id],tsb=d.kpis.tsb;
     const tc=tsb>5?'#4db87a':tsb<-10?'#ff7c3a':'#8b90a0';
     return `<div class="cmp-card"><div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>${loadMap.map(m=>`<div class="cmp-row"><span class="cmp-k">${m.label}</span><span class="cmp-v" style="${m.key==='tsb'?`color:${tc}`:''}"> ${d.kpis[m.key]}</span></div>`).join('')}<div class="cmp-row"><span class="cmp-k">Horas</span><span class="cmp-v">${fmtH(totalH(d.vol))}</span></div></div>`;
   }).join('');
 
   dc('cmp-ctl');
-  document.getElementById('cmp-ctl-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  document.getElementById('cmp-ctl-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const refLabels = (DB.bruno||DB.jean||Object.values(DB)[0]).pmc.labels;
   charts['cmp-ctl']=new Chart(document.getElementById('cmp-ctl-chart'),{type:'line',
-    data:{labels:DB.bruno.pmc.labels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+    data:{labels:refLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:(v,i)=>{return refLabels[i]||null;}}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 
   dc('cmp-hrv');
-  document.getElementById('cmp-hrv-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
-  const hrvLabels=(DB.jean.hrv||{}).labels||[];
+  document.getElementById('cmp-hrv-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const hrvLabels=(DB.jean&&DB.jean.hrv||{}).labels||[];
   charts['cmp-hrv']=new Chart(document.getElementById('cmp-hrv-chart'),{type:'line',
-    data:{labels:hrvLabels,datasets:ATHLETES.filter(id=>(DB[id].hrv||{}).vals?.some(v=>v>0)).map(id=>({label:NAMES[id],data:(DB[id].hrv||{}).vals||[],borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
+    data:{labels:hrvLabels,datasets:activeAthletes.filter(id=>(DB[id].hrv||{}).vals?.some(v=>v>0)).map(id=>({label:NAMES[id],data:(DB[id].hrv||{}).vals||[],borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 
   dc('cmp-vol');
-  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];  document.getElementById('cmp-vol-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];
+  document.getElementById('cmp-vol-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
   charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',
-    data:{labels:vLabels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[ATHLETES[c.datasetIndex]]}: ${c.raw.toFixed(1)}h`}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},grid:{color:gc}}}}});
+    data:{labels:vLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[activeAthletes[c.datasetIndex]]}: ${fmtH(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
 }
 
 // ── Calendar ───────────────────────────────────────────────────────
