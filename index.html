@@ -60,7 +60,7 @@
     .card-title-row .card-title{margin-bottom:0}
     .row1{margin-bottom:1.25rem}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
-    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1.25rem}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:1.25rem}
     .row4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
     .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--text2)}
     .legend span{display:flex;align-items:center;gap:5px}
@@ -205,6 +205,10 @@
         <div class="card-title">FC repouso — 14 dias</div>
         <div style="position:relative;height:140px"><canvas id="hr-chart"></canvas></div>
       </div>
+      <div class="card">
+        <div class="card-title">Body Battery — 14 dias</div>
+        <div style="position:relative;height:140px"><canvas id="batt-chart"></canvas></div>
+      </div>
     </div>
     <div class="row2">
       <div class="card">
@@ -293,7 +297,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:15 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:18 (Supabase)</div>
 </div>
 
 <script>
@@ -3819,6 +3823,19 @@ function renderWellness(d) {
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+' bpm'}}}}});
   } else {
     document.getElementById('hr-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">FC repouso indisponível</p>';
+  }
+
+  // Body Battery chart
+  dc('batt');
+  if(batt.some(v=>v>0)) {
+    charts['batt']=new Chart(document.getElementById('batt-chart'),{type:'bar',data:{labels,datasets:[
+      {label:'Body Battery',data:batt,backgroundColor:batt.map(v=>v>=70?'rgba(77,184,122,.6)':v>=40?'rgba(245,166,35,.6)':'rgba(255,82,82,.6)'),borderRadius:3},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>`Body Battery: ${c.raw.toFixed(0)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
+              y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},min:0,max:100}}}});
+  } else {
+    document.getElementById('batt-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Body Battery indisponível</p>';
   }
 }
 
