@@ -160,7 +160,7 @@
         <span class="logo-badge">NPC</span>
         <span class="logo-title">Endurance</span>
       </div>
-      <div class="logo-sub">Dashboard de Treinos · Buenos Aires 70.3 · 04/10/2026</div>
+      <div class="logo-sub" id="logo-sub">Dashboard de Treinos · NPC Endurance</div>
     </div>
     <div class="ctrls">
       <div class="tab-group">
@@ -293,7 +293,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:13 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 25/04/2026 15:15 (Supabase)</div>
 </div>
 
 <script>
@@ -3596,8 +3596,35 @@ function fmtH(h) {
 }
 function totalH(vol) { return Object.values(vol).reduce((a,b)=>a+b,0); }
 function getA()  { return document.getElementById('sel-athlete').value; }
-
 function dc(id)  { if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+// ── URL Routing ────────────────────────────────────────────────────
+function getAthleteFromURL() {
+  const path = window.location.pathname.replace(/^\//, '').toLowerCase();
+  return ATHLETES.includes(path) ? path : null;
+}
+function setAthleteURL(key) {
+  history.pushState({athlete: key}, '', '/' + key);
+}
+function updateSubtitle(key) {
+  const d = DB[key];
+  const sub = document.getElementById('logo-sub');
+  if (!sub || !d) return;
+  const event = (d.alerts || []).find(a =>
+    a.type === 'info' && a.message &&
+    !a.message.includes('HRV') &&
+    !a.message.includes('Aniversário') &&
+    !a.message.includes('Aniversario')
+  );
+  sub.textContent = event
+    ? `Dashboard de Treinos · ${event.message}`
+    : `Dashboard de Treinos · NPC Endurance`;
+}
+window.addEventListener('popstate', e => {
+  const key = (e.state && e.state.athlete) || getAthleteFromURL() || 'bruno';
+  document.getElementById('sel-athlete').value = key;
+  updateDash();
+});
 
 // ── View toggle ────────────────────────────────────────────────────
 function setView(v, btn) {
@@ -3648,7 +3675,11 @@ function updateDash() {
   if(currentView==='comparativo'){renderComparativo();return;}
   if(currentView==='calendario') {renderCalendar(calAthlete);return;}
   if(currentView==='macro')      {renderMacro(macroAthlete);return;}
-  const d = DB[getA()];
+  const key = getA();
+  setAthleteURL(key);
+  updateSubtitle(key);
+  const d = DB[key];
+  if(!d){return;}
   renderAlerts(d);
   renderKPIs(d);
   renderIndicators(d);
@@ -4117,6 +4148,10 @@ function togglePhase(idx) {
 }
 
 // ── Init ───────────────────────────────────────────────────────────
+const urlAthlete = getAthleteFromURL();
+if (urlAthlete) {
+  document.getElementById('sel-athlete').value = urlAthlete;
+}
 updateDash();
 </script>
 </body>
