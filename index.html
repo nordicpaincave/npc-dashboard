@@ -301,28 +301,27 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 27/04/2026 20:29 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 28/04/2026 06:01 (Supabase)</div>
 </div>
 
 <script>
 const DB = {
   "jean": {
     "kpis": {
-      "ctl": 73.2,
-      "atl": 119.8,
-      "tsb": -46.6,
+      "ctl": 73.9,
+      "atl": 117.4,
+      "tsb": -43.5,
       "tss_week": 126
     },
     "kpi_delta": {
       "ctl": "+9",
-      "atl": "+5",
-      "tsb": "+4",
+      "atl": "+2",
+      "tsb": "+6",
       "tss_week": "-741"
     },
     "pmc": {
       "labels": [
-        "12/2",
-        "",
+        "13/2",
         "",
         "",
         "16/2",
@@ -395,10 +394,10 @@ const DB = {
         "",
         "",
         "",
-        "27/4"
+        "27/4",
+        ""
       ],
       "ctl": [
-        null,
         null,
         null,
         null,
@@ -472,10 +471,10 @@ const DB = {
         70.3,
         71.6,
         71.9,
-        73.2
+        73.2,
+        73.9
       ],
       "atl": [
-        null,
         null,
         null,
         null,
@@ -549,10 +548,10 @@ const DB = {
         124.0,
         124.5,
         118.8,
-        119.8
+        119.8,
+        117.4
       ],
       "tsb": [
-        null,
         null,
         null,
         null,
@@ -626,7 +625,8 @@ const DB = {
         -53.7,
         -52.8,
         -46.8,
-        -46.6
+        -46.6,
+        -43.5
       ]
     },
     "zones": {
@@ -651,7 +651,6 @@ const DB = {
     },
     "hrv": {
       "labels": [
-        "14/4",
         "15/4",
         "16/4",
         "17/4",
@@ -664,10 +663,10 @@ const DB = {
         "24/4",
         "25/4",
         "26/4",
-        "27/4"
+        "27/4",
+        "28/4"
       ],
       "vals": [
-        64,
         59,
         67,
         66,
@@ -680,11 +679,11 @@ const DB = {
         55,
         55,
         55,
-        59
+        59,
+        0
       ],
-      "baseline": 64.9,
+      "baseline": 65.3,
       "sleep": [
-        8.0,
         8.0,
         8.3,
         8.1,
@@ -697,10 +696,10 @@ const DB = {
         6.8,
         6.9,
         6.6,
-        8.0
+        8.0,
+        0
       ],
       "resting_hr": [
-        48,
         49,
         41,
         47,
@@ -713,10 +712,10 @@ const DB = {
         49,
         49,
         48,
-        50
+        50,
+        0
       ],
       "body_battery": [
-        56.0,
         51.0,
         63.1,
         52.5,
@@ -729,7 +728,8 @@ const DB = {
         42.2,
         38.6,
         46.6,
-        60.5
+        60.5,
+        0
       ],
       "last_hrv": 59,
       "last_sleep": 8.0,
@@ -744,24 +744,34 @@ const DB = {
         "color": "#4a9eff"
       },
       {
+        "label": "Bike",
+        "done": 0.0,
+        "target": 1.5,
+        "color": "#f5a623"
+      },
+      {
         "label": "Força",
         "done": 1.1,
-        "target": 1.0,
+        "target": 1.8,
         "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
         "type": "danger",
-        "msg": "Sobrecarga crítica — TSB -47 com HRV 87% do baseline: semana de recuperação obrigatória"
+        "msg": "Sobrecarga crítica — TSB -44 com HRV 87% do baseline: semana de recuperação obrigatória"
       },
       {
         "type": "warn",
-        "msg": "Ramp rate elevado — CTL subiu 9.3 pts em 7 dias: risco de overuse se mantido"
+        "msg": "Ramp rate elevado — CTL subiu 8.7 pts em 7 dias: risco de overuse se mantido"
       },
       {
         "type": "warn",
-        "msg": "Carga aguda muito acima da crônica — ATL 120 vs CTL 73: semana de pico, planejar descarga"
+        "msg": "Carga aguda muito acima da crônica — ATL 117 vs CTL 74: semana de pico, planejar descarga"
+      },
+      {
+        "type": "warn",
+        "msg": "Aderência baixa — 49% do plano executado: identificar causa (lesão, agenda, motivação)"
       },
       {
         "type": "info",
@@ -788,6 +798,26 @@ const DB = {
         "zones": "—",
         "hrv": 59,
         "ht": "dn"
+      },
+      {
+        "day": "Ter",
+        "sport": "strength",
+        "desc": "Musculação — Membros Superiores + Core (Sem. 7)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1+Z2 — 3×8min LT1 (Sem. 7)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
       }
     ],
     "indicators": {
@@ -801,14 +831,14 @@ const DB = {
       "fitness": {
         "label": "Going Hard",
         "color": "#f5a623",
-        "pos": 94,
+        "pos": 91,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
-        "label": "Increasing",
-        "color": "#ff7c3a",
-        "pos": 60,
+        "label": "Decreasing",
+        "color": "#4db87a",
+        "pos": 38,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -818,21 +848,20 @@ const DB = {
   },
   "bruno": {
     "kpis": {
-      "ctl": 55.0,
-      "atl": 84.9,
-      "tsb": -30.0,
+      "ctl": 56.0,
+      "atl": 86.8,
+      "tsb": -30.8,
       "tss_week": 113
     },
     "kpi_delta": {
-      "ctl": "+6",
-      "atl": "+8",
-      "tsb": "-2",
+      "ctl": "+8",
+      "atl": "+21",
+      "tsb": "-13",
       "tss_week": "-401"
     },
     "pmc": {
       "labels": [
-        "12/2",
-        "",
+        "13/2",
         "",
         "",
         "16/2",
@@ -905,10 +934,10 @@ const DB = {
         "",
         "",
         "",
-        "27/4"
+        "27/4",
+        ""
       ],
       "ctl": [
-        null,
         null,
         null,
         null,
@@ -982,10 +1011,10 @@ const DB = {
         53.4,
         53.8,
         53.6,
-        55.0
+        55.0,
+        56.0
       ],
       "atl": [
-        null,
         null,
         null,
         null,
@@ -1059,10 +1088,10 @@ const DB = {
         89.3,
         86.4,
         80.9,
-        84.9
+        84.9,
+        86.8
       ],
       "tsb": [
-        null,
         null,
         null,
         null,
@@ -1136,7 +1165,8 @@ const DB = {
         -35.9,
         -32.6,
         -27.3,
-        -30.0
+        -30.0,
+        -30.8
       ]
     },
     "zones": {
@@ -1161,7 +1191,6 @@ const DB = {
     },
     "hrv": {
       "labels": [
-        "14/4",
         "15/4",
         "16/4",
         "17/4",
@@ -1174,10 +1203,10 @@ const DB = {
         "24/4",
         "25/4",
         "26/4",
-        "27/4"
+        "27/4",
+        "28/4"
       ],
       "vals": [
-        45.9,
         41.4,
         46.1,
         41.3,
@@ -1190,11 +1219,11 @@ const DB = {
         54.5,
         82.7,
         61.4,
-        57.2
+        57.2,
+        0
       ],
-      "baseline": 54.5,
+      "baseline": 54.8,
       "sleep": [
-        8.1,
         0,
         7.7,
         7.9,
@@ -1207,10 +1236,10 @@ const DB = {
         7.0,
         8.9,
         9.4,
-        8.0
+        8.0,
+        0
       ],
       "resting_hr": [
-        43,
         47,
         44,
         45,
@@ -1223,7 +1252,8 @@ const DB = {
         45,
         46,
         45,
-        45
+        45,
+        49
       ],
       "body_battery": [
         0,
@@ -1243,15 +1273,21 @@ const DB = {
       ],
       "last_hrv": 57.2,
       "last_sleep": 8.0,
-      "last_rhr": 45,
+      "last_rhr": 49,
       "last_bb": 0
     },
     "adherence": [
       {
         "label": "Natação",
         "done": 0.8,
-        "target": 0.8,
+        "target": 1.6,
         "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 0.0,
+        "target": 1.0,
+        "color": "#f5a623"
       },
       {
         "label": "Força",
@@ -1262,16 +1298,24 @@ const DB = {
     ],
     "alerts": [
       {
-        "type": "warn",
-        "msg": "Fadiga acumulada — TSB -30: HRV estável, monitorar próximas 48h"
+        "type": "danger",
+        "msg": "Sobrecarga elevada — TSB -31: monitorar HRV diariamente e proteger o sono"
       },
       {
         "type": "info",
-        "msg": "HRV preservado (67 ms) apesar da fadiga: sistema nervoso respondendo bem"
+        "msg": "HRV preservado (59 ms) apesar da fadiga: sistema nervoso respondendo bem"
       },
       {
         "type": "warn",
-        "msg": "Carga aguda muito acima da crônica — ATL 85 vs CTL 55: semana de pico, planejar descarga"
+        "msg": "Ramp rate elevado — CTL subiu 8.2 pts em 7 dias: risco de overuse se mantido"
+      },
+      {
+        "type": "warn",
+        "msg": "Carga aguda muito acima da crônica — ATL 87 vs CTL 56: semana de pico, planejar descarga"
+      },
+      {
+        "type": "warn",
+        "msg": "Aderência baixa — 50% do plano executado: identificar causa (lesão, agenda, motivação)"
       },
       {
         "type": "info",
@@ -1298,6 +1342,26 @@ const DB = {
         "zones": "—",
         "hrv": 57.2,
         "ht": "up"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Natação — Aula 12h (Sem. 7)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia Solo (Sem. 7)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
       }
     ],
     "indicators": {
@@ -1311,14 +1375,14 @@ const DB = {
       "fitness": {
         "label": "Going Hard",
         "color": "#f5a623",
-        "pos": 79,
+        "pos": 89,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Increasing",
         "color": "#ff7c3a",
-        "pos": 75,
+        "pos": 64,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -1328,21 +1392,20 @@ const DB = {
   },
   "gabriel": {
     "kpis": {
-      "ctl": 81.4,
-      "atl": 32.9,
-      "tsb": 48.5,
-      "tss_week": 0
+      "ctl": 81.0,
+      "atl": 38.2,
+      "tsb": 42.8,
+      "tss_week": 64
     },
     "kpi_delta": {
-      "ctl": "-12",
-      "atl": "-18",
-      "tsb": "+6",
-      "tss_week": "-35"
+      "ctl": "-10",
+      "atl": "-5",
+      "tsb": "-5",
+      "tss_week": "+28"
     },
     "pmc": {
       "labels": [
-        "12/2",
-        "",
+        "13/2",
         "",
         "",
         "16/2",
@@ -1415,10 +1478,10 @@ const DB = {
         "",
         "",
         "",
-        "27/4"
+        "27/4",
+        ""
       ],
       "ctl": [
-        204.7,
         199.8,
         198.6,
         203.2,
@@ -1492,10 +1555,10 @@ const DB = {
         84.7,
         82.7,
         80.7,
-        81.4
+        80.3,
+        81.0
       ],
       "atl": [
-        114.1,
         97.8,
         105.4,
         146.0,
@@ -1569,10 +1632,10 @@ const DB = {
         27.2,
         23.3,
         20.0,
-        32.9
+        26.3,
+        38.2
       ],
       "tsb": [
-        90.6,
         102.0,
         93.2,
         57.2,
@@ -1646,24 +1709,32 @@ const DB = {
         57.4,
         59.3,
         60.7,
-        48.5
+        54.0,
+        42.8
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Bike"
+      ],
+      "z1": [
+        95
+      ],
+      "z2": [
+        4
+      ],
+      "z3": [
+        1
+      ]
     },
     "vol": {
       "swim": 0.0,
-      "bike": 0.0,
+      "bike": 1.5,
       "run": 0.0,
       "strength": 0.0
     },
     "hrv": {
       "labels": [
-        "14/4",
         "15/4",
         "16/4",
         "17/4",
@@ -1676,10 +1747,10 @@ const DB = {
         "24/4",
         "25/4",
         "26/4",
-        "27/4"
+        "27/4",
+        "28/4"
       ],
       "vals": [
-        48,
         46,
         41,
         44,
@@ -1692,11 +1763,11 @@ const DB = {
         46,
         48,
         48,
-        50
+        50,
+        43
       ],
-      "baseline": 44.2,
+      "baseline": 44.6,
       "sleep": [
-        6.5,
         7.0,
         7.2,
         4.3,
@@ -1709,10 +1780,10 @@ const DB = {
         5.3,
         8.4,
         8.8,
-        5.5
+        5.5,
+        4.1
       ],
       "resting_hr": [
-        54,
         55,
         54,
         53,
@@ -1725,10 +1796,10 @@ const DB = {
         53,
         53,
         52,
-        52
+        52,
+        57
       ],
       "body_battery": [
-        47.4,
         51.7,
         46.1,
         29.3,
@@ -1741,31 +1812,32 @@ const DB = {
         47.2,
         53.5,
         62.4,
-        60.2
+        53.8,
+        34.8
       ],
-      "last_hrv": 50,
-      "last_sleep": 5.5,
-      "last_rhr": 52,
-      "last_bb": 60.2
+      "last_hrv": 43,
+      "last_sleep": 4.1,
+      "last_rhr": 57,
+      "last_bb": 34.8
     },
     "adherence": [
       {
         "label": "Bike",
-        "done": 0.0,
-        "target": 1.5,
+        "done": 1.5,
+        "target": 3.0,
         "color": "#f5a623"
       },
       {
         "label": "Força",
         "done": 0.0,
-        "target": 1.0,
+        "target": 2.0,
         "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
         "type": "warn",
-        "msg": "Aderência baixa — 0% do plano executado: identificar causa (lesão, agenda, motivação)"
+        "msg": "Aderência baixa — 25% do plano executado: identificar causa (lesão, agenda, motivação)"
       }
     ],
     "sessions": [
@@ -1783,11 +1855,31 @@ const DB = {
         "day": "Seg",
         "sport": "bike",
         "desc": "Ciclismo Z1 — Base Aeróbia (Retomada)",
-        "dur": "—",
-        "tss": 0,
+        "dur": "1h30",
+        "tss": 64,
         "zones": "—",
         "hrv": 50,
         "ht": "up"
+      },
+      {
+        "day": "Ter",
+        "sport": "strength",
+        "desc": "Musculação (Retomada)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 43,
+        "ht": "nt"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Ciclismo Z1 — Base Aeróbia (Retomada)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 43,
+        "ht": "nt"
       }
     ],
     "indicators": {
@@ -1831,8 +1923,7 @@ const DB = {
     },
     "pmc": {
       "labels": [
-        "12/2",
-        "",
+        "13/2",
         "",
         "",
         "16/2",
@@ -1905,7 +1996,8 @@ const DB = {
         "",
         "",
         "",
-        "27/4"
+        "27/4",
+        ""
       ],
       "ctl": [
         null,
@@ -2153,7 +2245,6 @@ const DB = {
     },
     "hrv": {
       "labels": [
-        "14/4",
         "15/4",
         "16/4",
         "17/4",
@@ -2166,7 +2257,8 @@ const DB = {
         "24/4",
         "25/4",
         "26/4",
-        "27/4"
+        "27/4",
+        "28/4"
       ],
       "vals": [
         0,
@@ -2269,21 +2361,20 @@ const DB = {
   },
   "simony": {
     "kpis": {
-      "ctl": 28.6,
-      "atl": 7.0,
-      "tsb": 21.6,
+      "ctl": 27.9,
+      "atl": 6.0,
+      "tsb": 21.9,
       "tss_week": 0
     },
     "kpi_delta": {
       "ctl": "-5",
-      "atl": "-14",
-      "tsb": "+8",
+      "atl": "-12",
+      "tsb": "+6",
       "tss_week": "-44"
     },
     "pmc": {
       "labels": [
-        "12/2",
-        "",
+        "13/2",
         "",
         "",
         "16/2",
@@ -2356,10 +2447,10 @@ const DB = {
         "",
         "",
         "",
-        "27/4"
+        "27/4",
+        ""
       ],
       "ctl": [
-        61.5,
         60.1,
         58.6,
         60.0,
@@ -2433,10 +2524,10 @@ const DB = {
         30.7,
         30.0,
         29.2,
-        28.6
+        28.6,
+        27.9
       ],
       "atl": [
-        42.8,
         36.9,
         31.7,
         43.8,
@@ -2510,10 +2601,10 @@ const DB = {
         11.1,
         9.5,
         8.1,
-        7.0
+        7.0,
+        6.0
       ],
       "tsb": [
-        18.6,
         23.1,
         26.9,
         16.2,
@@ -2587,7 +2678,8 @@ const DB = {
         19.6,
         20.5,
         21.1,
-        21.6
+        21.6,
+        21.9
       ]
     },
     "zones": {
@@ -2604,7 +2696,6 @@ const DB = {
     },
     "hrv": {
       "labels": [
-        "14/4",
         "15/4",
         "16/4",
         "17/4",
@@ -2617,10 +2708,10 @@ const DB = {
         "24/4",
         "25/4",
         "26/4",
-        "27/4"
+        "27/4",
+        "28/4"
       ],
       "vals": [
-        80,
         74,
         77,
         75,
@@ -2633,11 +2724,11 @@ const DB = {
         74,
         78,
         0,
+        0,
         0
       ],
-      "baseline": 74.3,
+      "baseline": 73.9,
       "sleep": [
-        7.8,
         6.5,
         7.4,
         7.4,
@@ -2650,10 +2741,10 @@ const DB = {
         6.8,
         9.2,
         0,
+        0,
         0
       ],
       "resting_hr": [
-        49,
         48,
         49,
         50,
@@ -2666,10 +2757,10 @@ const DB = {
         48,
         47,
         0,
+        0,
         0
       ],
       "body_battery": [
-        44.1,
         42.4,
         44.6,
         43.8,
@@ -2681,6 +2772,7 @@ const DB = {
         58.5,
         49.0,
         64.4,
+        0,
         0,
         0
       ],
@@ -2710,7 +2802,7 @@ const DB = {
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 44,
+        "pos": 45,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -2720,21 +2812,20 @@ const DB = {
   },
   "clara": {
     "kpis": {
-      "ctl": 69.5,
-      "atl": 79.1,
-      "tsb": -9.6,
+      "ctl": 68.9,
+      "atl": 74.2,
+      "tsb": -5.3,
       "tss_week": 0
     },
     "kpi_delta": {
-      "ctl": "+2",
-      "atl": "+4",
-      "tsb": "-2",
+      "ctl": "+0",
+      "atl": "-9",
+      "tsb": "+9",
       "tss_week": "-566"
     },
     "pmc": {
       "labels": [
-        "12/2",
-        "",
+        "13/2",
         "",
         "",
         "16/2",
@@ -2807,10 +2898,10 @@ const DB = {
         "",
         "",
         "",
-        "27/4"
+        "27/4",
+        ""
       ],
       "ctl": [
-        66.8,
         67.5,
         67.2,
         69.4,
@@ -2884,10 +2975,10 @@ const DB = {
         68.2,
         67.4,
         71.2,
-        69.5
+        69.5,
+        68.9
       ],
       "atl": [
-        76.3,
         79.4,
         75.9,
         87.6,
@@ -2961,10 +3052,10 @@ const DB = {
         75.3,
         69.9,
         92.3,
-        79.1
+        79.1,
+        74.2
       ],
       "tsb": [
-        -9.6,
         -11.9,
         -8.7,
         -18.2,
@@ -3038,7 +3129,8 @@ const DB = {
         -7.1,
         -2.5,
         -21.1,
-        -9.6
+        -9.6,
+        -5.3
       ]
     },
     "zones": {
@@ -3055,7 +3147,6 @@ const DB = {
     },
     "hrv": {
       "labels": [
-        "14/4",
         "15/4",
         "16/4",
         "17/4",
@@ -3068,10 +3159,10 @@ const DB = {
         "24/4",
         "25/4",
         "26/4",
-        "27/4"
+        "27/4",
+        "28/4"
       ],
       "vals": [
-        0,
         0,
         0,
         0,
@@ -3084,7 +3175,8 @@ const DB = {
         55,
         54,
         51,
-        52
+        52,
+        0
       ],
       "baseline": 53.0,
       "sleep": [
@@ -3097,14 +3189,13 @@ const DB = {
         0,
         0,
         0,
-        0,
         7.0,
         7.0,
         4.8,
-        7.0
+        7.0,
+        0
       ],
       "resting_hr": [
-        0,
         0,
         0,
         0,
@@ -3117,10 +3208,10 @@ const DB = {
         54,
         56,
         57,
-        57
+        55,
+        60
       ],
       "body_battery": [
-        0,
         0,
         0,
         0,
@@ -3133,40 +3224,63 @@ const DB = {
         50.9,
         45.0,
         28.9,
-        42.1
+        41.5,
+        46.5
       ],
       "last_hrv": 52,
       "last_sleep": 7.0,
-      "last_rhr": 57,
-      "last_bb": 42.1
+      "last_rhr": 60,
+      "last_bb": 46.5
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Força",
+        "done": 0.0,
+        "target": 1.0,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
       {
         "type": "info",
-        "msg": "Fadiga moderada — TSB -10: zona de treino produtivo, manter plano"
+        "msg": "Fadiga moderada — TSB -5: zona de treino produtivo, manter plano"
+      },
+      {
+        "type": "warn",
+        "msg": "Aderência baixa — 0% do plano executado: identificar causa (lesão, agenda, motivação)"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Ter",
+        "sport": "strength",
+        "desc": "Corrida Z1 — Leve + Força Joelho (Sem. 1 NPC)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
+      }
+    ],
     "indicators": {
       "form": {
         "label": "Optimal",
         "color": "#4db87a",
-        "pos": 42,
+        "pos": 49,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
         "label": "Keeping Fit",
         "color": "#4db87a",
-        "pos": 56,
+        "pos": 33,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 3,
+        "pos": 26,
         "start": "Decreasing",
         "end": "Increasing"
       }
