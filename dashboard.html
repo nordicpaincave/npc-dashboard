@@ -308,7 +308,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 20:47 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 20:52 (Supabase)</div>
 </div>
 
 <script>
@@ -3483,6 +3483,77 @@ const DB = {
     "week_notes": {}
   }
 };
+
+// ── Nutrition ──────────────────────────────────────────────────────
+const NUTR_ATHLETES = ['bruno'];
+const NUTR_PLAN = {
+  rest:      {label:'Descanso',    kcal:2350,carb:245,prot:225,fat:70, water:2500,tips:['Reduzir carbo no almoço (100g) e na janta (75g)','Aumentar oleaginosas para 70g no lanche tarde','Acrescentar azeite extra nas saladas','Manter proteína total']},
+  easy:      {label:'Z1 Leve',     kcal:2600,carb:300,prot:225,fat:62, water:2800,tips:['Desjejum 30min antes do treino','Manter dieta base sem ajustes','Pós-treino: fazer a próxima refeição normalmente']},
+  threshold: {label:'Limiar (DT)', kcal:3050,carb:400,prot:245,fat:52, water:3000,tips:['Desjejum: aumentar pão para 80g','Almoço: aumentar carbo para 250g','Lanche tarde: reduzir oleaginosas para 30g','1 dose whey extra pós-sessão']},
+  double:    {label:'Duplo Limiar',kcal:3200,carb:430,prot:250,fat:50, water:3200,tips:['Entre treinos: 1 gel + 350ml água de coco OBRIGATÓRIO','Almoço: 260g de carbo','Janta: aumentar carbo para 200g','Oleaginosas: 25g']},
+  vo2max:    {label:'VO2max / Z3', kcal:3100,carb:415,prot:245,fat:48, water:3200,tips:['Refeição imediata pós-sessão (máx 30min)','Almoço: 250g carbo','Desjejum: 80g pão','Oleaginosas: 25g']},
+  long:      {label:'Treino Longo',kcal:3150,carb:425,prot:245,fat:55, water:3500,tips:['1 liquidz OU jungle OU 1L água de coco hoje','DURANTE bike >2h: 60g xtratus + 1 gel a cada 30min','DURANTE corrida: 1 gel a cada 30min','600ml água/hora durante treino']},
+  pre_race:  {label:'Pré-Prova',  kcal:3100,carb:460,prot:225,fat:42, water:3000,tips:['Janta: macarrão à vontade','1 liquidz OU 1L água de coco','Reduzir fibra e gordura na janta','Não testar alimentos novos']},
+  race_day:  {label:'Dia de Prova',kcal:3200,carb:490,prot:225,fat:35,water:3000,tips:['Café da manhã normal — largada >2h: 1 gel no início','DURANTE: 1 gel a cada 30min + 600ml água/h + sal','Bike >2h: 60g xtratus + 1 gel a cada 30min','PÓS: ½ dose whey + 200ml água de coco + 200g frutas']},
+  post_race: {label:'Pós-Prova',  kcal:2900,carb:360,prot:275,fat:60, water:3500,tips:['½ dose whey + 200ml água de coco + 200g frutas vermelhas','Priorizar proteína para recuperação','Manter carboidrato moderado-alto','Hidratação: 3.500ml']},
+};
+const NUTR_MEALS = [
+  {time:'06:00',name:'Desjejum',      kcal:250, carb:52,prot:6, fat:2, desc:'2 fatias pão integral OU fermentação natural (60g) + 30g geleia + café'},
+  {time:'07:30',name:'Entre treinos', kcal:60,  carb:15,prot:0, fat:0, desc:'Dupla sessão apenas — 100g fruta OU ½ BTnitrato OU 1 gel OU 350ml água de coco'},
+  {time:'08:30',name:'Lanche manhã',  kcal:221, carb:29,prot:24,fat:1, desc:'1 dose whey protein + 200g de frutas'},
+  {time:'10:30',name:'Café da manhã', kcal:365, carb:17,prot:27,fat:21,desc:'Op.1: 1 fatia pão + 4 ovos | Op.2: 40g tapioca + 2 ovos + 90g frango'},
+  {time:'13:00',name:'Almoço',        kcal:641, carb:82,prot:67,fat:5, desc:'Salada à vontade + 100g vegetal + 200g carbo + 225g frango/peixe ou 150g carne'},
+  {time:'15:00',name:'Lanche tarde 1',kcal:397, carb:33,prot:10,fat:25,desc:'Op.1: 200g frutas + 50g oleaginosas | Op.2: 100g frutas + 25g aveia + 50g amendoim'},
+  {time:'18:00',name:'Lanche tarde 2',kcal:277, carb:42,prot:25,fat:1, desc:'1 dose whey protein + 300g de frutas'},
+  {time:'20:00',name:'Janta',         kcal:601, carb:72,prot:67,fat:5, desc:'Salada à vontade + 200g vegetal + 150g carbo + 225g frango/peixe ou 150g carne'},
+];
+const NUTR_BASE = 2750;
+function classifyNutrDay(sessions) {
+  if (!sessions||!sessions.length) return 'rest';
+  const t=sessions.map(s=>(s.desc||'').toLowerCase()).join(' ');
+  const n=sessions.length;
+  const dur=sessions.reduce((a,s)=>{const h=(s.dur||'').match(/(\d+)h/),m=(s.dur||'').match(/(\d+)min/);return a+(h?+h[1]*60:0)+(m?+m[1]:0);},0);
+  const isDT=/duplo|dt1|dt2|limiar|threshold/.test(t);
+  const isVO2=/vo2|z3|intervalado/.test(t);
+  if(n>=2&&isDT)return 'double';
+  if(isVO2)return 'vo2max';
+  if(isDT)return 'threshold';
+  if(dur>90)return 'long';
+  return 'easy';
+}
+function renderNutricao() {
+  const key=getA(), el=document.getElementById('nutri-body');
+  if(!el)return;
+  if(!NUTR_ATHLETES.includes(key)){
+    el.innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)"><div style="font-size:2rem;margin-bottom:.75rem">🥗</div><div>Plano nutricional não cadastrado para este atleta.</div></div>';
+    return;
+  }
+  const d=DB[key], sessions=d?(d.sessions||[]):[], dt=classifyNutrDay(sessions);
+  const nutr=NUTR_PLAN[dt]||NUTR_PLAN.easy;
+  const delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
+  const dias=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const tc={rest:'#7a9ab8',easy:'#2ecc71',threshold:'#4a9bbe',double:'#4a9bbe',vo2max:'#e85d24',long:'#f39c12',pre_race:'#e85d24',race_day:'#e74c3c',post_race:'#2ecc71'}[dt]||'#4a9bbe';
+  const today=new Date();
+  el.innerHTML=
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">'+
+      '<div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Plano Nutricional — '+dias[today.getDay()]+'</div>'+
+      '<div style="font-size:13px;color:var(--text2)">Monah Dias · CRN 7119 PR · emitido em 06/04/2026</div></div>'+
+      '<span style="background:'+tc+'18;border:1px solid '+tc+'40;border-radius:20px;color:'+tc+';font-size:11px;font-weight:700;padding:.3rem .9rem">'+nutr.label+'</span>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem">'+
+      [{v:nutr.kcal,l:'Calorias',u:'kcal',c:tc},{v:nutr.carb+'g',l:'Carboidratos',u:Math.round(nutr.carb*4/nutr.kcal*100)+'%',c:'#4a9bbe'},{v:nutr.prot+'g',l:'Proteínas',u:Math.round(nutr.prot*4/nutr.kcal*100)+'%',c:'#2ecc71'},{v:nutr.fat+'g',l:'Gorduras',u:Math.round(nutr.fat*9/nutr.kcal*100)+'%',c:'#f39c12'}]
+      .map(function(m){return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem;text-align:center"><div style="font-size:20px;font-weight:700;color:'+m.c+'">'+m.v+'</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.2rem 0">'+m.l+'</div><div style="font-size:11px;color:var(--text2)">'+m.u+'</div></div>';}).join('')+
+    '</div>'+
+    '<div style="background:'+tc+'10;border:1px solid '+tc+'25;border-radius:var(--radius);padding:.875rem 1rem;margin-bottom:1rem">'+
+      '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">Orientações para hoje</div>'+
+      nutr.tips.map(function(t){return '<div style="display:flex;align-items:flex-start;gap:.5rem;font-size:12px;color:var(--text2);margin-bottom:.3rem;line-height:1.5"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';}).join('')+
+      '<div style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid '+tc+'20;font-size:12px;color:var(--text2)">💧 Hidratação: <strong style="color:'+tc+'">'+(nutr.water/1000).toFixed(1)+'L</strong> · '+ds+' kcal vs base de '+NUTR_BASE+' kcal</div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">Refeições base</div>'+
+    '<div style="display:flex;flex-direction:column;gap:.4rem">'+
+      NUTR_MEALS.map(function(m){return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem .875rem;display:flex;align-items:center;gap:.75rem"><span style="font-size:11px;color:var(--text3);width:2.5rem;text-align:right;flex-shrink:0">'+m.time+'</span><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+m.name+'</div><div style="font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.desc+'</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:700;color:var(--ice)">'+m.kcal+' kcal</div><div style="font-size:10px;color:var(--text3)">'+m.carb+'c '+m.prot+'p '+m.fat+'g</div></div></div>';}).join('')+
+    '</div>';
+}
 const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
 const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
 const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc',simony:'#f472b6',clara:'#fb923c'};
@@ -4233,7 +4304,6 @@ function togglePhase(idx) {
   </div>`;
 }
 
-const NUTR_ATHLETES = ['bruno']; // atletas com plano cadastrado
 
 // ── Init ───────────────────────────────────────────────────────────
 (function() {
