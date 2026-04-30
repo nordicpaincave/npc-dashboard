@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPC Endurance — Schema do Banco de Dados</title>
+<style>
+  :root {
+    --ice: #4a9bbe;
+    --ice-light: #d4eef7;
+    --ice-dark: #2e7da0;
+    --fire: #e85d24;
+    --dark: #0a0e17;
+    --dark2: #0f1520;
+    --dark3: #141b2d;
+    --text: #c8d8e8;
+    --text2: #7a9ab8;
+    --text3: #4a6278;
+    --border: #1e2d42;
+    --green: #2ecc71;
+    --yellow: #f39c12;
+    --purple: #9b59b6;
+    --red: #e74c3c;
+    --teal: #1abc9c;
+    --pink: #e91e8c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--dark2);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: .75rem; }
+  .logo-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--ice);
+    box-shadow: 0 0 8px var(--ice);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: .4; }
+  }
+  .logo-text { font-size: .85rem; font-weight: bold; color: var(--ice); letter-spacing: .1em; }
+  .logo-sub { font-size: .7rem; color: var(--text3); letter-spacing: .05em; }
+  .stats-bar { display: flex; gap: 2rem; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 1.4rem; font-weight: bold; color: var(--ice); font-family: monospace; }
+  .stat-lbl { font-size: .65rem; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; }
+
+  /* ── SEARCH ── */
+  .search-bar {
+    padding: .75rem 2rem;
+    background: var(--dark2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .search-input {
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    font-size: .8rem;
+    padding: .4rem .8rem;
+    width: 280px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-input:focus { border-color: var(--ice); }
+  .search-input::placeholder { color: var(--text3); }
+  .filter-btns { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .filter-btn {
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text2);
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: .7rem;
+    padding: .25rem .6rem;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--ice);
+    border-color: var(--ice);
+    color: var(--dark);
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+  }
+
+  /* ── GROUP CARD ── */
+  .group {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all .2s;
+  }
+  .group:hover { border-color: var(--group-color, var(--ice)); }
+  .group-header {
+    background: color-mix(in srgb, var(--group-color, var(--ice)) 15%, var(--dark2));
+    border-bottom: 1px solid color-mix(in srgb, var(--group-color, var(--ice)) 30%, var(--border));
+    padding: .6rem 1rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .group-icon { font-size: 1rem; }
+  .group-name {
+    font-size: .75rem;
+    font-weight: bold;
+    color: var(--group-color, var(--ice));
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .group-count {
+    margin-left: auto;
+    background: color-mix(in srgb, var(--group-color, var(--ice)) 20%, transparent);
+    color: var(--group-color, var(--ice));
+    border-radius: 10px;
+    font-size: .65rem;
+    padding: .1rem .45rem;
+  }
+
+  /* ── TABLE ITEMS ── */
+  .table-list { padding: .5rem 0; }
+  .table-item {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    gap: .5rem;
+    padding: .3rem 1rem;
+    transition: background .1s;
+    font-size: .75rem;
+  }
+  .table-item:hover { background: rgba(74,155,190,.08); }
+  .table-item.highlighted { background: rgba(74,155,190,.15); }
+  .table-item.dimmed { opacity: .25; }
+  .table-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--group-color, var(--ice));
+    flex-shrink: 0;
+  }
+  .table-name { color: var(--text); flex: 1; }
+  .table-rows {
+    color: var(--text3);
+    font-size: .65rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .table-badges { display: flex; gap: .2rem; margin-left: auto; }
+  .badge {
+    border-radius: 2px;
+    font-size: .6rem;
+    padding: .1rem .3rem;
+  }
+  .badge-fk { background: rgba(74,155,190,.2); color: var(--ice); }
+  .badge-data { background: rgba(46,204,113,.2); color: var(--green); }
+
+  /* ── DETAIL PANEL ── */
+  .detail-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .detail-overlay.open { display: flex; }
+  .detail-panel {
+    background: var(--dark2);
+    border: 1px solid var(--ice);
+    border-radius: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    width: 520px;
+    max-width: 95vw;
+    position: relative;
+    box-shadow: 0 0 40px rgba(74,155,190,.2);
+  }
+  .detail-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: var(--text3);
+    cursor: pointer; font-size: 1.2rem;
+  }
+  .detail-close:hover { color: var(--text); }
+  .detail-title {
+    font-size: 1rem; font-weight: bold;
+    color: var(--ice); margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+  }
+  .detail-section { margin-bottom: 1rem; }
+  .detail-section-title {
+    font-size: .65rem; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--text3);
+    margin-bottom: .4rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .2rem;
+  }
+  .rel-item {
+    align-items: center;
+    background: var(--dark3);
+    border-radius: 3px;
+    display: flex;
+    font-size: .72rem;
+    gap: .5rem;
+    margin-bottom: .2rem;
+    padding: .3rem .6rem;
+  }
+  .rel-arrow { color: var(--text3); }
+  .rel-table { color: var(--ice); }
+  .rel-col { color: var(--text2); font-size: .65rem; }
+  .data-tag {
+    background: rgba(46,204,113,.15);
+    border: 1px solid rgba(46,204,113,.3);
+    border-radius: 3px;
+    color: var(--green);
+    font-size: .7rem;
+    padding: .15rem .4rem;
+    display: inline-block;
+    margin-bottom: .5rem;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: var(--dark2);
+  }
+  .legend-item { align-items: center; display: flex; gap: .4rem; font-size: .7rem; color: var(--text2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ── HIGHLIGHT MODE ── */
+  .highlight-info {
+    background: rgba(74,155,190,.1);
+    border: 1px solid rgba(74,155,190,.3);
+    border-radius: 4px;
+    color: var(--text2);
+    font-size: .75rem;
+    padding: .4rem .8rem;
+  }
+  .highlight-info span { color: var(--ice); font-weight: bold; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .stats-bar { gap: 1rem; }
+    .stat-val { font-size: 1rem; }
+    header { flex-wrap: wrap; gap: .5rem; }
+    .grid { grid-template-columns: 1fr; padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div>
+      <div class="logo-text">NPC ENDURANCE</div>
+      <div class="logo-sub">Schema do Banco de Dados · Supabase PostgreSQL</div>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val">88</div><div class="stat-lbl">Tabelas</div></div>
+    <div class="stat"><div class="stat-val">80</div><div class="stat-lbl">Relações FK</div></div>
+    <div class="stat"><div class="stat-val">6</div><div class="stat-lbl">Atletas</div></div>
+    <div class="stat"><div class="stat-val" id="data-count">1.5k+</div><div class="stat-lbl">Registros</div></div>
+  </div>
+</header>
+
+<div class="search-bar">
+  <input class="search-input" id="search" placeholder="Buscar tabela..." type="text">
+  <div class="filter-btns" id="filter-btns"></div>
+  <div class="highlight-info" id="hl-info" style="display:none">
+    Clique em <span id="hl-name">—</span> · tabelas relacionadas destacadas
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="legend" id="legend"></div>
+
+<!-- Detail Panel -->
+<div class="detail-overlay" id="overlay">
+  <div class="detail-panel" id="panel">
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div class="detail-title" id="panel-title"></div>
+    <div id="panel-body"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const GROUPS = [
+  {
+    id: 'athletes',
+    name: 'Atletas & Perfil',
+    icon: '🏃',
+    color: '#4a9bbe',
+    tables: [
+      { name: 'athletes', rows: 6, note: 'Registro central dos atletas NPC' },
+      { name: 'athlete_profiles', rows: 6, note: 'Biometria, PRs, equipamentos' },
+      { name: 'athlete_anamnesis', rows: null, note: 'Histórico de saúde e anamnese' },
+      { name: 'athlete_goals', rows: null, note: 'Objetivos de performance' },
+      { name: 'athlete_milestones', rows: null, note: 'Marcos e conquistas' },
+      { name: 'guardian_consents', rows: null, note: 'Consentimentos (menores)' },
+    ]
+  },
+  {
+    id: 'coaches',
+    name: 'Coaches & Org',
+    icon: '👥',
+    color: '#9b59b6',
+    tables: [
+      { name: 'coaches', rows: null, note: 'Perfil dos treinadores' },
+      { name: 'organizations', rows: null, note: 'Organização / equipe NPC' },
+      { name: 'coach_athlete_assignments', rows: null, note: 'Vínculos coach ↔ atleta' },
+      { name: 'coach_notes', rows: null, note: 'Notas técnicas do coach' },
+    ]
+  },
+  {
+    id: 'training',
+    name: 'Treinos Executados',
+    icon: '⚡',
+    color: '#e85d24',
+    tables: [
+      { name: 'executed_workouts', rows: 576, note: 'Treinos realizados (dados TP + Garmin)' },
+      { name: 'planned_workouts', rows: 264, note: 'Treinos planejados (exportados ao TP)' },
+      { name: 'prescribed_workouts', rows: null, note: 'Prescrições estruturadas' },
+      { name: 'workout_laps', rows: null, note: 'Voltas e splits por treino' },
+      { name: 'workout_intervals', rows: null, note: 'Intervalados estruturados' },
+      { name: 'workout_journal_entries', rows: null, note: 'Diário de treinos' },
+      { name: 'workout_templates', rows: null, note: 'Templates reutilizáveis' },
+      { name: 'prescription_compliance', rows: null, note: 'Aderência ao planejado' },
+    ]
+  },
+  {
+    id: 'load',
+    name: 'Carga & Wellness',
+    icon: '📈',
+    color: '#2ecc71',
+    tables: [
+      { name: 'training_load_daily', rows: 383, note: 'CTL / ATL / TSB diário (PMC)' },
+      { name: 'wellness_logs', rows: 293, note: 'HRV, sono, FC repouso, body battery' },
+      { name: 'daily_journal_entries', rows: null, note: 'Diário subjetivo do atleta' },
+      { name: 'athlete_feedback', rows: null, note: 'Feedbacks e percepções' },
+    ]
+  },
+  {
+    id: 'physio',
+    name: 'Fisiologia',
+    icon: '🔬',
+    color: '#4a9bbe',
+    tables: [
+      { name: 'physiological_passports', rows: 9, note: 'FTP, CSS, LT1, LT2, VO2max por esporte' },
+      { name: 'training_zones', rows: null, note: 'Zonas Z1/Z2/Z3 vinculadas ao passaporte' },
+      { name: 'benchmark_tests', rows: null, note: 'Step tests, FTP tests, CSS tests' },
+      { name: 'athlete_labs', rows: null, note: 'Exames laboratoriais (ferritina, vit D…)' },
+      { name: 'blood_markers', rows: null, note: 'Marcadores sanguíneos' },
+      { name: 'body_composition_history', rows: null, note: 'Histórico de composição corporal' },
+      { name: 'performance_prs', rows: null, note: 'Recordes pessoais por distância/esporte' },
+    ]
+  },
+  {
+    id: 'planning',
+    name: 'Periodização Macro',
+    icon: '📅',
+    color: '#f39c12',
+    tables: [
+      { name: 'macro_plans', rows: null, note: 'Plano macro (temporada inteira)' },
+      { name: 'macro_phases', rows: null, note: 'Fases: Base, Build, Específico, Taper' },
+      { name: 'macro_weeks', rows: null, note: 'Semanas individuais do macro' },
+      { name: 'training_plans', rows: null, note: 'Planos de treino estruturados' },
+      { name: 'training_plan_weeks', rows: null, note: 'Semanas de um plano específico' },
+      { name: 'athlete_plan_targets', rows: null, note: 'Metas semanais por atleta' },
+      { name: 'athlete_availability', rows: null, note: 'Disponibilidade semanal' },
+      { name: 'athlete_availability_exceptions', rows: null, note: 'Exceções de disponibilidade' },
+      { name: 'athlete_schedule_preferences', rows: null, note: 'Preferências de horário e dia' },
+      { name: 'holidays', rows: null, note: 'Feriados e bloqueios de calendário' },
+    ]
+  },
+  {
+    id: 'races',
+    name: 'Provas & Eventos',
+    icon: '🏁',
+    color: '#e74c3c',
+    tables: [
+      { name: 'athlete_events', rows: null, note: 'Eventos agendados (ergo, provas, etc.)' },
+      { name: 'target_races', rows: null, note: 'Provas-alvo (A, B, C) com CTL alvo' },
+      { name: 'race_results', rows: null, note: 'Resultados de provas competitivas' },
+      { name: 'race_reports', rows: null, note: 'Relatórios pós-prova' },
+    ]
+  },
+  {
+    id: 'nutrition',
+    name: 'Nutrição',
+    icon: '🥗',
+    color: '#1abc9c',
+    tables: [
+      { name: 'nutrition_plans', rows: 1, note: 'Plano base da nutricionista (Monah Dias)' },
+      { name: 'nutrition_day_type_targets', rows: 9, note: 'Macros por tipo de dia (rest/DT/long…)' },
+      { name: 'meal_distribution_templates', rows: 8, note: 'Refeições detalhadas com horários' },
+      { name: 'nutrition_logs', rows: null, note: 'Registro diário de consumo' },
+      { name: 'race_nutrition_protocols', rows: 3, note: 'Protocolos de nutrição de prova' },
+    ]
+  },
+  {
+    id: 'strength',
+    name: 'Força',
+    icon: '💪',
+    color: '#9b59b6',
+    tables: [
+      { name: 'strength_plans', rows: null, note: 'Planos de força periodizados' },
+      { name: 'strength_session_templates', rows: null, note: 'Templates de sessão de força' },
+      { name: 'strength_exercises_prescribed', rows: null, note: 'Exercícios prescritos por sessão' },
+      { name: 'executed_strength_sessions', rows: null, note: 'Sessões de força executadas' },
+      { name: 'executed_strength_sets', rows: null, note: 'Séries e reps realizadas' },
+      { name: 'exercise_library', rows: null, note: 'Biblioteca de exercícios' },
+      { name: 'one_rep_max_history', rows: null, note: 'Histórico de 1RM por exercício' },
+    ]
+  },
+  {
+    id: 'health',
+    name: 'Saúde & Reabilitação',
+    icon: '🩺',
+    color: '#e74c3c',
+    tables: [
+      { name: 'athlete_injuries', rows: null, note: 'Lesões registradas' },
+      { name: 'injury_history', rows: null, note: 'Histórico detalhado de lesões' },
+      { name: 'rehab_protocols', rows: null, note: 'Protocolos de reabilitação' },
+      { name: 'rehab_phases', rows: null, note: 'Fases do protocolo de rehab' },
+      { name: 'rehab_exercises_prescribed', rows: null, note: 'Exercícios de rehab prescritos' },
+      { name: 'rehab_progress_logs', rows: null, note: 'Progresso e acompanhamento de rehab' },
+    ]
+  },
+  {
+    id: 'supplements',
+    name: 'Suplementação',
+    icon: '💊',
+    color: '#1abc9c',
+    tables: [
+      { name: 'supplement_protocols', rows: null, note: 'Protocolos de suplementação' },
+      { name: 'supplement_protocol_items', rows: null, note: 'Itens de cada protocolo' },
+      { name: 'supplement_library', rows: null, note: 'Biblioteca de suplementos' },
+    ]
+  },
+  {
+    id: 'integrations',
+    name: 'Integrações & Sync',
+    icon: '🔄',
+    color: '#7a9ab8',
+    tables: [
+      { name: 'athlete_integrations', rows: null, note: 'Conexões TP, Garmin, Polar, Whoop' },
+      { name: 'sync_logs', rows: null, note: 'Log de sincronizações TP → Supabase' },
+      { name: 'sports', rows: null, note: 'Modalidades (swim, bike, run, strength…)' },
+      { name: 'device_tokens', rows: null, note: 'Tokens de dispositivos mobile' },
+    ]
+  },
+  {
+    id: 'ai',
+    name: 'IA & Prescrição',
+    icon: '🤖',
+    color: '#4a9bbe',
+    tables: [
+      { name: 'ai_sessions', rows: null, note: 'Sessões de análise e prescrição com Claude' },
+      { name: 'ai_prescriptions', rows: null, note: 'Prescrições geradas por IA' },
+      { name: 'ai_usage_monthly', rows: null, note: 'Uso mensal de tokens de IA' },
+      { name: 'weekly_analyses', rows: 3, note: 'Análises semanais com CTL/ATL/TSB/HRV' },
+    ]
+  },
+  {
+    id: 'comms',
+    name: 'Comunicação',
+    icon: '💬',
+    color: '#f39c12',
+    tables: [
+      { name: 'conversations', rows: null, note: 'Conversas coach ↔ atleta' },
+      { name: 'messages', rows: null, note: 'Mensagens individuais' },
+      { name: 'notifications', rows: null, note: 'Notificações push / email' },
+      { name: 'notification_preferences', rows: null, note: 'Preferências de notificação' },
+      { name: 'group_sessions', rows: null, note: 'Sessões em grupo NPC' },
+      { name: 'group_session_participants', rows: null, note: 'Participantes das sessões' },
+    ]
+  },
+  {
+    id: 'billing',
+    name: 'Assinaturas & Billing',
+    icon: '💳',
+    color: '#7a9ab8',
+    tables: [
+      { name: 'plans', rows: null, note: 'Planos de assinatura disponíveis' },
+      { name: 'subscriptions', rows: null, note: 'Assinaturas ativas' },
+      { name: 'subscription_history', rows: null, note: 'Histórico de planos' },
+      { name: 'invoices', rows: null, note: 'Faturas geradas' },
+      { name: 'billing_events', rows: null, note: 'Eventos de pagamento' },
+      { name: 'payment_methods', rows: null, note: 'Métodos de pagamento' },
+      { name: 'coupons', rows: null, note: 'Cupons de desconto' },
+    ]
+  },
+  {
+    id: 'system',
+    name: 'Sistema & Audit',
+    icon: '⚙️',
+    color: '#4a6278',
+    tables: [
+      { name: 'audit_logs', rows: null, note: 'Log de ações no sistema' },
+      { name: 'content_translations', rows: null, note: 'Traduções de conteúdo' },
+      { name: 'data_consent_logs', rows: null, note: 'LGPD — consentimentos de dados' },
+    ]
+  },
+];
+
+// FK relationships
+const FK = [
+  { from: 'ai_prescriptions', col: 'session_id', to: 'ai_sessions', to_col: 'id' },
+  { from: 'ai_prescriptions', col: 'macro_week_id', to: 'macro_weeks', to_col: 'id' },
+  { from: 'ai_sessions', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'ai_sessions', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'ai_usage_monthly', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'athlete_milestones', col: 'related_workout_id', to: 'executed_workouts', to_col: 'id' },
+  { from: 'athlete_milestones', col: 'related_race_id', to: 'target_races', to_col: 'id' },
+  { from: 'athlete_plan_targets', col: 'week_id', to: 'training_plan_weeks', to_col: 'id' },
+  { from: 'benchmark_tests', col: 'generated_passport_id', to: 'physiological_passports', to_col: 'id' },
+  { from: 'benchmark_tests', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'benchmark_tests', col: 'executed_workout_id', to: 'executed_workouts', to_col: 'id' },
+  { from: 'coach_athlete_assignments', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'coach_notes', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'coaches', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'conversations', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'executed_strength_sessions', col: 'prescribed_workout_id', to: 'prescribed_workouts', to_col: 'id' },
+  { from: 'executed_strength_sessions', col: 'session_template_id', to: 'strength_session_templates', to_col: 'id' },
+  { from: 'executed_strength_sets', col: 'executed_session_id', to: 'executed_strength_sessions', to_col: 'id' },
+  { from: 'executed_strength_sets', col: 'exercise_id', to: 'exercise_library', to_col: 'id' },
+  { from: 'executed_workouts', col: 'prescribed_workout_id', to: 'prescribed_workouts', to_col: 'id' },
+  { from: 'executed_workouts', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'exercise_library', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'group_sessions', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'group_sessions', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'group_sessions', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'group_sessions', col: 'prescribed_workout_id', to: 'prescribed_workouts', to_col: 'id' },
+  { from: 'invoices', col: 'subscription_id', to: 'subscriptions', to_col: 'id' },
+  { from: 'invoices', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'macro_phases', col: 'macro_plan_id', to: 'macro_plans', to_col: 'id' },
+  { from: 'macro_plans', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'macro_plans', col: 'primary_sport_id', to: 'sports', to_col: 'id' },
+  { from: 'macro_weeks', col: 'phase_id', to: 'macro_phases', to_col: 'id' },
+  { from: 'macro_weeks', col: 'macro_plan_id', to: 'macro_plans', to_col: 'id' },
+  { from: 'meal_distribution_templates', col: 'nutrition_plan_id', to: 'nutrition_plans', to_col: 'id' },
+  { from: 'messages', col: 'conversation_id', to: 'conversations', to_col: 'id' },
+  { from: 'notifications', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'nutrition_day_type_targets', col: 'nutrition_plan_id', to: 'nutrition_plans', to_col: 'id' },
+  { from: 'nutrition_plans', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'one_rep_max_history', col: 'exercise_id', to: 'exercise_library', to_col: 'id' },
+  { from: 'payment_methods', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'performance_prs', col: 'executed_workout_id', to: 'executed_workouts', to_col: 'id' },
+  { from: 'performance_prs', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'physiological_passports', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'planned_workouts', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'prescribed_workouts', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'prescribed_workouts', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'prescribed_workouts', col: 'template_id', to: 'workout_templates', to_col: 'id' },
+  { from: 'prescribed_workouts', col: 'macro_week_id', to: 'macro_weeks', to_col: 'id' },
+  { from: 'prescription_compliance', col: 'executed_workout_id', to: 'executed_workouts', to_col: 'id' },
+  { from: 'prescription_compliance', col: 'prescribed_workout_id', to: 'prescribed_workouts', to_col: 'id' },
+  { from: 'race_reports', col: 'target_race_id', to: 'target_races', to_col: 'id' },
+  { from: 'rehab_exercises_prescribed', col: 'rehab_phase_id', to: 'rehab_phases', to_col: 'id' },
+  { from: 'rehab_exercises_prescribed', col: 'exercise_id', to: 'exercise_library', to_col: 'id' },
+  { from: 'rehab_phases', col: 'rehab_protocol_id', to: 'rehab_protocols', to_col: 'id' },
+  { from: 'rehab_progress_logs', col: 'rehab_protocol_id', to: 'rehab_protocols', to_col: 'id' },
+  { from: 'rehab_protocols', col: 'injury_id', to: 'injury_history', to_col: 'id' },
+  { from: 'strength_exercises_prescribed', col: 'session_template_id', to: 'strength_session_templates', to_col: 'id' },
+  { from: 'strength_exercises_prescribed', col: 'exercise_id', to: 'exercise_library', to_col: 'id' },
+  { from: 'strength_plans', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'strength_session_templates', col: 'strength_plan_id', to: 'strength_plans', to_col: 'id' },
+  { from: 'subscription_history', col: 'subscription_id', to: 'subscriptions', to_col: 'id' },
+  { from: 'subscription_history', col: 'to_plan_id', to: 'plans', to_col: 'id' },
+  { from: 'subscriptions', col: 'org_id', to: 'organizations', to_col: 'id' },
+  { from: 'subscriptions', col: 'plan_id', to: 'plans', to_col: 'id' },
+  { from: 'supplement_protocol_items', col: 'supplement_id', to: 'supplement_library', to_col: 'id' },
+  { from: 'supplement_protocol_items', col: 'protocol_id', to: 'supplement_protocols', to_col: 'id' },
+  { from: 'supplement_protocols', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'sync_logs', col: 'integration_id', to: 'athlete_integrations', to_col: 'id' },
+  { from: 'target_races', col: 'macro_plan_id', to: 'macro_plans', to_col: 'id' },
+  { from: 'training_plan_weeks', col: 'plan_id', to: 'training_plans', to_col: 'id' },
+  { from: 'training_zones', col: 'passport_id', to: 'physiological_passports', to_col: 'id' },
+  { from: 'workout_intervals', col: 'prescribed_workout_id', to: 'prescribed_workouts', to_col: 'id' },
+  { from: 'workout_journal_entries', col: 'parent_entry_id', to: 'workout_journal_entries', to_col: 'id' },
+  { from: 'workout_journal_entries', col: 'executed_workout_id', to: 'executed_workouts', to_col: 'id' },
+  { from: 'workout_laps', col: 'executed_workout_id', to: 'executed_workouts', to_col: 'id' },
+  { from: 'workout_templates', col: 'parent_template_id', to: 'workout_templates', to_col: 'id' },
+  { from: 'workout_templates', col: 'sport_id', to: 'sports', to_col: 'id' },
+  { from: 'workout_templates', col: 'coach_id', to: 'coaches', to_col: 'id' },
+  { from: 'workout_templates', col: 'org_id', to: 'organizations', to_col: 'id' },
+];
+
+// Build lookup: table → FKs out, FKs in
+const fkOut = {}, fkIn = {};
+FK.forEach(fk => {
+  if (!fkOut[fk.from]) fkOut[fk.from] = [];
+  fkOut[fk.from].push(fk);
+  if (!fkIn[fk.to]) fkIn[fk.to] = [];
+  fkIn[fk.to].push(fk);
+});
+
+// Table → group color
+const tableColor = {};
+GROUPS.forEach(g => g.tables.forEach(t => tableColor[t.name] = g.color));
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let activeGroup = null;
+let activeTable = null;
+let searchQ = '';
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function getRelatedTables(name) {
+  const set = new Set();
+  (fkOut[name] || []).forEach(fk => set.add(fk.to));
+  (fkIn[name]  || []).forEach(fk => set.add(fk.from));
+  return set;
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  const q = searchQ.toLowerCase();
+  const related = activeTable ? getRelatedTables(activeTable) : null;
+
+  GROUPS.forEach(g => {
+    // Filter tables
+    const tables = g.tables.filter(t => {
+      if (q && !t.name.includes(q) && !g.name.toLowerCase().includes(q)) return false;
+      if (activeGroup && g.id !== activeGroup) return false;
+      return true;
+    });
+    if (!tables.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'group';
+    card.style.setProperty('--group-color', g.color);
+
+    // FK count for group
+    const fkCount = tables.reduce((n, t) => n + (fkOut[t.name]||[]).length, 0);
+
+    card.innerHTML = `
+      <div class="group-header">
+        <span class="group-icon">${g.icon}</span>
+        <span class="group-name">${g.name}</span>
+        <span class="group-count">${tables.length} tabelas</span>
+      </div>
+      <div class="table-list">
+        ${tables.map(t => {
+          let cls = 'table-item';
+          if (activeTable === t.name) cls += ' highlighted';
+          else if (related && related.has(t.name)) cls += ' highlighted';
+          else if (related && !related.has(t.name) && activeTable !== t.name) cls += ' dimmed';
+
+          const fkCnt = (fkOut[t.name]||[]).length + (fkIn[t.name]||[]).length;
+          const hasData = t.rows !== null && t.rows > 0;
+
+          return `<div class="${cls}" onclick="selectTable('${t.name}')" title="${t.note}">
+            <div class="table-dot"></div>
+            <span class="table-name">${t.name}</span>
+            ${t.rows !== null ? `<span class="table-rows">${t.rows.toLocaleString()}</span>` : ''}
+            <div class="table-badges">
+              ${fkCnt > 0 ? `<span class="badge badge-fk">${fkCnt}</span>` : ''}
+              ${hasData ? `<span class="badge badge-data">●</span>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+
+    grid.appendChild(card);
+  });
+}
+
+function selectTable(name) {
+  if (activeTable === name) {
+    activeTable = null;
+    document.getElementById('hl-info').style.display = 'none';
+    render();
+    return;
+  }
+  activeTable = name;
+  document.getElementById('hl-info').style.display = 'flex';
+  document.getElementById('hl-name').textContent = name;
+  render();
+  showDetail(name);
+}
+
+function showDetail(name) {
+  const overlay = document.getElementById('overlay');
+  const title   = document.getElementById('panel-title');
+  const body    = document.getElementById('panel-body');
+
+  // Find table info
+  let tableInfo = null, groupInfo = null;
+  GROUPS.forEach(g => {
+    const t = g.tables.find(t => t.name === name);
+    if (t) { tableInfo = t; groupInfo = g; }
+  });
+
+  title.innerHTML = `<span style="color:${groupInfo?.color}">${groupInfo?.icon}</span> ${name}`;
+
+  let html = '';
+
+  // Data tag
+  if (tableInfo?.rows > 0) {
+    html += `<div class="data-tag">● ${tableInfo.rows.toLocaleString()} registros reais</div>`;
+  }
+
+  // Description
+  if (tableInfo?.note) {
+    html += `<p style="font-size:.8rem;color:var(--text2);margin-bottom:1rem;line-height:1.5">${tableInfo.note}</p>`;
+  }
+
+  // FK out
+  const out = fkOut[name] || [];
+  if (out.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Referencia (FK saindo) → ${out.length}</div>
+      ${out.map(fk => `
+        <div class="rel-item">
+          <span style="color:var(--text3);font-size:.65rem">.${fk.col}</span>
+          <span class="rel-arrow">→</span>
+          <span class="rel-table">${fk.to}</span>
+          <span class="rel-col">.${fk.to_col}</span>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  // FK in
+  const inn = fkIn[name] || [];
+  if (inn.length) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Referenciada por (FK entrando) ← ${inn.length}</div>
+      ${inn.map(fk => `
+        <div class="rel-item">
+          <span class="rel-table">${fk.from}</span>
+          <span class="rel-arrow">→</span>
+          <span style="color:var(--text3);font-size:.65rem">.${fk.col}</span>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  if (!out.length && !inn.length) {
+    html += `<p style="color:var(--text3);font-size:.75rem">Tabela independente — sem foreign keys.</p>`;
+  }
+
+  body.innerHTML = html;
+  overlay.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('overlay').classList.remove('open');
+  activeTable = null;
+  document.getElementById('hl-info').style.display = 'none';
+  render();
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────────────────
+function buildFilters() {
+  const container = document.getElementById('filter-btns');
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn active';
+  allBtn.textContent = 'Todos';
+  allBtn.onclick = () => { activeGroup = null; setActive(allBtn); render(); };
+  container.appendChild(allBtn);
+
+  GROUPS.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = `${g.icon} ${g.name}`;
+    btn.onclick = () => {
+      activeGroup = activeGroup === g.id ? null : g.id;
+      activeTable = null;
+      document.getElementById('hl-info').style.display = 'none';
+      if (activeGroup) setActive(btn);
+      else setActive(allBtn);
+      render();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function setActive(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── LEGEND ───────────────────────────────────────────────────────────────────
+function buildLegend() {
+  const lg = document.getElementById('legend');
+  const items = [
+    { color: '#4a9bbe', label: 'Com dados reais' },
+    { color: '#2ecc71', label: '● = tem registros' },
+    { color: '#7a9ab8', label: 'Número = FK connections' },
+    { color: '#4a6278', label: 'Clique para ver relações' },
+  ];
+  items.forEach(i => {
+    const el = document.createElement('div');
+    el.className = 'legend-item';
+    el.innerHTML = `<div class="legend-dot" style="background:${i.color}"></div>${i.label}`;
+    lg.appendChild(el);
+  });
+  lg.innerHTML += `<span style="margin-left:auto;font-size:.7rem;color:var(--text3)">
+    Atualizado em 30/04/2026 · NPC Endurance · Supabase PostgreSQL
+  </span>`;
+}
+
+// ── SEARCH ───────────────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', e => {
+  searchQ = e.target.value;
+  render();
+});
+
+// Close overlay clicking outside
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeDetail();
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+buildFilters();
+buildLegend();
+render();
+</script>
+</body>
+</html>
