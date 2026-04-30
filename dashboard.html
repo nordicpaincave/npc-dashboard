@@ -308,7 +308,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 20:21 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 20:23 (Supabase)</div>
 </div>
 
 <script>
@@ -3594,7 +3594,8 @@ function fmtH(h) {
   return mm > 0 ? `${hh}h${String(mm).padStart(2,'0')}` : `${hh}h`;
 }
 function totalH(vol) { return Object.values(vol).reduce((a,b)=>a+b,0); }
-function getA()  { return document.getElementById('sel-athlete').value; }
+let _portalOverride = null;
+function getA()  { return _portalOverride || document.getElementById('sel-athlete').value; }
 function dc(id)  { if(charts[id]){charts[id].destroy();delete charts[id];} }
 
 // ── URL Routing ────────────────────────────────────────────────────
@@ -4241,12 +4242,10 @@ function togglePhase(idx) {
   // 1. Definir atleta inicial
   const sel = document.getElementById('sel-athlete');
   if (portalAthlete && ATHLETES.includes(portalAthlete)) {
+    _portalOverride = portalAthlete;
+  }
+  if (portalAthlete && ATHLETES.includes(portalAthlete)) {
     sel.value = portalAthlete;
-    // Garantir que o select mantém o valor mesmo após disabled
-    Object.defineProperty(sel, 'value', {
-      get: function() { return portalAthlete; },
-      configurable: true
-    });
   } else if (urlAthlete) {
     sel.value = urlAthlete;
   }
