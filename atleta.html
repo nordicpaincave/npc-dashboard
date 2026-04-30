@@ -37,7 +37,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="brand">
   <div class="dot"></div>
   <div class="title">NPC ENDURANCE</div>
-  <div class="sub">Área do Atleta</div>
+  <div class="sub" id="page-sub">Área do Atleta</div>
 </div>
 <div class="card">
   <div class="card-label">Digite seu PIN de 4 dígitos</div>
@@ -65,12 +65,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <a class="back-link" href="index.html">&#8592; Voltar ao início</a>
 <script>
 const COACH_PIN='0000';
+const mode = new URLSearchParams(location.search).get('mode') || 'atleta';
+document.getElementById('page-sub').textContent = mode === 'treinador' ? 'Área do Treinador' : 'Área do Atleta';
 const PINS={'3060':'bruno','1590':'jean','5056':'gabriel','6470':'rafael','5861':'simony','1606':'clara'};
 let pin='';
 function press(d){if(pin.length>=4)return;pin+=d;document.getElementById('d'+(pin.length-1)).classList.add('on');if(pin.length===4)setTimeout(check,130)}
 function del(){if(!pin.length)return;document.getElementById('d'+(pin.length-1)).classList.remove('on');pin=pin.slice(0,-1);document.getElementById('err').textContent=''}
 function check(){
-  if(pin===COACH_PIN){sessionStorage.removeItem('npc_portal_athlete');window.location.href='dashboard.html';return;}
+  if(pin===COACH_PIN){sessionStorage.removeItem('npc_portal_athlete');sessionStorage.setItem('npc_portal_coach','1');window.location.href='dashboard.html';return;}
   const key=PINS[pin];
   if(key){sessionStorage.setItem('npc_portal_athlete',key);window.location.href='dashboard.html'}
   else{
