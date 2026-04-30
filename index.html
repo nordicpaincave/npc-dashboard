@@ -302,7 +302,7 @@
     <div id="macro-body"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 13:24 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 18:47 (Supabase)</div>
 </div>
 
 <script>
@@ -4230,6 +4230,39 @@ const urlAthlete = getAthleteFromURL();
 if (urlAthlete) {
   document.getElementById('sel-athlete').value = urlAthlete;
 }
+
+// ── Portal Mode (atleta logado via atleta.html) ─────────────────────
+const _portalKey = sessionStorage.getItem('npc_portal_athlete');
+if (_portalKey && ATHLETES.includes(_portalKey)) {
+  // Travar no atleta logado
+  const sel = document.getElementById('sel-athlete');
+  sel.value = _portalKey;
+  sel.disabled = true;
+  sel.style.display = 'none';
+
+  // Esconder Comparativo (mostra todos os atletas)
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    if (btn.textContent.trim() === 'Comparativo') btn.style.display = 'none';
+  });
+
+  // Substituir seletor por nome do atleta + botão Sair
+  const portalLabel = document.createElement('div');
+  portalLabel.style.cssText = 'display:flex;align-items:center;gap:.6rem';
+  portalLabel.innerHTML = `
+    <span style="font-size:.8rem;color:var(--text2);font-weight:600">
+      ${NAMES[_portalKey] || _portalKey}
+    </span>
+    <button onclick="sessionStorage.removeItem('npc_portal_athlete');location.href='atleta.html'"
+      style="background:rgba(74,155,190,.12);border:1px solid rgba(74,155,190,.2);border-radius:6px;
+             color:var(--text2);cursor:pointer;font-size:.72rem;padding:.25rem .65rem;
+             transition:all .2s"
+      onmouseover="this.style.borderColor='var(--ice)';this.style.color='var(--ice)'"
+      onmouseout="this.style.borderColor='rgba(74,155,190,.2)';this.style.color='var(--text2)'">
+      Sair
+    </button>`;
+  sel.parentNode.insertBefore(portalLabel, sel);
+}
+
 updateDash();
 </script>
 </body>
