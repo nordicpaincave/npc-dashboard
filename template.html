@@ -42,7 +42,11 @@
     .a-info .alert-icon{background:rgba(74,158,255,.2);color:var(--blue)}
     /* KPI */
     .kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
-    .kpi{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem}
+    .kpi{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;position:relative;cursor:default}
+    .kpi:hover{border-color:var(--border2)}
+    .kpi-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .kpi-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .kpi:hover .kpi-tooltip{display:block}
     .kpi.hl{border-color:var(--border2);background:var(--bg3)}
     .kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
     .kpi-value{font-size:26px;font-weight:600;color:var(--text);line-height:1}
@@ -56,7 +60,7 @@
     .card-title-row .card-title{margin-bottom:0}
     .row1{margin-bottom:1.25rem}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
-    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1.25rem}
+    .row3{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
     .row4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
     .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--text2)}
     .legend span{display:flex;align-items:center;gap:5px}
@@ -89,7 +93,11 @@
     .section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin:0 0 .875rem}
     /* Wellness mini cards */
     .well-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
-    .well-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem}
+    .well-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;position:relative;cursor:default}
+    .well-card:hover{border-color:var(--border2)}
+    .well-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .well-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .well-card:hover .well-tooltip{display:block}
     .well-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
     .well-value{font-size:22px;font-weight:600;color:var(--text);line-height:1}
     .well-sub{font-size:10px;color:var(--text2);margin-top:4px}
@@ -129,6 +137,19 @@
     .phase-meta span b{color:var(--text);font-weight:600}
     .phase-goals{font-size:13px;color:var(--text2);line-height:1.8}
     .phase-goals li{margin-bottom:4px}
+    /* Indicators */
+    .ind-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+    .ind-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;position:relative;cursor:default}
+    .ind-card:hover{border-color:var(--border2)}
+    .ind-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+    .ind-value{font-size:17px;font-weight:700;margin-bottom:10px}
+    .ind-track{position:relative;height:7px;border-radius:4px;margin-bottom:6px}
+    .ind-pointer{position:absolute;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+    .ind-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+    .ind-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .ind-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .ind-card:hover .ind-tooltip{display:block}
+    @media(max-width:640px){.ind-grid{grid-template-columns:1fr}}
     /* Footer */
     .footer{margin-top:3rem;padding-top:1rem;border-top:0.5px solid var(--border);text-align:center;font-size:11px;color:var(--text3)}
     @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.row3,.cmp-grid{grid-template-columns:1fr 1fr}.well-grid,.row4{grid-template-columns:repeat(2,1fr)}.cal-days{grid-template-columns:repeat(4,1fr)}}
@@ -143,27 +164,21 @@
         <span class="logo-badge">NPC</span>
         <span class="logo-title">Endurance</span>
       </div>
-      <div class="logo-sub">Dashboard de Treinos · Buenos Aires 70.3 · 04/10/2026</div>
+      <div class="logo-sub" id="logo-sub">Dashboard de Treinos · NPC Endurance</div>
     </div>
     <div class="ctrls">
       <div class="tab-group">
         <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
         <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
-        <button class="tab-btn" onclick="setView('calendario',this)">Calendário</button>
         <button class="tab-btn" onclick="setView('macro',this)">Plano Macro</button>
       </div>
       <select id="sel-athlete" onchange="updateDash()">
         <option value="bruno">Bruno Trevisan</option>
         <option value="jean">Jean Romano</option>
-        <option value="gabriel">Gabriel</option>
+        <option value="gabriel">Gabriel Antunes</option>
         <option value="rafael">Rafael Lemos</option>
-      </select>
-      <select id="sel-sport" onchange="updateDash()">
-        <option value="all">Todos os esportes</option>
-        <option value="swim">Natação</option>
-        <option value="bike">Ciclismo</option>
-        <option value="run">Corrida</option>
-        <option value="strength">Força</option>
+        <option value="simony">Simony Huck</option>
+        <option value="clara">Clara Helena</option>
       </select>
     </div>
   </div>
@@ -172,6 +187,7 @@
   <div id="view-individual">
     <div id="alerts-bar" class="alerts"></div>
     <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="ind-grid" id="ind-grid"></div>
     <div class="card row1">
       <div class="card-title">Tendência de carga — CTL / ATL / TSB (75 dias)</div>
       <div class="legend" id="pmc-legend"></div>
@@ -183,15 +199,20 @@
       <div class="card">
         <div class="card-title">HRV — 14 dias</div>
         <div class="legend" id="hrv-legend"></div>
-        <div style="position:relative;height:140px"><canvas id="hrv-chart"></canvas></div>
+        <div style="position:relative;height:180px"><canvas id="hrv-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title">Sono — 14 dias (horas)</div>
-        <div style="position:relative;height:140px"><canvas id="sleep-chart"></canvas></div>
+        <div style="position:relative;height:180px"><canvas id="sleep-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="card-title">FC repouso — 14 dias</div>
-        <div style="position:relative;height:140px"><canvas id="hr-chart"></canvas></div>
+        <div style="position:relative;height:180px"><canvas id="hr-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Body Battery — 14 dias</div>
+        <div style="position:relative;height:180px"><canvas id="batt-chart"></canvas></div>
+        <p id="batt-nodata" style="display:none;color:var(--text3);font-size:12px;padding:1rem 0">Body Battery indisponível</p>
       </div>
     </div>
     <div class="row2">
@@ -257,6 +278,8 @@
         <button class="tab-btn" onclick="setCalAthlete('jean',this)">Jean</button>
         <button class="tab-btn" onclick="setCalAthlete('gabriel',this)">Gabriel</button>
         <button class="tab-btn" onclick="setCalAthlete('rafael',this)">Rafael</button>
+        <button class="tab-btn" onclick="setCalAthlete('simony',this)">Simony</button>
+        <button class="tab-btn" onclick="setCalAthlete('clara',this)">Clara</button>
       </div>
       <span style="font-size:11px;color:var(--text3)">Sólido = realizado · Tracejado = planejado</span>
     </div>
@@ -268,10 +291,12 @@
     <div style="margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
       <span style="font-size:12px;color:var(--text2)">Atleta:</span>
       <div class="tab-group">
-        <button class="tab-btn active" onclick="setMacroAthlete('bruno',this)">Bruno</button>
-        <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean</button>
+        <button class="tab-btn active" onclick="setMacroAthlete('bruno',this)">Bruno ✓</button>
+        <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean ✓</button>
         <button class="tab-btn" onclick="setMacroAthlete('gabriel',this)">Gabriel</button>
         <button class="tab-btn" onclick="setMacroAthlete('rafael',this)">Rafael</button>
+        <button class="tab-btn" onclick="setMacroAthlete('simony',this)">Simony</button>
+        <button class="tab-btn" onclick="setMacroAthlete('clara',this)">Clara</button>
       </div>
     </div>
     <div id="macro-body"></div>
@@ -282,9 +307,9 @@
 
 <script>
 const DB = __NPC_DATA__;
-const ATHLETES = ['bruno','jean','gabriel','rafael'];
-const NAMES    = {bruno:'Bruno',jean:'Jean',gabriel:'Gabriel',rafael:'Rafael'};
-const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc'};
+const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
+const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
+const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc',simony:'#f472b6',clara:'#fb923c'};
 const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força'};
 const DAYS_LABEL  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
@@ -295,30 +320,85 @@ let macroAthlete = 'bruno';
 const gc = 'rgba(255,255,255,0.06)';
 const tf = {size:11,family:'system-ui'};
 
-// ── Plano macro 29 semanas ─────────────────────────────────────────
+// ── Plano macro 29 semanas — Método Norueguês ──────────────────────
 const MACRO_PLAN = {
-  race_date: '2026-10-04',
+  race_date:   '2026-10-04',
   total_weeks: 29,
+  // Semanas de descarga (redução 45–55% de volume, intensidade mantida)
+  deload_weeks: [7, 12, 15, 19, 23],
   phases: [
-    {name:'Base 1',color:'#378ADD',weeks:[1,4],goal:'Construção aeróbica — Z1 predominante, adaptação ao volume',
-     objectives:['CTL alvo: +2–3 pts/semana','Z1 ≥ 75% do tempo total','Sem intervalos acima de LT2','Iniciar protocolo de força bilateral'],
-     key_sessions:['Bike Z1 longa (3h+) aos sábados','Corrida Z1 progressiva (18–22km) aos domingos','Natação volume 3x/semana']},
-    {name:'Base 2',color:'#1D9E75',weeks:[5,10],goal:'Consolidação do volume e introdução do limiar duplo',
-     objectives:['CTL alvo: +3–4 pts/semana','Introduzir sessões Z2 (limiar) 2x/semana','Manter Z1 ≥ 65% do tempo total','Força: transição para unilateral'],
-     key_sessions:['Duplo limiar: bike + corrida no mesmo dia','Natação CSS semanal','Longa Z1 com bloco final Z2']},
-    {name:'Específico',color:'#EF9F27',weeks:[11,20],goal:'Intensidade específica de prova e pico de CTL',
-     objectives:['CTL pico: 120 (Jean) / 102 (Bruno) / 90 (Gabriel) / 95 (Rafael)','Simulados de prova parcial','Trabalho de ritmo de prova Z2–Z3','Reduzir força para manutenção'],
-     key_sessions:['Brick bike+corrida semanal','Natação em águas abertas (quando disponível)','Intervalos longos Z2 no bike (2×20min FTP)']},
-    {name:'Competição',color:'#D85A30',weeks:[21,26],goal:'Manutenção de CTL e afinação da forma',
-     objectives:['Manter CTL ± 5 pts','TSB alvo entre -5 e +5','Provas de teste (Olympic ou sprint)','Reduzir volume, manter intensidade'],
-     key_sessions:['Provas simuladas a cada 2 semanas','Sessões curtas de qualidade','Trabalho técnico de transição']},
-    {name:'Taper',color:'#9b8fff',weeks:[27,28],goal:'Polimento final — forma máxima para Buenos Aires',
-     objectives:['Reduzir volume 40–50%','TSB alvo: +5 a +15 na largada','Manter 2 sessões de qualidade/semana','Foco em sono e nutrição'],
+    {name:'Fundação',  color:'#378ADD', weeks:[1,6],
+     goal:'Base aeróbia Z1 — tolerância de carga e construção de volume',
+     objectives:['Distribuição permanente: ~80% Z1, 18-20% Z2, <2% Z3','Ramp rate: +3–5 pts CTL/semana','Força 3×/semana — programa bilateral Fase 1','Natação: 4–10km/semana com foco técnico'],
+     key_sessions:['Bike Z1 longo sábado (90min → 3h)','Corrida Z1 longa domingo (40–100min)','Natação técnica 3–4×/semana']},
+    {name:'Limiar I',  color:'#1D9E75', weeks:[8,14],
+     goal:'Duplo limiar 2×/semana — qualidade antes de volume',
+     objectives:['Entrada do duplo limiar na semana 8','Run limiar: 2×10min → 2×14min Z2','Bike limiar: 3×8min → 3×12min Z2','Brick introduzido na semana 10','CSS natação integrado'],
+     key_sessions:['Duplo limiar bike (2× por semana)','Corrida limiar progressiva','Bike longo Z1 sábados (3h)','Brick bike+run sem 10+']},
+    {name:'Limiar II', color:'#EF9F27', weeks:[16,21],
+     goal:'Threshold 3×/semana — volume máximo do ciclo',
+     objectives:['Limiar 3× por semana','Volume: 3×15min Z2 + 2×8min Z3 no pico','Brick race-distance semana 18','Open water toda semana','Força reduzida para 1×/semana'],
+     key_sessions:['Bike 90km + Run 21km (dias separados, sem 18)','Brick completo sem 21','OWS semanal — sighting e viragem de boia']},
+    {name:'Específico',color:'#D85A30', weeks:[22,23],
+     goal:'Simulações parciais — ritmo e nutrição de prova',
+     objectives:['Simulações de percurso','Testar nutrição de prova (60–80g CHO/h bike)','Manter limiar 2×/semana','Força: apenas manutenção'],
+     key_sessions:['Simulação 1: Swim 1.9km + Bike 90km (sep.)','Ajuste de kit e transição']},
+    {name:'Pico',      color:'#c084fc', weeks:[24,25],
+     goal:'Simulações completas — sessão mais importante do ciclo',
+     objectives:['Simulação 1 semana 24: S+B+R dias separados','Simulação 2 semana 25: brick completo 1.9+90+21','Kit de prova completo','Nutrição de prova testada e validada'],
+     key_sessions:['★ Sem 24: Swim 1.9km OWS + Bike 90km + Run 21km','★ Sem 25: Brick completo com transições']},
+    {name:'Taper',     color:'#f472b6', weeks:[26,28],
+     goal:'Volume cai — intensidade NUNCA cai',
+     objectives:['Sem 26: −30% volume, 1 duplo limiar mantido','Sem 27: −45% volume, TSB começa a subir','Sem 28: −60% volume, apenas ativações e strides','TSB alvo na largada: +10 a +15'],
      key_sessions:['Bike ativação 60min c/ 3×5min LT2','Corrida 30min c/ strides','Natação técnica 2×1.500m']},
-    {name:'Prova',color:'#ff5252',weeks:[29,29],goal:'70.3 Buenos Aires — 04 de outubro de 2026',
-     objectives:['Natação: 1.9km','Bike: 90km','Corrida: 21.1km','Meta: Top 5 M40-44 + vaga Mundial (Jean) / sub-5h (Bruno) / sub-4h50 (Gabriel) / sub-5h30 (Rafael)'],
-     key_sessions:['Sábado: check-in e reconhecimento do percurso','Domingo 07h: largada']},
-  ]
+    {name:'Prova',     color:'#ff5252', weeks:[29,29],
+     goal:'70.3 Buenos Aires — 04 de outubro de 2026',
+     objectives:['Natação 1.9km · Bike 90km · Corrida 21.1km','Jean: Top 5 M40-44 + vaga Mundial','Bruno: Top 5 M40-44 + vaga Mundial','TSB alvo largada: +10 a +15'],
+     key_sessions:['Qua/Qui: chegada em Buenos Aires','Sáb: swim adaptação 15min + bike 20min + run 15min','Dom 07h: largada']},
+  ],
+  // Dados por semana (foco, TSS alvo Jean, TSS alvo Bruno, CTL alvo Jean, CTL alvo Bruno)
+  weeks_data: {
+    1:  {focus:'Adaptação — tolerância de carga',         tss_j:250,  tss_b:210,  ctl_j:20,  ctl_b:15},
+    2:  {focus:'Construção gradual de volume Z1',         tss_j:420,  tss_b:370,  ctl_j:28,  ctl_b:22},
+    3:  {focus:'Volume Z1 estabilizando — primeiras longas', tss_j:510, tss_b:450, ctl_j:36, ctl_b:30},
+    4:  {focus:'Volume Z1 crescendo — base sólida',       tss_j:640,  tss_b:590,  ctl_j:46,  ctl_b:38},
+    5:  {focus:'Pico de fase — maior semana até agora',   tss_j:720,  tss_b:640,  ctl_j:55,  ctl_b:46},
+    6:  {focus:'Consolidação — preparar 1ª descarga',     tss_j:760,  tss_b:680,  ctl_j:71,  ctl_b:53},
+    7:  {focus:'■ Recuperação ativa — absorção de carga', tss_j:400,  tss_b:360,  ctl_j:75,  ctl_b:56, deload:true},
+    8:  {focus:'★ Primeiro duplo limiar — baixo volume',  tss_j:660,  tss_b:590,  ctl_j:80,  ctl_b:61},
+    9:  {focus:'Limiar progressivo — qualidade > volume', tss_j:700,  tss_b:630,  ctl_j:85,  ctl_b:66},
+    10: {focus:'Brick semanal instaurado',                tss_j:740,  tss_b:670,  ctl_j:89,  ctl_b:70},
+    11: {focus:'Pico do bloco — maior volume com limiar', tss_j:790,  tss_b:710,  ctl_j:94,  ctl_b:74},
+    12: {focus:'■ Recuperação — check-in de forma',      tss_j:430,  tss_b:390,  ctl_j:96,  ctl_b:76, deload:true},
+    13: {focus:'Relançamento pós-descarga',               tss_j:770,  tss_b:690,  ctl_j:100, ctl_b:79},
+    14: {focus:'Fechamento bloco 1 — pico de eficiência', tss_j:820,  tss_b:740,  ctl_j:106, ctl_b:82},
+    15: {focus:'■ Descanso antes do novo patamar',       tss_j:440,  tss_b:400,  ctl_j:108, ctl_b:84, deload:true},
+    16: {focus:'★ Threshold 3×/semana — novo patamar',   tss_j:820,  tss_b:750,  ctl_j:111, ctl_b:87},
+    17: {focus:'Volume crescente — adaptação ao nível',   tss_j:860,  tss_b:780,  ctl_j:113, ctl_b:90},
+    18: {focus:'Brick race-distance — próximo da prova',  tss_j:890,  tss_b:810,  ctl_j:116, ctl_b:93},
+    19: {focus:'■ Recuperação crítica antes do pico',    tss_j:460,  tss_b:420,  ctl_j:117, ctl_b:95, deload:true},
+    20: {focus:'Volume pico aproximando-se',              tss_j:910,  tss_b:830,  ctl_j:120, ctl_b:97},
+    21: {focus:'Pico de volume da fase limiar',           tss_j:950,  tss_b:860,  ctl_j:124, ctl_b:99},
+    22: {focus:'★ Início específico — simulações parciais', tss_j:930, tss_b:850, ctl_j:125, ctl_b:101},
+    23: {focus:'■ Recuperação pré-pico',                 tss_j:490,  tss_b:450,  ctl_j:126, ctl_b:102, deload:true},
+    24: {focus:'★ SIMULAÇÃO 1 — distância de prova',     tss_j:970,  tss_b:880,  ctl_j:126, ctl_b:102},
+    25: {focus:'★ SIMULAÇÃO 2 — sessão de pico',         tss_j:960,  tss_b:870,  ctl_j:125, ctl_b:101},
+    26: {focus:'Volume cai, intensidade mantida',         tss_j:680,  tss_b:620,  ctl_j:121, ctl_b:98},
+    27: {focus:'Frescor em construção',                   tss_j:500,  tss_b:460,  ctl_j:115, ctl_b:93},
+    28: {focus:'Afiação final',                           tss_j:340,  tss_b:310,  ctl_j:109, ctl_b:88},
+    29: {focus:'Chegada em Buenos Aires — ativação',      tss_j:200,  tss_b:185,  ctl_j:104, ctl_b:84},
+  }
+};
+
+// ── Atletas com plano macro ativo ────────────────────────────────
+// Chave: athleteKey → plano aplicável (null = sem plano)
+const ATHLETE_PLAN = {
+  jean:    'buenos_aires_2026',
+  bruno:   'buenos_aires_2026',
+  gabriel: null,
+  rafael:  null,
+  simony:  null,
+  clara:   null,
 };
 
 function getPhaseForWeek(w) {
@@ -339,8 +419,35 @@ function fmtH(h) {
 }
 function totalH(vol) { return Object.values(vol).reduce((a,b)=>a+b,0); }
 function getA()  { return document.getElementById('sel-athlete').value; }
-function getSp() { return document.getElementById('sel-sport').value; }
 function dc(id)  { if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+// ── URL Routing ────────────────────────────────────────────────────
+function getAthleteFromURL() {
+  const path = window.location.pathname.replace(/^\//, '').toLowerCase();
+  return ATHLETES.includes(path) ? path : null;
+}
+function setAthleteURL(key) {
+  history.pushState({athlete: key}, '', '/' + key);
+}
+function updateSubtitle(key) {
+  const d = DB[key];
+  const sub = document.getElementById('logo-sub');
+  if (!sub || !d) return;
+  const event = (d.alerts || []).find(a =>
+    a.type === 'info' && a.message &&
+    !a.message.includes('HRV') &&
+    !a.message.includes('Aniversário') &&
+    !a.message.includes('Aniversario')
+  );
+  sub.textContent = event
+    ? `Dashboard de Treinos · ${event.message}`
+    : `Dashboard de Treinos · NPC Endurance`;
+}
+window.addEventListener('popstate', e => {
+  const key = (e.state && e.state.athlete) || getAthleteFromURL() || 'bruno';
+  document.getElementById('sel-athlete').value = key;
+  updateDash();
+});
 
 // ── View toggle ────────────────────────────────────────────────────
 function setView(v, btn) {
@@ -348,14 +455,42 @@ function setView(v, btn) {
   document.querySelectorAll('.tab-group:first-child .tab-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
   ['individual','comparativo','calendario','macro'].forEach(id=>{
-    document.getElementById('view-'+id).style.display = v===id ? 'block':'none';
+    const el = document.getElementById('view-'+id);
+    if(el) el.style.display = v===id ? 'block':'none';
   });
-  const isInd = v==='individual';
-  document.getElementById('sel-athlete').disabled = !isInd && v!=='individual';
-  document.getElementById('sel-sport').disabled   = v!=='individual';
   if(v==='comparativo') renderComparativo();
   if(v==='calendario')  renderCalendar(calAthlete);
   if(v==='macro')       renderMacro(macroAthlete);
+}
+
+// ── Indicators ─────────────────────────────────────────────────────
+function renderIndicators(d) {
+  const ind = d.indicators || {};
+  const defs = [
+    {key:'fitness', title:'Fitness — Ramp Rate',
+     tooltip:'Velocidade de ganho de fitness (variação do CTL em 7 dias).<br><b>Recovering</b>: CTL caindo — corpo em recuperação.<br><b>Keeping Fit</b>: CTL estável ou crescendo saudável (0–3 pts/semana).<br><b>Going Hard</b>: CTL subindo rápido (>3 pts) — monitorar fadiga acumulada.'},
+    {key:'form',    title:'Form — TSB',
+     tooltip:'Forma atual = Fitness (CTL) − Fadiga (ATL).<br><b>Overloading</b>: TSB negativo elevado — atleta fatigado, risco de overtraining.<br><b>Optimal</b>: TSB entre −15 e +5 — janela ideal de treino produtivo.<br><b>Recharging</b>: TSB positivo — atleta fresco, pronto para competir.'},
+    {key:'fatigue', title:'Fatigue — Direção',
+     tooltip:'Direção da fadiga aguda hoje vs ontem (variação do ATL).<br><b>Decreasing</b>: ATL caindo — fadiga reduzindo, recuperação em curso.<br><b>Stable</b>: ATL estável — carga de treino constante.<br><b>Increasing</b>: ATL subindo — mais carga acumulada nas últimas 24h.'},
+  ];
+  const gradients = {
+    fitness: 'linear-gradient(to right,#4a9eff,#4db87a,#f5a623)',
+    form:    'linear-gradient(to right,#ff5252,#4db87a,#4a9eff)',
+    fatigue: 'linear-gradient(to right,#4db87a,#f5a623,#ff5252)',
+  };
+  document.getElementById('ind-grid').innerHTML = defs.map(def => {
+    const i = ind[def.key] || {label:'—', color:'#8b90a0', pos:50, start:'', end:''};
+    return `<div class="ind-card">
+      <div class="ind-tooltip">${def.tooltip}</div>
+      <div class="ind-label">${def.title}</div>
+      <div class="ind-value" style="color:${i.color}">${i.label}</div>
+      <div class="ind-track" style="background:${gradients[def.key]}">
+        <div class="ind-pointer" style="left:${i.pos}%"></div>
+      </div>
+      <div class="ind-ends"><span>${i.start}</span><span>${i.end}</span></div>
+    </div>`;
+  }).join('');
 }
 
 // ── Main ───────────────────────────────────────────────────────────
@@ -363,9 +498,14 @@ function updateDash() {
   if(currentView==='comparativo'){renderComparativo();return;}
   if(currentView==='calendario') {renderCalendar(calAthlete);return;}
   if(currentView==='macro')      {renderMacro(macroAthlete);return;}
-  const d = DB[getA()];
+  const key = getA();
+  setAthleteURL(key);
+  updateSubtitle(key);
+  const d = DB[key];
+  if(!d){return;}
   renderAlerts(d);
   renderKPIs(d);
+  renderIndicators(d);
   renderPMC(d);
   renderWellness(d);
   renderZone(d);
@@ -384,6 +524,13 @@ function renderAlerts(d) {
 }
 
 // ── KPIs ───────────────────────────────────────────────────────────
+const KPI_TOOLTIPS = {
+  ctl: 'Chronic Training Load — mede o fitness acumulado nas últimas 6 semanas (média exponencial de TSS diário). Quanto maior, melhor a base aeróbia. Cresce lentamente com treino consistente.',
+  atl: 'Acute Training Load — mede a fadiga das últimas 7–10 dias. Sobe rápido com treino intenso e cai rápido com descanso. ATL muito acima da CTL indica risco de overtraining.',
+  tsb: 'Training Stress Balance — a "forma" do atleta: CTL − ATL. Positivo = atleta fresco, ideal para competir. Negativo = fatigado, mas é onde o treino acontece. Janela ideal de treino: entre −15 e +5.',
+  tss_week: 'Training Stress Score semanal — carga total de treino acumulada na semana. Calculado a partir da intensidade e duração de cada sessão. Serve para comparar semanas e calibrar a progressão de carga.',
+};
+
 function renderKPIs(d) {
   const total = totalH(d.vol);
   const parts = ['swim','bike','run','strength']
@@ -395,7 +542,8 @@ function renderKPIs(d) {
       const val=d.kpis[def.key], delta=d.kpi_delta[def.key];
       const dir=String(delta).startsWith('+')?'up':String(delta).startsWith('-')?'dn':'nt';
       const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
-      return `<div class="kpi"><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
+      const tip=KPI_TOOLTIPS[def.key]||'';
+      return `<div class="kpi"><div class="kpi-tooltip">${tip}</div><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
     }).join('') +
     `<div class="kpi hl"><div class="kpi-label">Total de horas</div><div class="kpi-value">${fmtH(total)}</div><div class="kpi-sub">${parts}</div></div>`;
 }
@@ -408,10 +556,15 @@ function renderPMC(d) {
     <span><span class="dot" style="background:#ff7c3a"></span>ATL</span>
     <span><span class="dot" style="background:#4db87a"></span>TSB</span>`;
   charts['pmc']=new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:d.pmc.labels,datasets:[
-    {label:'CTL',data:d.pmc.ctl,borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,.07)',tension:.4,pointRadius:3,borderWidth:2,fill:true},
-    {label:'ATL',data:d.pmc.atl,borderColor:'#ff7c3a',backgroundColor:'rgba(255,124,58,.07)',tension:.4,pointRadius:3,borderWidth:2,fill:true},
-    {label:'TSB',data:d.pmc.tsb,borderColor:'#4db87a',borderDash:[5,3],tension:.4,pointRadius:3,borderWidth:2},
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+    {label:'CTL',data:d.pmc.ctl,borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,.07)',tension:.4,pointRadius:0,borderWidth:2,fill:true,spanGaps:true},
+    {label:'ATL',data:d.pmc.atl,borderColor:'#ff7c3a',backgroundColor:'rgba(255,124,58,.07)',tension:.4,pointRadius:0,borderWidth:2,fill:true,spanGaps:true},
+    {label:'TSB',data:d.pmc.tsb,borderColor:'#4db87a',borderDash:[5,3],tension:.4,pointRadius:0,borderWidth:2,spanGaps:true},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:items=>{const i=items[0].dataIndex;return d.pmc.labels[i]||'';} }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:'#565c70',font:tf,maxRotation:0,autoSkip:true,maxTicksLimit:11,callback:(v,i)=>{return d.pmc.labels[i]||null;}}},
+      y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}
+    }}});
 }
 
 // ── Wellness ───────────────────────────────────────────────────────
@@ -431,21 +584,25 @@ function renderWellness(d) {
 
   document.getElementById('well-grid').innerHTML = `
     <div class="well-card">
+      <div class="well-tooltip">Variabilidade da frequência cardíaca — mede a capacidade de recuperação do sistema nervoso autônomo. Quanto maior e mais próximo do baseline, melhor a recuperação. Queda >10% por 2+ dias = sinal de alerta.</div>
       <div class="well-label">HRV (último)</div>
       <div class="well-value">${lastHrv || '—'}</div>
       <div class="well-sub">Baseline: ${hrv.baseline || '—'}</div>
     </div>
     <div class="well-card">
+      <div class="well-tooltip">Duração do sono da última noite via Garmin Health. O ideal para atletas é 7h30–9h. Sono insuficiente (<7h) prejudica a síntese proteica, aumenta o cortisol e compromete a adaptação ao treino.</div>
       <div class="well-label">Sono (última noite)</div>
       <div class="well-value">${lastSleep ? lastSleep.toFixed(1)+'h' : '—'}</div>
       <div class="well-sub">Via Garmin Health</div>
     </div>
     <div class="well-card">
+      <div class="well-tooltip">Frequência cardíaca em repouso — reflete o nível de fadiga acumulada e adaptação cardiovascular. Valores elevados vs. a média do atleta (>5 bpm acima) indicam estresse ou recuperação insuficiente. Tende a diminuir com o aumento do fitness.</div>
       <div class="well-label">FC Repouso</div>
       <div class="well-value">${lastHR || '—'}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
       <div class="well-sub">Último registro</div>
     </div>
     <div class="well-card">
+      <div class="well-tooltip">Estimativa Garmin de energia disponível (0–100). Acima de 75 = bem recuperado. Entre 40–75 = recuperação parcial. Abaixo de 40 = fadiga elevada. Útil para calibrar a intensidade do treino do dia.</div>
       <div class="well-label">Body Battery</div>
       <div class="well-value">${lastBatt || '—'}</div>
       <div class="well-sub">Média 14 dias: ${batt.filter(v=>v>0).length ? Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length) : '—'}</div>
@@ -470,9 +627,11 @@ function renderWellness(d) {
   // Sleep chart
   dc('sleep');
   if(sleep.some(v=>v>0)) {
+    const sleepAvg = +(sleep.filter(v=>v>0).reduce((a,b)=>a+b,0)/sleep.filter(v=>v>0).length).toFixed(1);
     charts['sleep']=new Chart(document.getElementById('sleep-chart'),{type:'bar',data:{labels,datasets:[
-      {label:'Sono',data:sleep,backgroundColor:'rgba(74,158,255,.4)',borderColor:'#4a9eff',borderWidth:1,borderRadius:3},
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      {label:'Sono',data:sleep,backgroundColor:'rgba(74,158,255,.4)',borderColor:'#4a9eff',borderWidth:1,borderRadius:3,order:2},
+      {label:`Média ${sleepAvg}h`,data:Array(labels.length).fill(sleepAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},suggestedMin:5,suggestedMax:10}}}});
   } else {
@@ -482,13 +641,36 @@ function renderWellness(d) {
   // Resting HR chart
   dc('hr');
   if(rhr.some(v=>v>0)) {
+    const rhrAvg = Math.round(rhr.filter(v=>v>0).reduce((a,b)=>a+b,0)/rhr.filter(v=>v>0).length);
     charts['hr']=new Chart(document.getElementById('hr-chart'),{type:'line',data:{labels,datasets:[
-      {label:'FC repouso',data:rhr,borderColor:'#ff5252',backgroundColor:'rgba(255,82,82,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true},
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      {label:'FC repouso',data:rhr,borderColor:'#ff5252',backgroundColor:'rgba(255,82,82,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true,order:2},
+      {label:`Média ${rhrAvg} bpm`,data:Array(labels.length).fill(rhrAvg),borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
       scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+' bpm'}}}}});
   } else {
     document.getElementById('hr-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">FC repouso indisponível</p>';
+  }
+
+  // Body Battery chart
+  dc('batt');
+  const battCanvas = document.getElementById('batt-chart');
+  const battNodata = document.getElementById('batt-nodata');
+  // Garantir que o canvas existe (pode ter sido escondido numa troca anterior)
+  battCanvas.style.display = '';
+  battNodata.style.display = 'none';
+  if(batt.some(v=>v>0)) {
+    const battAvg = Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length);
+    charts['batt']=new Chart(battCanvas,{type:'bar',data:{labels,datasets:[
+      {label:'Body Battery',data:batt,backgroundColor:batt.map(v=>v>=70?'rgba(77,184,122,.6)':v>=40?'rgba(245,166,35,.6)':'rgba(255,82,82,.6)'),borderRadius:3,order:2},
+      {label:`Média ${battAvg}`,data:Array(labels.length).fill(battAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{filter:i=>i.datasetIndex===0,callbacks:{label:c=>`Body Battery: ${c.raw.toFixed(0)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
+              y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},min:0,max:100}}}});
+  } else {
+    battCanvas.style.display = 'none';
+    battNodata.style.display = 'block';
   }
 }
 
@@ -522,8 +704,8 @@ function renderVol(d) {
   document.getElementById('vol-total').textContent=fmtH(totalH(d.vol))+' total';
   document.getElementById('vol-legend').innerHTML=labels.map((l,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${l}</span>`).join('');
   charts['vol']=new Chart(document.getElementById('vol-chart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.toFixed(1)}h`}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},grid:{color:gc}}}}});
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${fmtH(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
 }
 
 // ── Adherence ──────────────────────────────────────────────────────
@@ -542,8 +724,7 @@ function renderAdherence(d) {
 
 // ── Sessions ───────────────────────────────────────────────────────
 function renderSessions(d) {
-  const sel=getSp();
-  const rows=(d.sessions||[]).filter(s=>sel==='all'||s.sport===sel);
+  const rows=(d.sessions||[]);
   document.getElementById('sessions-body').innerHTML=rows.length
     ? rows.map(s=>`<tr><td style="font-weight:600">${s.day}</td><td><span class="badge b-${s.sport}">${SPORT_LABEL[s.sport]||s.sport}</span></td><td style="color:#8b90a0">${s.desc}</td><td>${s.dur}</td><td style="font-weight:600">${s.tss}</td><td style="color:#565c70">${s.zones}</td></tr>`).join('')
     : '<tr><td colspan="6" style="color:var(--text3);padding:1rem 0">Nenhuma sessão encontrada</td></tr>';
@@ -551,32 +732,35 @@ function renderSessions(d) {
 
 // ── Comparativo ────────────────────────────────────────────────────
 function renderComparativo() {
+  const activeAthletes = ATHLETES.filter(id => DB[id] && DB[id].kpis);
   const loadMap=[{key:'ctl',label:'CTL'},{key:'atl',label:'ATL'},{key:'tsb',label:'TSB'},{key:'tss_week',label:'TSS semana'}];
-  document.getElementById('cmp-load').innerHTML=ATHLETES.map(id=>{
+  document.getElementById('cmp-load').innerHTML=activeAthletes.map(id=>{
     const d=DB[id],tsb=d.kpis.tsb;
     const tc=tsb>5?'#4db87a':tsb<-10?'#ff7c3a':'#8b90a0';
     return `<div class="cmp-card"><div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>${loadMap.map(m=>`<div class="cmp-row"><span class="cmp-k">${m.label}</span><span class="cmp-v" style="${m.key==='tsb'?`color:${tc}`:''}"> ${d.kpis[m.key]}</span></div>`).join('')}<div class="cmp-row"><span class="cmp-k">Horas</span><span class="cmp-v">${fmtH(totalH(d.vol))}</span></div></div>`;
   }).join('');
 
   dc('cmp-ctl');
-  document.getElementById('cmp-ctl-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  document.getElementById('cmp-ctl-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const refLabels = (DB.bruno||DB.jean||Object.values(DB)[0]).pmc.labels;
   charts['cmp-ctl']=new Chart(document.getElementById('cmp-ctl-chart'),{type:'line',
-    data:{labels:DB.bruno.pmc.labels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+    data:{labels:refLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:(v,i)=>{return refLabels[i]||null;}}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 
   dc('cmp-hrv');
-  document.getElementById('cmp-hrv-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
-  const hrvLabels=(DB.jean.hrv||{}).labels||[];
+  document.getElementById('cmp-hrv-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const hrvLabels=(DB.jean&&DB.jean.hrv||{}).labels||[];
   charts['cmp-hrv']=new Chart(document.getElementById('cmp-hrv-chart'),{type:'line',
-    data:{labels:hrvLabels,datasets:ATHLETES.filter(id=>(DB[id].hrv||{}).vals?.some(v=>v>0)).map(id=>({label:NAMES[id],data:(DB[id].hrv||{}).vals||[],borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
+    data:{labels:hrvLabels,datasets:activeAthletes.filter(id=>(DB[id].hrv||{}).vals?.some(v=>v>0)).map(id=>({label:NAMES[id],data:(DB[id].hrv||{}).vals||[],borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 
   dc('cmp-vol');
-  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];  document.getElementById('cmp-vol-legend').innerHTML=ATHLETES.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];
+  document.getElementById('cmp-vol-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
   charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',
-    data:{labels:vLabels,datasets:ATHLETES.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[ATHLETES[c.datasetIndex]]}: ${c.raw.toFixed(1)}h`}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},grid:{color:gc}}}}});
+    data:{labels:vLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[activeAthletes[c.datasetIndex]]}: ${fmtH(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
 }
 
 // ── Calendar ───────────────────────────────────────────────────────
@@ -661,6 +845,21 @@ function setMacroAthlete(id, btn) {
 }
 
 function renderMacro(athleteKey) {
+  const hasPlan = !!ATHLETE_PLAN[athleteKey];
+
+  if (!hasPlan) {
+    document.getElementById('macro-body').innerHTML = `
+      <div class="card" style="padding:2rem;text-align:center">
+        <div style="font-size:32px;margin-bottom:1rem">📋</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:.5rem">${NAMES[athleteKey]} não tem plano macro cadastrado</div>
+        <div style="font-size:13px;color:var(--text3);line-height:1.7">
+          O plano macro de 29 semanas está ativo para <b style="color:var(--text2)">Jean Romano</b> e <b style="color:var(--text2)">Bruno Trevisan</b>.<br>
+          Para adicionar um plano para este atleta, defina uma prova alvo e periodização.
+        </div>
+      </div>`;
+    return;
+  }
+
   const currentWeek = currentRaceWeek();
   const totalW = MACRO_PLAN.total_weeks;
 
@@ -676,12 +875,17 @@ function renderMacro(athleteKey) {
   // Week dots
   let weeksHtml = '<div class="macro-weeks">';
   for(let w = 1; w <= totalW; w++) {
-    const phase = getPhaseForWeek(w);
-    const color = phase ? phase.color : '#565c70';
+    const phase    = getPhaseForWeek(w);
+    const color    = phase ? phase.color : '#565c70';
     const isCurrent = w === currentWeek;
     const isPast    = w < currentWeek;
+    const isDeload  = MACRO_PLAN.deload_weeks.includes(w);
     const dates     = weekDates(w);
-    weeksHtml += `<div class="macro-week ${isPast?'past':''} ${isCurrent?'current':''}" style="background:${color};color:#fff;opacity:${isPast?0.45:1}" onclick="toggleWeek(${w},'${athleteKey}')" title="S${w} · ${dates.label}">${w}</div>`;
+    const bg = isDeload ? `repeating-linear-gradient(45deg,${color}88,${color}88 3px,${color}44 3px,${color}44 6px)` : color;
+    weeksHtml += `<div class="macro-week ${isPast?'past':''} ${isCurrent?'current':''}" 
+      style="background:${isDeload?color+'66':color};color:#fff;opacity:${isPast?0.45:1};${isDeload?'border:1.5px dashed '+color+'cc;':''}" 
+      onclick="toggleWeek(${w},'${athleteKey}')" 
+      title="S${w}${isDeload?' ■ DESCARGA':''} · ${dates.label}">${w}</div>`;
   }
   weeksHtml += '</div>';
 
@@ -735,13 +939,20 @@ function toggleWeek(weekNum, athleteKey) {
 
   const phase   = getPhaseForWeek(weekNum);
   const dates   = weekDates(weekNum);
+  const wd      = MACRO_PLAN.weeks_data[weekNum] || {};
   const notes   = (DB[athleteKey] || {}).week_notes || {};
   const note    = notes[weekNum];
   const curWeek = currentRaceWeek();
   const isPast  = weekNum < curWeek;
   const isCur   = weekNum === curWeek;
+  const isDeload = !!wd.deload;
 
-  // Fecha se clicou na mesma semana
+  // CTL atual do atleta (do DB)
+  const d = DB[athleteKey];
+  const ctlActual = (d && isCur) ? d.kpis.ctl : null;
+  const ctlTarget = athleteKey === 'jean' ? wd.ctl_j : athleteKey === 'bruno' ? wd.ctl_b : null;
+  const tssTarget = athleteKey === 'jean' ? wd.tss_j : athleteKey === 'bruno' ? wd.tss_b : null;
+
   if (panel.dataset.openWeek === String(weekNum)) {
     panel.innerHTML = '';
     panel.dataset.openWeek = '';
@@ -759,9 +970,36 @@ function toggleWeek(weekNum, athleteKey) {
     ? `<span style="background:rgba(255,255,255,.08);color:var(--text3);font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">concluída</span>`
     : '';
 
+  const deloadBadge = isDeload
+    ? `<span style="background:rgba(255,124,58,.15);color:#ff7c3a;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:4px">■ DESCARGA</span>`
+    : '';
+
+  // CTL status vs target
+  let ctlHtml = '';
+  if (ctlTarget) {
+    if (ctlActual && isCur) {
+      const diff = (ctlActual - ctlTarget).toFixed(1);
+      const color = diff > 0 ? '#4db87a' : diff < -5 ? '#ff5252' : '#f5a623';
+      const sign  = diff > 0 ? '+' : '';
+      ctlHtml = `
+        <div style="margin-top:1rem;padding:12px;background:var(--bg3);border-radius:var(--radius);display:flex;gap:2rem;flex-wrap:wrap">
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL atual</div><div style="font-size:20px;font-weight:700">${ctlActual}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">${ctlTarget}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">Vs plano</div><div style="font-size:20px;font-weight:700;color:${color}">${sign}${diff}</div></div>
+          ${tssTarget ? `<div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">TSS alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">~${tssTarget}</div></div>` : ''}
+        </div>`;
+    } else {
+      ctlHtml = `
+        <div style="margin-top:1rem;padding:12px;background:var(--bg3);border-radius:var(--radius);display:flex;gap:2rem;flex-wrap:wrap">
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">${ctlTarget}</div></div>
+          ${tssTarget ? `<div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">TSS alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">~${tssTarget}</div></div>` : ''}
+        </div>`;
+    }
+  }
+
   const noteHtml = note
     ? `<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Nota do coach — TrainingPeaks</div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Nota do coach</div>
         <pre style="font-family:var(--font-sans);font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.7">${note.body}</pre>
       </div>`
     : `<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);font-size:12px;color:var(--text3)">
@@ -772,9 +1010,11 @@ function toggleWeek(weekNum, athleteKey) {
     <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:.75rem">
       <h3 style="color:${phase?.color||'var(--text)'}">Semana ${weekNum}</h3>
       <span style="font-size:13px;color:var(--text2)">${dates.label}</span>
-      ${statusBadge}
+      ${statusBadge}${deloadBadge}
       ${phase ? `<span style="font-size:11px;background:${phase.color}22;color:${phase.color};padding:2px 8px;border-radius:4px">${phase.name}</span>` : ''}
     </div>
+    ${wd.focus ? `<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem">📌 ${wd.focus}</div>` : ''}
+    ${ctlHtml}
     ${noteHtml}
   </div>`;
 }
@@ -816,6 +1056,43 @@ function togglePhase(idx) {
 }
 
 // ── Init ───────────────────────────────────────────────────────────
+const urlAthlete = getAthleteFromURL();
+if (urlAthlete) {
+  document.getElementById('sel-athlete').value = urlAthlete;
+}
+
+// ── Portal Mode (atleta logado via atleta.html) ─────────────────────
+const _portalKey = sessionStorage.getItem('npc_portal_athlete');
+if (_portalKey && ATHLETES.includes(_portalKey)) {
+  // Travar no atleta logado
+  const sel = document.getElementById('sel-athlete');
+  sel.value = _portalKey;
+  sel.disabled = true;
+  sel.style.display = 'none';
+
+  // Esconder Comparativo (mostra todos os atletas)
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    if (btn.textContent.trim() === 'Comparativo') btn.style.display = 'none';
+  });
+
+  // Substituir seletor por nome do atleta + botão Sair
+  const portalLabel = document.createElement('div');
+  portalLabel.style.cssText = 'display:flex;align-items:center;gap:.6rem';
+  portalLabel.innerHTML = `
+    <span style="font-size:.8rem;color:var(--text2);font-weight:600">
+      ${NAMES[_portalKey] || _portalKey}
+    </span>
+    <button onclick="sessionStorage.removeItem('npc_portal_athlete');location.href='atleta.html'"
+      style="background:rgba(74,155,190,.12);border:1px solid rgba(74,155,190,.2);border-radius:6px;
+             color:var(--text2);cursor:pointer;font-size:.72rem;padding:.25rem .65rem;
+             transition:all .2s"
+      onmouseover="this.style.borderColor='var(--ice)';this.style.color='var(--ice)'"
+      onmouseout="this.style.borderColor='rgba(74,155,190,.2)';this.style.color='var(--text2)'">
+      Sair
+    </button>`;
+  sel.parentNode.insertBefore(portalLabel, sel);
+}
+
 updateDash();
 </script>
 </body>
