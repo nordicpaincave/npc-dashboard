@@ -70,7 +70,7 @@ function press(d){if(pin.length>=4)return;pin+=d;document.getElementById('d'+(pi
 function del(){if(!pin.length)return;document.getElementById('d'+(pin.length-1)).classList.remove('on');pin=pin.slice(0,-1);document.getElementById('err').textContent=''}
 function check(){
   const key=PINS[pin];
-  if(key){sessionStorage.setItem('npc_portal_athlete',key);window.location.href='index.html'}
+  if(key){sessionStorage.setItem('npc_portal_athlete',key);window.location.href='dashboard.html'}
   else{
     for(let i=0;i<4;i++){document.getElementById('d'+i).classList.remove('on');document.getElementById('d'+i).classList.add('err')}
     document.getElementById('err').textContent='PIN incorreto. Tente novamente.';
