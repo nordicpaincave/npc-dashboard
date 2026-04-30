@@ -1,0 +1,12 @@
+{
+  "routes": [
+    { "src": "/treinador", "dest": "/dashboard.html" },
+    { "src": "/atleta",    "dest": "/atleta.html"    },
+    { "src": "/bruno",     "dest": "/dashboard.html" },
+    { "src": "/jean",      "dest": "/dashboard.html" },
+    { "src": "/gabriel",   "dest": "/dashboard.html" },
+    { "src": "/rafael",    "dest": "/dashboard.html" },
+    { "src": "/simony",    "dest": "/dashboard.html" },
+    { "src": "/clara",     "dest": "/dashboard.html" }
+  ]
+}
