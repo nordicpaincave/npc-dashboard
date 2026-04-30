@@ -1064,22 +1064,40 @@ if (urlAthlete) {
 // ── Portal Mode (atleta logado via atleta.html) ─────────────────────
 const _coachMode = sessionStorage.getItem('npc_portal_coach') === '1';
 if (_coachMode) {
-  // Treinador logado via PIN — mostrar só botão Sair
   const _coachSair = document.createElement('div');
   _coachSair.style.cssText = 'display:flex;align-items:center;gap:.6rem';
   _coachSair.innerHTML = `
     <button onclick="sessionStorage.removeItem('npc_portal_coach');location.href='index.html'"
       style="background:rgba(232,93,36,.12);border:1px solid rgba(232,93,36,.2);border-radius:6px;
-             color:#e85d24;cursor:pointer;font-size:.72rem;padding:.25rem .65rem;
-             transition:all .2s"
+             color:#e85d24;cursor:pointer;font-size:.72rem;padding:.25rem .65rem;transition:all .2s"
       onmouseover="this.style.borderColor='#e85d24'"
-      onmouseout="this.style.borderColor='rgba(232,93,36,.2)'">
-      Sair
-    </button>`;
+      onmouseout="this.style.borderColor='rgba(232,93,36,.2)'">Sair</button>`;
   const _selCoach = document.getElementById('sel-athlete');
   _selCoach.parentNode.insertBefore(_coachSair, _selCoach.nextSibling);
 }
 const _portalKey = sessionStorage.getItem('npc_portal_athlete');
+if (_portalKey) {
+  // Esconder botões de outros atletas no Calendário e Plano Macro
+  ['cal-athlete-select'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.querySelectorAll('.tab-btn').forEach(btn => {
+        const txt = btn.textContent.trim().toLowerCase().replace(' ✓','');
+        if (txt !== _portalKey) btn.style.display = 'none';
+        else { btn.classList.add('active'); }
+      });
+    }
+  });
+  // Plano Macro — esconder outros atletas
+  document.querySelectorAll('#view-macro .tab-btn').forEach(btn => {
+    const txt = btn.textContent.trim().toLowerCase().replace(' ✓','');
+    if (txt !== _portalKey) btn.style.display = 'none';
+    else btn.classList.add('active');
+  });
+  // Setar o atleta correto no macro e calendário
+  if (typeof setMacroAthlete === 'function') setMacroAthlete(_portalKey);
+  if (typeof setCalAthlete === 'function') setCalAthlete(_portalKey);
+}
 if (_portalKey && ATHLETES.includes(_portalKey)) {
   // Travar no atleta logado
   const sel = document.getElementById('sel-athlete');
