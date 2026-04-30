@@ -1072,6 +1072,11 @@ function togglePhase(idx) {
   const sel = document.getElementById('sel-athlete');
   if (portalAthlete && ATHLETES.includes(portalAthlete)) {
     sel.value = portalAthlete;
+    // Garantir que o select mantém o valor mesmo após disabled
+    Object.defineProperty(sel, 'value', {
+      get: function() { return portalAthlete; },
+      configurable: true
+    });
   } else if (urlAthlete) {
     sel.value = urlAthlete;
   }

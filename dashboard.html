@@ -308,7 +308,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 20:19 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 20:21 (Supabase)</div>
 </div>
 
 <script>
@@ -4242,6 +4242,11 @@ function togglePhase(idx) {
   const sel = document.getElementById('sel-athlete');
   if (portalAthlete && ATHLETES.includes(portalAthlete)) {
     sel.value = portalAthlete;
+    // Garantir que o select mantém o valor mesmo após disabled
+    Object.defineProperty(sel, 'value', {
+      get: function() { return portalAthlete; },
+      configurable: true
+    });
   } else if (urlAthlete) {
     sel.value = urlAthlete;
   }
