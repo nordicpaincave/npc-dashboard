@@ -427,8 +427,7 @@ function renderNutricao() {
   dayData.forEach(function(dd,i){
     var nutr=dd.nutr, tc=dd.tc;
     var delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
-    html+='<div onclick="showNutrDay('+i+')" style="cursor:pointer;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s" '+
-          'onmouseover="this.style.borderColor=''+tc+''" onmouseout="this.style.borderColor='var(--border)'">';
+    html+='<div onclick="showNutrDay('+i+')" style="cursor:pointer;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s">';
     html+='<div style="background:'+tc+'18;border-bottom:1px solid '+tc+'30;padding:.55rem .75rem;display:flex;align-items:center;justify-content:space-between">';
     html+='<div><div style="font-size:13px;font-weight:700;color:var(--text)">'+dd.full+'</div>';
     if(dd.sessions.length){
