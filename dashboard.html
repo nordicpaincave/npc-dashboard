@@ -308,7 +308,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/04/2026 21:00 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 01/05/2026 08:12 (Supabase)</div>
 </div>
 
 <script>
@@ -3534,60 +3534,168 @@ function renderNutricao() {
   var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
   var tc_map={rest:'#7a9ab8',easy:'#2ecc71',threshold:'#4a9bbe',double:'#4a9bbe',vo2max:'#e85d24',long:'#f39c12',pre_race:'#e85d24',race_day:'#e74c3c',post_race:'#2ecc71'};
 
+  // Adjusted meals per day type
+  var MEAL_ADJUST = {
+    rest:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pão integral (60g) + geleia natural + café',                              c:52,  p:6,  g:2,  k:250},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 100g carbo + 225g frango/peixe',          c:41,  p:67, g:5,  k:481},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 70g oleaginosas (castanha/amêndoa/nozes)',                           c:33,  p:10, g:43, k:555},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 75g carbo + 225g frango/peixe',           c:27,  p:67, g:5,  k:421}],
+    easy:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pão integral (60g) + geleia natural + café',                              c:52,  p:6,  g:2,  k:250},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 200g carbo + 225g frango/peixe',          c:82,  p:67, g:5,  k:641},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 50g oleaginosas',                                                    c:33,  p:10, g:25, k:397},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 150g carbo + 225g frango/peixe',          c:72,  p:67, g:5,  k:601}],
+    threshold: [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia natural + café',                                         c:62,  p:7,  g:2,  k:293},
+                {t:'07:30',n:'Entre treinos',  d:'1 gel de carboidrato + 350ml água de coco',                                        c:35,  p:0,  g:0,  k:140},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 250g carbo + 225g frango/peixe',          c:102, p:67, g:5,  k:737},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 30g oleaginosas',                                                    c:33,  p:8,  g:15, k:295},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
+    double:    [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia natural + café',                                         c:62,  p:7,  g:2,  k:293},
+                {t:'07:30',n:'Entre treinos',  d:'1 gel OBRIGATÓRIO + 350ml água de coco',                                           c:50,  p:0,  g:0,  k:200},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'40g tapioca + 2 ovos + 90g frango desfiado',                                       c:32,  p:35, g:7,  k:335},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 260g carbo + 225g frango/peixe',          c:107, p:67, g:5,  k:761},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 25g oleaginosas + 1 dose whey',                                      c:40,  p:34, g:13, k:413},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
+    long:      [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia + café + 1 liquidz OU 1L água de coco (preparação)',      c:72,  p:7,  g:2,  k:333},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos',                                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada + 100g vegetal + 260g carbo + 225g frango/peixe',                           c:107, p:67, g:5,  k:761},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 50g oleaginosas',                                                    c:33,  p:10, g:25, k:397},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada + 200g vegetal + 200g carbo + 225g frango/peixe + azeite extra',            c:92,  p:67, g:10, k:741}],
+  };
+  // Use easy as fallback for types not explicitly mapped
+  ['vo2max','pre_race','race_day','post_race'].forEach(function(t){MEAL_ADJUST[t]=MEAL_ADJUST[t]||MEAL_ADJUST.easy;});
+  MEAL_ADJUST.vo2max = MEAL_ADJUST.threshold;
+  MEAL_ADJUST.pre_race = MEAL_ADJUST.double;
+  MEAL_ADJUST.post_race = MEAL_ADJUST.easy;
+
   // Group sessions by day
   var byDay={};
   DAYS.forEach(function(d){byDay[d]=[];});
   sessions.forEach(function(s){if(byDay[s.day])byDay[s.day].push(s);});
 
-  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem">';
-  DAYS.forEach(function(day,i){
-    var daySessions=byDay[day]||[];
-    var dt=classifyNutrDay(daySessions);
-    var nutr=NUTR_PLAN[dt]||NUTR_PLAN.easy;
-    var tc=tc_map[dt]||'#4a9bbe';
-    var delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
+  // Build day data
+  var dayData=DAYS.map(function(day,i){
+    var ds=byDay[day]||[];
+    var dt=classifyNutrDay(ds);
+    return {day:day,full:DAY_FULL[i],sessions:ds,dt:dt,nutr:NUTR_PLAN[dt]||NUTR_PLAN.easy,meals:MEAL_ADJUST[dt]||MEAL_ADJUST.easy,tc:tc_map[dt]||'#4a9bbe'};
+  });
 
-    html+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden">';
-    // Header
-    html+='<div style="background:'+tc+'18;border-bottom:1px solid '+tc+'30;padding:.6rem .875rem;display:flex;align-items:center;justify-content:space-between">';
-    html+='<div><div style="font-size:13px;font-weight:700;color:var(--text)">'+DAY_FULL[i]+'</div>';
-    if(daySessions.length){
-      html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">'+daySessions.map(function(s){return (SPORT_ICON[s.sport]||'')+'&nbsp;'+s.desc.split('—')[0].trim();}).join(' · ')+'</div>';
+  // Week overview cards
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;margin-bottom:1.5rem">';
+  dayData.forEach(function(dd,i){
+    var nutr=dd.nutr, tc=dd.tc;
+    var delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
+    html+='<div onclick="showNutrDay('+i+')" style="cursor:pointer;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s" '+
+          'onmouseover="this.style.borderColor=''+tc+''" onmouseout="this.style.borderColor='var(--border)'">';
+    html+='<div style="background:'+tc+'18;border-bottom:1px solid '+tc+'30;padding:.55rem .75rem;display:flex;align-items:center;justify-content:space-between">';
+    html+='<div><div style="font-size:13px;font-weight:700;color:var(--text)">'+dd.full+'</div>';
+    if(dd.sessions.length){
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:1px">'+dd.sessions.map(function(s){return (SPORT_ICON[s.sport]||'');}).join(' ')+'</div>';
     } else {
-      html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">Descanso</div>';
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:1px">Descanso</div>';
     }
     html+='</div>';
-    html+='<span style="background:'+tc+'25;color:'+tc+';font-size:10px;font-weight:700;padding:.2rem .6rem;border-radius:10px;white-space:nowrap">'+nutr.label+'</span>';
+    html+='<span style="background:'+tc+'25;color:'+tc+';font-size:9px;font-weight:700;padding:.15rem .5rem;border-radius:8px;white-space:nowrap">'+nutr.label+'</span>';
     html+='</div>';
-    // Macros
-    html+='<div style="padding:.75rem .875rem">';
-    html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.6rem">';
-    [{v:nutr.kcal,l:'kcal',c:tc},{v:nutr.carb+'g',l:'carbo',c:'#4a9bbe'},{v:nutr.prot+'g',l:'prot',c:'#2ecc71'},{v:nutr.fat+'g',l:'gord',c:'#f39c12'}].forEach(function(m){
-      html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+m.c+'">'+m.v+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">'+m.l+'</div></div>';
+    html+='<div style="padding:.6rem .75rem">';
+    html+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.3rem;margin-bottom:.4rem">';
+    [{v:nutr.kcal+' kcal',c:tc},{v:nutr.carb+'g carbo',c:'#4a9bbe'},{v:nutr.prot+'g prot',c:'#2ecc71'},{v:nutr.fat+'g gord',c:'#f39c12'}].forEach(function(m){
+      html+='<div style="font-size:11px;font-weight:700;color:'+m.c+'">'+m.v+'</div>';
     });
     html+='</div>';
-    // Tips (first 2 only)
-    html+='<div style="font-size:11px;color:var(--text3);border-top:0.5px solid var(--border);padding-top:.5rem">';
-    nutr.tips.slice(0,2).forEach(function(t){
-      html+='<div style="display:flex;gap:.4rem;margin-bottom:.2rem"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';
-    });
-    html+='<div style="margin-top:.3rem;color:var(--text3)">💧 '+( nutr.water/1000).toFixed(1)+'L &nbsp;·&nbsp; '+ds+' kcal</div>';
-    html+='</div></div></div>';
+    html+='<div style="font-size:10px;color:var(--text3)">💧 '+(nutr.water/1000).toFixed(1)+'L &nbsp;·&nbsp; <span style="color:'+tc+'">'+ds+'</span> kcal</div>';
+    html+='</div>';
+    html+='<div style="padding:.3rem .75rem .5rem;border-top:0.5px solid var(--border);font-size:10px;color:'+tc+';text-align:center">Toque para ver as refeições →</div>';
+    html+='</div>';
   });
   html+='</div>';
 
-  // Meals table below
-  html+='<div style="margin-top:1.5rem"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">Refeições base (Monah Dias)</div>';
-  html+='<div style="display:flex;flex-direction:column;gap:.35rem">';
-  NUTR_MEALS.forEach(function(m){
-    html+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.5rem .875rem;display:flex;align-items:center;gap:.75rem">';
-    html+='<span style="font-size:11px;color:var(--text3);width:2.5rem;text-align:right;flex-shrink:0">'+m.time+'</span>';
-    html+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+m.name+'</div><div style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.desc+'</div></div>';
-    html+='<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:700;color:var(--ice)">'+m.kcal+' kcal</div><div style="font-size:10px;color:var(--text3)">'+m.carb+'c '+m.prot+'p '+m.fat+'g</div></div>';
+  // Detail panel (hidden initially)
+  html+='<div id="nutr-detail" style="display:none;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:1rem;margin-bottom:1rem">';
+  html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">';
+  html+='<div id="nutr-detail-title" style="font-size:15px;font-weight:700;color:var(--text)"></div>';
+  html+='<button onclick="document.getElementById('nutr-detail').style.display='none'" '+
+        'style="background:none;border:0.5px solid var(--border2);border-radius:6px;color:var(--text3);cursor:pointer;font-size:11px;padding:.25rem .6rem">✕ Fechar</button>';
+  html+='</div>';
+  html+='<div id="nutr-detail-body"></div>';
+  html+='</div>';
+
+  el.innerHTML=html;
+
+  // Store dayData for click handler
+  el._dayData=dayData;
+}
+
+function showNutrDay(idx) {
+  var el=document.getElementById('nutri-body');
+  if(!el||!el._dayData)return;
+  var dd=el._dayData[idx];
+  var tc=dd.tc, nutr=dd.nutr, meals=dd.meals;
+  var panel=document.getElementById('nutr-detail');
+  var titleEl=document.getElementById('nutr-detail-title');
+  var bodyEl=document.getElementById('nutr-detail-body');
+  if(!panel||!titleEl||!bodyEl)return;
+
+  var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
+  var sessionStr=dd.sessions.length ? dd.sessions.map(function(s){return (SPORT_ICON[s.sport]||'')+' '+s.desc.split('—')[0].trim()+(s.dur?' ('+s.dur+')':'');}).join(' + ') : 'Descanso';
+
+  titleEl.innerHTML=dd.full+' &nbsp;<span style="background:'+tc+'20;color:'+tc+';font-size:10px;font-weight:700;padding:.2rem .6rem;border-radius:8px">'+nutr.label+'</span>';
+
+  // Session info
+  var html='';
+  if(dd.sessions.length){
+    html+='<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;padding:.4rem .6rem;background:var(--bg);border-radius:6px">📅 '+sessionStr+'</div>';
+  }
+
+  // Macro summary bar
+  html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1rem">';
+  [{v:nutr.kcal,l:'Calorias',u:'kcal',c:tc},{v:nutr.carb+'g',l:'Carboidratos',u:Math.round(nutr.carb*4/nutr.kcal*100)+'%',c:'#4a9bbe'},{v:nutr.prot+'g',l:'Proteínas',u:Math.round(nutr.prot*4/nutr.kcal*100)+'%',c:'#2ecc71'},{v:nutr.fat+'g',l:'Gorduras',u:Math.round(nutr.fat*9/nutr.kcal*100)+'%',c:'#f39c12'}].forEach(function(m){
+    html+='<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem;text-align:center">';
+    html+='<div style="font-size:16px;font-weight:700;color:'+m.c+'">'+m.v+'</div>';
+    html+='<div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.15rem 0">'+m.l+'</div>';
+    html+='<div style="font-size:10px;color:var(--text2)">'+m.u+'</div></div>';
+  });
+  html+='</div>';
+
+  // Tips
+  html+='<div style="background:'+tc+'10;border-left:3px solid '+tc+';border-radius:0 6px 6px 0;padding:.6rem .875rem;margin-bottom:1rem">';
+  nutr.tips.forEach(function(t){
+    html+='<div style="display:flex;gap:.4rem;font-size:11px;color:var(--text2);margin-bottom:.25rem"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';
+  });
+  html+='<div style="font-size:11px;color:var(--text3);margin-top:.3rem">💧 Hidratação: <strong style="color:'+tc+'">'+(nutr.water/1000).toFixed(1)+'L</strong></div>';
+  html+='</div>';
+
+  // Meals adjusted
+  html+='<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">O que comer hoje</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:.4rem">';
+  meals.forEach(function(m){
+    html+='<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.65rem .875rem;display:flex;align-items:center;gap:.75rem">';
+    html+='<span style="font-size:11px;color:var(--text3);width:2.5rem;text-align:right;flex-shrink:0;font-weight:600">'+m.t+'</span>';
+    html+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--text)">'+m.n+'</div>';
+    html+='<div style="font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4">'+m.d+'</div></div>';
+    html+='<div style="text-align:right;flex-shrink:0;min-width:60px">';
+    html+='<div style="font-size:12px;font-weight:700;color:var(--ice)">'+m.k+' kcal</div>';
+    html+='<div style="font-size:10px;color:var(--text3)">'+m.c+'c '+m.p+'p '+m.g+'g</div></div>';
     html+='</div>';
   });
-  html+='</div></div>';
-  el.innerHTML=html;
+  html+='</div>';
+
+  bodyEl.innerHTML=html;
+  panel.style.display='block';
+  // Scroll to panel
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
 const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
