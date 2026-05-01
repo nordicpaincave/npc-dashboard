@@ -352,37 +352,72 @@ function classifyNutrDay(sessions) {
   return 'easy';
 }
 function renderNutricao() {
-  const key=getA(), el=document.getElementById('nutri-body');
+  var key=getA(), el=document.getElementById('nutri-body');
   if(!el)return;
   if(!NUTR_ATHLETES.includes(key)){
     el.innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)"><div style="font-size:2rem;margin-bottom:.75rem">🥗</div><div>Plano nutricional não cadastrado para este atleta.</div></div>';
     return;
   }
-  const d=DB[key], sessions=d?(d.sessions||[]):[], dt=classifyNutrDay(sessions);
-  const nutr=NUTR_PLAN[dt]||NUTR_PLAN.easy;
-  const delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
-  const dias=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-  const tc={rest:'#7a9ab8',easy:'#2ecc71',threshold:'#4a9bbe',double:'#4a9bbe',vo2max:'#e85d24',long:'#f39c12',pre_race:'#e85d24',race_day:'#e74c3c',post_race:'#2ecc71'}[dt]||'#4a9bbe';
-  const today=new Date();
-  el.innerHTML=
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">'+
-      '<div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Plano Nutricional — '+dias[today.getDay()]+'</div>'+
-      '<div style="font-size:13px;color:var(--text2)">Monah Dias · CRN 7119 PR · emitido em 06/04/2026</div></div>'+
-      '<span style="background:'+tc+'18;border:1px solid '+tc+'40;border-radius:20px;color:'+tc+';font-size:11px;font-weight:700;padding:.3rem .9rem">'+nutr.label+'</span>'+
-    '</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem">'+
-      [{v:nutr.kcal,l:'Calorias',u:'kcal',c:tc},{v:nutr.carb+'g',l:'Carboidratos',u:Math.round(nutr.carb*4/nutr.kcal*100)+'%',c:'#4a9bbe'},{v:nutr.prot+'g',l:'Proteínas',u:Math.round(nutr.prot*4/nutr.kcal*100)+'%',c:'#2ecc71'},{v:nutr.fat+'g',l:'Gorduras',u:Math.round(nutr.fat*9/nutr.kcal*100)+'%',c:'#f39c12'}]
-      .map(function(m){return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem;text-align:center"><div style="font-size:20px;font-weight:700;color:'+m.c+'">'+m.v+'</div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.2rem 0">'+m.l+'</div><div style="font-size:11px;color:var(--text2)">'+m.u+'</div></div>';}).join('')+
-    '</div>'+
-    '<div style="background:'+tc+'10;border:1px solid '+tc+'25;border-radius:var(--radius);padding:.875rem 1rem;margin-bottom:1rem">'+
-      '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">Orientações para hoje</div>'+
-      nutr.tips.map(function(t){return '<div style="display:flex;align-items:flex-start;gap:.5rem;font-size:12px;color:var(--text2);margin-bottom:.3rem;line-height:1.5"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';}).join('')+
-      '<div style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid '+tc+'20;font-size:12px;color:var(--text2)">💧 Hidratação: <strong style="color:'+tc+'">'+(nutr.water/1000).toFixed(1)+'L</strong> · '+ds+' kcal vs base de '+NUTR_BASE+' kcal</div>'+
-    '</div>'+
-    '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">Refeições base</div>'+
-    '<div style="display:flex;flex-direction:column;gap:.4rem">'+
-      NUTR_MEALS.map(function(m){return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem .875rem;display:flex;align-items:center;gap:.75rem"><span style="font-size:11px;color:var(--text3);width:2.5rem;text-align:right;flex-shrink:0">'+m.time+'</span><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+m.name+'</div><div style="font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.desc+'</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:700;color:var(--ice)">'+m.kcal+' kcal</div><div style="font-size:10px;color:var(--text3)">'+m.carb+'c '+m.prot+'p '+m.fat+'g</div></div></div>';}).join('')+
-    '</div>';
+  var d=DB[key], sessions=d?(d.sessions||[]):[];
+  var DAYS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  var DAY_FULL=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+  var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
+  var tc_map={rest:'#7a9ab8',easy:'#2ecc71',threshold:'#4a9bbe',double:'#4a9bbe',vo2max:'#e85d24',long:'#f39c12',pre_race:'#e85d24',race_day:'#e74c3c',post_race:'#2ecc71'};
+
+  // Group sessions by day
+  var byDay={};
+  DAYS.forEach(function(d){byDay[d]=[];});
+  sessions.forEach(function(s){if(byDay[s.day])byDay[s.day].push(s);});
+
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem">';
+  DAYS.forEach(function(day,i){
+    var daySessions=byDay[day]||[];
+    var dt=classifyNutrDay(daySessions);
+    var nutr=NUTR_PLAN[dt]||NUTR_PLAN.easy;
+    var tc=tc_map[dt]||'#4a9bbe';
+    var delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
+
+    html+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden">';
+    // Header
+    html+='<div style="background:'+tc+'18;border-bottom:1px solid '+tc+'30;padding:.6rem .875rem;display:flex;align-items:center;justify-content:space-between">';
+    html+='<div><div style="font-size:13px;font-weight:700;color:var(--text)">'+DAY_FULL[i]+'</div>';
+    if(daySessions.length){
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">'+daySessions.map(function(s){return (SPORT_ICON[s.sport]||'')+'&nbsp;'+s.desc.split('—')[0].trim();}).join(' · ')+'</div>';
+    } else {
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">Descanso</div>';
+    }
+    html+='</div>';
+    html+='<span style="background:'+tc+'25;color:'+tc+';font-size:10px;font-weight:700;padding:.2rem .6rem;border-radius:10px;white-space:nowrap">'+nutr.label+'</span>';
+    html+='</div>';
+    // Macros
+    html+='<div style="padding:.75rem .875rem">';
+    html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.6rem">';
+    [{v:nutr.kcal,l:'kcal',c:tc},{v:nutr.carb+'g',l:'carbo',c:'#4a9bbe'},{v:nutr.prot+'g',l:'prot',c:'#2ecc71'},{v:nutr.fat+'g',l:'gord',c:'#f39c12'}].forEach(function(m){
+      html+='<div style="text-align:center"><div style="font-size:14px;font-weight:700;color:'+m.c+'">'+m.v+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">'+m.l+'</div></div>';
+    });
+    html+='</div>';
+    // Tips (first 2 only)
+    html+='<div style="font-size:11px;color:var(--text3);border-top:0.5px solid var(--border);padding-top:.5rem">';
+    nutr.tips.slice(0,2).forEach(function(t){
+      html+='<div style="display:flex;gap:.4rem;margin-bottom:.2rem"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';
+    });
+    html+='<div style="margin-top:.3rem;color:var(--text3)">💧 '+( nutr.water/1000).toFixed(1)+'L &nbsp;·&nbsp; '+ds+' kcal</div>';
+    html+='</div></div></div>';
+  });
+  html+='</div>';
+
+  // Meals table below
+  html+='<div style="margin-top:1.5rem"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">Refeições base (Monah Dias)</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:.35rem">';
+  NUTR_MEALS.forEach(function(m){
+    html+='<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.5rem .875rem;display:flex;align-items:center;gap:.75rem">';
+    html+='<span style="font-size:11px;color:var(--text3);width:2.5rem;text-align:right;flex-shrink:0">'+m.time+'</span>';
+    html+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+m.name+'</div><div style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.desc+'</div></div>';
+    html+='<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:700;color:var(--ice)">'+m.kcal+' kcal</div><div style="font-size:10px;color:var(--text3)">'+m.carb+'c '+m.prot+'p '+m.fat+'g</div></div>';
+    html+='</div>';
+  });
+  html+='</div></div>';
+  el.innerHTML=html;
 }
 const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
 const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
