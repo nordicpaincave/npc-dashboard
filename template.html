@@ -338,18 +338,41 @@ const NUTR_MEALS = [
   {time:'20:00',name:'Janta',         kcal:601, carb:72,prot:67,fat:5, desc:'Salada à vontade + 200g vegetal + 150g carbo + 225g frango/peixe ou 150g carne'},
 ];
 const NUTR_BASE = 2750;
+function parseDurMin(dur) {
+  // Converte '1h49', '49min', '1h01' para minutos
+  if (!dur) return 0;
+  var h = dur.match(/(\d+)h/), m = dur.match(/(\d+)min/);
+  return (h ? +h[1]*60 : 0) + (m ? +m[1] : 0);
+}
 function classifyNutrDay(sessions) {
-  if (!sessions||!sessions.length) return 'rest';
-  const t=sessions.map(s=>(s.desc||'').toLowerCase()).join(' ');
-  const n=sessions.length;
-  const dur=sessions.reduce((a,s)=>{const h=(s.dur||'').match(/(\d+)h/),m=(s.dur||'').match(/(\d+)min/);return a+(h?+h[1]*60:0)+(m?+m[1]:0);},0);
-  const isDT=/duplo|dt1|dt2|limiar|threshold/.test(t);
-  const isVO2=/vo2|z3|intervalado/.test(t);
-  if(n>=2&&isDT)return 'double';
-  if(isVO2)return 'vo2max';
-  if(isDT)return 'threshold';
-  if(dur>90)return 'long';
-  return 'easy';
+  if (!sessions || !sessions.length) return 'rest';
+  // Filtrar Other/Alfredson (≤10min)
+  var real = sessions.filter(function(s) {
+    var title = (s.desc || '').toLowerCase();
+    var dur = parseDurMin(s.dur);
+    return !(title.indexOf('other') !== -1 && dur <= 10);
+  });
+  if (!real.length) return 'rest';
+  var titles  = real.map(function(s){ return (s.desc||'').toLowerCase(); }).join(' ');
+  var hasSwim = real.some(function(s){ return s.sport === 'swim'; });
+  var hasBike = real.some(function(s){ return s.sport === 'bike'; });
+  var hasRun  = real.some(function(s){ return s.sport === 'run'; });
+  var hasStr  = real.some(function(s){ return s.sport === 'strength'; });
+  var isDT    = /limiar|threshold|dt1|dt2|duplo|vo2|z3|intervalado/.test(titles);
+  // Duração da bike em minutos
+  var bikeDur = real.filter(function(s){ return s.sport==='bike'; })
+                    .reduce(function(a,s){ return a+parseDurMin(s.dur); }, 0);
+  var runDur  = real.filter(function(s){ return s.sport==='run'; })
+                    .reduce(function(a,s){ return a+parseDurMin(s.dur); }, 0);
+  // Hierarquia
+  if (isDT && hasSwim)  return 'double';
+  if (isDT)             return 'threshold';
+  if (bikeDur >= 120 || (bikeDur >= 90 && hasRun)) return 'long';
+  if (runDur >= 90)     return 'long';
+  if (hasSwim)          return 'threshold'; // natação sempre tem estímulo
+  if (hasStr && !hasSwim && !hasBike && !hasRun) return 'easy';
+  if ((hasBike || hasRun) && !hasSwim) return 'easy';
+  return 'rest';
 }
 function renderNutricao() {
   var key=getA(), el=document.getElementById('nutri-body');
