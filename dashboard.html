@@ -308,23 +308,23 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 04/05/2026 16:02 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 04/05/2026 18:43 (Supabase)</div>
 </div>
 
 <script>
 const DB = {
   "jean": {
     "kpis": {
-      "ctl": 0.0,
-      "atl": 0.0,
-      "tsb": 0.0,
-      "tss_week": 0
+      "ctl": 73.4,
+      "atl": 92.5,
+      "tsb": -19.1,
+      "tss_week": 98
     },
     "kpi_delta": {
-      "ctl": "-73",
-      "atl": "-120",
-      "tsb": "+47",
-      "tss_week": "-508"
+      "ctl": "+0",
+      "atl": "-27",
+      "tsb": "+28",
+      "tss_week": "-409"
     },
     "pmc": {
       "labels": [
@@ -479,7 +479,7 @@ const DB = {
         72.2,
         72.7,
         71.9,
-        null
+        73.4
       ],
       "atl": [
         null,
@@ -556,7 +556,7 @@ const DB = {
         93.5,
         93.1,
         85.6,
-        null
+        92.5
       ],
       "tsb": [
         null,
@@ -633,17 +633,25 @@ const DB = {
         -21.3,
         -20.5,
         -13.7,
-        null
+        -19.1
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Natação"
+      ],
+      "z1": [
+        90
+      ],
+      "z2": [
+        9
+      ],
+      "z3": [
+        1
+      ]
     },
     "vol": {
-      "swim": 0.0,
+      "swim": 1.5,
       "bike": 0.0,
       "run": 0.0,
       "strength": 0.0
@@ -679,9 +687,9 @@ const DB = {
         62,
         66,
         65,
-        0
+        56
       ],
-      "baseline": 64.1,
+      "baseline": 63.8,
       "sleep": [
         8.0,
         7.9,
@@ -696,7 +704,7 @@ const DB = {
         9.0,
         7.5,
         9.8,
-        0
+        7.7
       ],
       "resting_hr": [
         46,
@@ -712,7 +720,7 @@ const DB = {
         48,
         46,
         48,
-        0
+        50
       ],
       "body_battery": [
         58.4,
@@ -727,41 +735,91 @@ const DB = {
         55.9,
         63.2,
         62.4,
-        69.1,
-        0
+        68.0,
+        60.7
       ],
-      "last_hrv": 65,
-      "last_sleep": 9.8,
-      "last_rhr": 48,
-      "last_bb": 69.1
+      "last_hrv": 56,
+      "last_sleep": 7.7,
+      "last_rhr": 50,
+      "last_bb": 60.7
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 1.5,
+        "target": 1.5,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Força",
+        "done": 0.0,
+        "target": 1.0,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
+      {
+        "type": "warn",
+        "msg": "Fadiga acumulada — TSB -19: HRV estável, monitorar próximas 48h"
+      },
+      {
+        "type": "info",
+        "msg": "HRV preservado (62 ms) apesar da fadiga: sistema nervoso respondendo bem"
+      },
+      {
+        "type": "info",
+        "msg": "ATL acima da CTL — 92 vs 73: normal em semana de carga, vigiar fadiga"
+      },
+      {
+        "type": "warn",
+        "msg": "Aderência baixa — 50% do plano executado: identificar causa (lesão, agenda, motivação)"
+      },
       {
         "type": "info",
         "msg": "70.3 Buenos Aires em 21 semanas"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "strength",
+        "desc": "Musculação — Manguito + Cadeia Post. + Core (Sem. 8)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 56,
+        "ht": "dn"
+      },
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 8)",
+        "dur": "1h27",
+        "tss": 99,
+        "zones": "—",
+        "hrv": 56,
+        "ht": "dn"
+      }
+    ],
     "indicators": {
       "form": {
-        "label": "Optimal",
-        "color": "#4db87a",
-        "pos": 58,
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 24,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
-        "label": "Recovering",
-        "color": "#4a9eff",
-        "pos": 3,
+        "label": "Keeping Fit",
+        "color": "#4db87a",
+        "pos": 35,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
-        "label": "Decreasing",
-        "color": "#4db87a",
-        "pos": 3,
+        "label": "Increasing",
+        "color": "#ff7c3a",
+        "pos": 90,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -771,16 +829,16 @@ const DB = {
   },
   "bruno": {
     "kpis": {
-      "ctl": 53.8,
-      "atl": 53.9,
-      "tsb": -0.1,
-      "tss_week": 0
+      "ctl": 54.0,
+      "atl": 55.2,
+      "tsb": -1.2,
+      "tss_week": 9
     },
     "kpi_delta": {
       "ctl": "-1",
-      "atl": "-31",
-      "tsb": "+30",
-      "tss_week": "-459"
+      "atl": "-30",
+      "tsb": "+29",
+      "tss_week": "-450"
     },
     "pmc": {
       "labels": [
@@ -935,7 +993,7 @@ const DB = {
         56.6,
         56.4,
         55.1,
-        53.8
+        54.0
       ],
       "atl": [
         null,
@@ -1012,7 +1070,7 @@ const DB = {
         77.2,
         73.4,
         62.9,
-        53.9
+        55.2
       ],
       "tsb": [
         null,
@@ -1089,19 +1147,27 @@ const DB = {
         -20.6,
         -16.9,
         -7.8,
-        -0.1
+        -1.2
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Corrida"
+      ],
+      "z1": [
+        55
+      ],
+      "z2": [
+        40
+      ],
+      "z3": [
+        5
+      ]
     },
     "vol": {
       "swim": 0.0,
       "bike": 0.0,
-      "run": 0.0,
+      "run": 0.2,
       "strength": 0.0
     },
     "hrv": {
@@ -1197,12 +1263,18 @@ const DB = {
         "done": 0.0,
         "target": 0.2,
         "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 0.2,
+        "target": 0.2,
+        "color": "#4db87a"
       }
     ],
     "alerts": [
       {
         "type": "warn",
-        "msg": "Aderência baixa — 0% do plano executado: identificar causa (lesão, agenda, motivação)"
+        "msg": "Aderência baixa — 50% do plano executado: identificar causa (lesão, agenda, motivação)"
       },
       {
         "type": "info",
@@ -1210,6 +1282,16 @@ const DB = {
       }
     ],
     "sessions": [
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Treadmill Running",
+        "dur": "11min",
+        "tss": 9,
+        "zones": "—",
+        "hrv": 61.1,
+        "ht": "up"
+      },
       {
         "day": "Seg",
         "sport": "bike",
@@ -1225,21 +1307,21 @@ const DB = {
       "form": {
         "label": "Optimal",
         "color": "#4db87a",
-        "pos": 58,
+        "pos": 56,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
         "label": "Recovering",
         "color": "#4a9eff",
-        "pos": 25,
+        "pos": 26,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 5,
+        "pos": 12,
         "start": "Decreasing",
         "end": "Increasing"
       }
