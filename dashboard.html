@@ -308,23 +308,23 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 06/05/2026 14:05 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 06/05/2026 18:31 (Supabase)</div>
 </div>
 
 <script>
 const DB = {
   "jean": {
     "kpis": {
-      "ctl": 0.0,
-      "atl": 0.0,
-      "tsb": 0.0,
-      "tss_week": 219
+      "ctl": 76.0,
+      "atl": 101.7,
+      "tsb": -25.7,
+      "tss_week": 390
     },
     "kpi_delta": {
-      "ctl": "-74",
-      "atl": "-110",
-      "tsb": "+37",
-      "tss_week": "-288"
+      "ctl": "+2",
+      "atl": "-8",
+      "tsb": "+11",
+      "tss_week": "-118"
     },
     "pmc": {
       "labels": [
@@ -478,8 +478,8 @@ const DB = {
         72.7,
         71.9,
         73.5,
-        74.5,
-        null
+        74.8,
+        76.0
       ],
       "atl": [
         null,
@@ -555,8 +555,8 @@ const DB = {
         93.1,
         85.6,
         93.1,
-        96.4,
-        null
+        98.3,
+        101.7
       ],
       "tsb": [
         null,
@@ -632,33 +632,37 @@ const DB = {
         -20.5,
         -13.7,
         -19.6,
-        -21.9,
-        null
+        -23.5,
+        -25.7
       ]
     },
     "zones": {
       "labels": [
         "Natação",
-        "Bike"
+        "Bike",
+        "Corrida"
       ],
       "z1": [
         90,
-        82
+        82,
+        95
       ],
       "z2": [
         9,
-        16
+        16,
+        4
       ],
       "z3": [
         1,
-        2
+        2,
+        1
       ]
     },
     "vol": {
-      "swim": 1.5,
+      "swim": 2.8,
       "bike": 1.6,
-      "run": 0.0,
-      "strength": 1.2
+      "run": 0.9,
+      "strength": 2.5
     },
     "hrv": {
       "labels": [
@@ -691,9 +695,9 @@ const DB = {
         65,
         56,
         59,
-        0
+        49
       ],
-      "baseline": 63.5,
+      "baseline": 63.0,
       "sleep": [
         8,
         6.8,
@@ -708,7 +712,7 @@ const DB = {
         9.8,
         7.7,
         8.5,
-        0
+        6.0
       ],
       "resting_hr": [
         52,
@@ -724,7 +728,7 @@ const DB = {
         48,
         49,
         49,
-        0
+        51
       ],
       "body_battery": [
         30.2,
@@ -739,19 +743,19 @@ const DB = {
         62.4,
         68.0,
         49.4,
-        68.6,
-        0
+        55.8,
+        48.6
       ],
-      "last_hrv": 59,
-      "last_sleep": 8.5,
-      "last_rhr": 49,
-      "last_bb": 68.6
+      "last_hrv": 49,
+      "last_sleep": 6.0,
+      "last_rhr": 51,
+      "last_bb": 48.6
     },
     "adherence": [
       {
         "label": "Natação",
-        "done": 1.5,
-        "target": 1.5,
+        "done": 2.8,
+        "target": 3.0,
         "color": "#4a9eff"
       },
       {
@@ -761,16 +765,26 @@ const DB = {
         "color": "#f5a623"
       },
       {
+        "label": "Corrida",
+        "done": 0.9,
+        "target": 0.9,
+        "color": "#4db87a"
+      },
+      {
         "label": "Força",
-        "done": 1.2,
+        "done": 2.5,
         "target": 2.1,
         "color": "#9b8fff"
       }
     ],
     "alerts": [
       {
-        "type": "ok",
-        "msg": "Forma positiva — TSB +0 com 86% de aderência: semana excelente"
+        "type": "warn",
+        "msg": "Fadiga acumulada — TSB -26 + HRV 87% do baseline: reduzir carga hoje"
+      },
+      {
+        "type": "warn",
+        "msg": "Carga aguda muito acima da crônica — ATL 102 vs CTL 76: semana de pico, planejar descarga"
       },
       {
         "type": "info",
@@ -812,32 +826,52 @@ const DB = {
         "day": "Ter",
         "sport": "strength",
         "desc": "Musculação — Quad + Glúteos + Mobilidade (Sem. 8)",
-        "dur": "—",
-        "tss": 0,
+        "dur": "1h20",
+        "tss": 48,
         "zones": "—",
         "hrv": 59,
+        "ht": "dn"
+      },
+      {
+        "day": "Qua",
+        "sport": "swim",
+        "desc": "Natação — Aula (Sem. 8)",
+        "dur": "1h18",
+        "tss": 86,
+        "zones": "—",
+        "hrv": 49,
+        "ht": "dn"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Corrida Z1 — 55min Base Aeróbia (Sem. 8)",
+        "dur": "56min",
+        "tss": 36,
+        "zones": "—",
+        "hrv": 49,
         "ht": "dn"
       }
     ],
     "indicators": {
       "form": {
-        "label": "Optimal",
-        "color": "#4db87a",
-        "pos": 58,
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 9,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
-        "label": "Recovering",
-        "color": "#4a9eff",
-        "pos": 3,
+        "label": "Keeping Fit",
+        "color": "#4db87a",
+        "pos": 59,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
-        "label": "Decreasing",
-        "color": "#4db87a",
-        "pos": 3,
+        "label": "Increasing",
+        "color": "#ff7c3a",
+        "pos": 72,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -3307,12 +3341,12 @@ const DB = {
         35.3,
         65.2,
         61.5,
-        68.5
+        68.1
       ],
       "last_hrv": 58,
       "last_sleep": 7.6,
       "last_rhr": 55,
-      "last_bb": 68.5
+      "last_bb": 68.1
     },
     "adherence": [
       {
