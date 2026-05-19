@@ -1,759 +1,2081 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NPC Endurance — Como Funciona</title>
-<style>
-:root {
-  --ice:#4a9bbe; --ice-l:#d4eef7; --ice-d:#2e7da0;
-  --fire:#e85d24; --fire-l:#fde8df;
-  --green:#2ecc71; --green-l:#e6f9ee;
-  --amber:#f39c12; --amber-l:#fef6e4;
-  --purple:#9b59b6; --purple-l:#f3e8f9;
-  --dark:#0a0e17; --dark2:#0f1520; --dark3:#141b2d;
-  --text:#c8d8e8; --text2:#7a9ab8; --text3:#4a6278;
-  --border:#1e2d42;
-  --card-bg:rgba(15,21,32,.85);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:var(--dark);
-  color:var(--text);
-  font-family:'Segoe UI',system-ui,sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-/* BG dots */
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background-image:radial-gradient(rgba(74,155,190,.07) 1px,transparent 1px);
-  background-size:32px 32px;
-  pointer-events:none;z-index:0;
-}
-
-/* HEADER */
-header{
-  position:relative;z-index:10;
-  background:var(--dark2);
-  border-bottom:1px solid var(--border);
-  padding:1.25rem 2rem;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:.75rem;
-}
-.brand{display:flex;align-items:center;gap:.75rem}
-.brand-dot{
-  width:12px;height:12px;border-radius:50%;
-  background:var(--ice);
-  box-shadow:0 0 8px var(--ice);
-  animation:pulse 2.5s infinite;
-}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.brand-name{font-size:1rem;font-weight:700;color:var(--ice);letter-spacing:.08em}
-.brand-sub{font-size:.72rem;color:var(--text3);letter-spacing:.04em}
-.kpis{display:flex;gap:2rem;flex-wrap:wrap}
-.kpi{text-align:center}
-.kpi-v{font-size:1.5rem;font-weight:700;color:var(--ice);font-variant-numeric:tabular-nums}
-.kpi-l{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
-
-/* HERO */
-.hero{
-  position:relative;z-index:2;
-  text-align:center;
-  padding:3.5rem 2rem 2rem;
-}
-.hero h1{
-  font-size:clamp(1.6rem,4vw,2.6rem);
-  font-weight:800;
-  line-height:1.15;
-  background:linear-gradient(135deg,var(--ice) 0%,#a8d8f0 60%,var(--fire) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-  margin-bottom:.75rem;
-}
-.hero p{
-  color:var(--text2);
-  font-size:.95rem;
-  max-width:560px;
-  margin:0 auto 2.5rem;
-  line-height:1.7;
-}
-
-/* NAV TABS */
-.tabs{
-  display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;
-  margin-bottom:2.5rem;
-}
-.tab{
-  background:var(--dark2);
-  border:1px solid var(--border);
-  border-radius:6px;
-  color:var(--text2);
-  cursor:pointer;
-  font-size:.8rem;
-  font-weight:600;
-  padding:.45rem 1.1rem;
-  transition:all .2s;
-  letter-spacing:.03em;
-}
-.tab:hover{border-color:var(--ice);color:var(--ice)}
-.tab.active{
-  background:var(--ice);
-  border-color:var(--ice);
-  color:var(--dark);
-}
-
-/* SECTIONS */
-.section{display:none;padding:0 1.5rem 4rem}
-.section.active{display:block}
-
-/* FLOW VIEW */
-.flow{
-  max-width:900px;margin:0 auto;
-  display:flex;flex-direction:column;
-  gap:0;
-}
-.flow-step{
-  display:grid;
-  grid-template-columns:1fr 48px 1fr;
-  align-items:start;
-  gap:0;
-}
-.flow-left,.flow-right{padding:0 1rem 2rem}
-.flow-center{
-  display:flex;flex-direction:column;
-  align-items:center;padding-top:.75rem;
-}
-.flow-dot{
-  width:32px;height:32px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:.85rem;
-  flex-shrink:0;
-}
-.flow-line{
-  width:2px;flex:1;min-height:2rem;
-  background:linear-gradient(to bottom,var(--ice) 0%,transparent 100%);
-  opacity:.4;
-}
-
-/* CARDS */
-.card{
-  background:var(--card-bg);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:1.1rem 1.25rem;
-  transition:border-color .2s,transform .15s;
-}
-.card:hover{border-color:var(--ice);transform:translateY(-2px)}
-.card-icon{font-size:1.4rem;margin-bottom:.5rem}
-.card-title{
-  font-size:.85rem;font-weight:700;
-  color:var(--ice);margin-bottom:.3rem;
-  text-transform:uppercase;letter-spacing:.06em;
-}
-.card-body{font-size:.8rem;color:var(--text2);line-height:1.6}
-.card-body strong{color:var(--text)}
-.badge{
-  display:inline-block;
-  font-size:.65rem;font-weight:600;
-  padding:.15rem .45rem;border-radius:3px;
-  margin:.1rem .15rem 0 0;
-}
-.badge-ice{background:rgba(74,155,190,.15);color:var(--ice)}
-.badge-fire{background:rgba(232,93,36,.15);color:var(--fire)}
-.badge-green{background:rgba(46,204,113,.15);color:var(--green)}
-.badge-amber{background:rgba(243,156,18,.15);color:var(--amber)}
-.badge-purple{background:rgba(155,89,182,.15);color:var(--purple)}
-
-/* PILARES GRID */
-.pilares{
-  max-width:960px;margin:0 auto;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:1.25rem;
-}
-.pilar{
-  background:var(--card-bg);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:1.5rem 1.25rem;
-  transition:all .2s;
-  position:relative;overflow:hidden;
-}
-.pilar::before{
-  content:'';
-  position:absolute;top:0;left:0;right:0;
-  height:3px;
-  background:var(--pilar-color,var(--ice));
-  border-radius:12px 12px 0 0;
-}
-.pilar:hover{border-color:var(--pilar-color,var(--ice));transform:translateY(-3px)}
-.pilar-num{
-  font-size:.65rem;font-weight:700;
-  color:var(--pilar-color,var(--ice));
-  text-transform:uppercase;letter-spacing:.1em;
-  margin-bottom:.25rem;
-}
-.pilar-title{
-  font-size:1.05rem;font-weight:700;
-  color:var(--text);margin-bottom:.6rem;
-}
-.pilar-desc{font-size:.8rem;color:var(--text2);line-height:1.65}
-.pilar-items{margin-top:.8rem;display:flex;flex-direction:column;gap:.35rem}
-.pilar-item{
-  display:flex;align-items:flex-start;gap:.5rem;
-  font-size:.78rem;color:var(--text2);
-}
-.pilar-item::before{
-  content:'→';
-  color:var(--pilar-color,var(--ice));
-  flex-shrink:0;margin-top:.05rem;
-}
-
-/* JOURNEY */
-.journey{
-  max-width:900px;margin:0 auto;
-}
-.journey-line{
-  position:relative;
-  padding-left:3rem;
-}
-.journey-line::before{
-  content:'';
-  position:absolute;left:.85rem;top:0;bottom:0;
-  width:2px;
-  background:linear-gradient(to bottom,var(--ice),var(--fire) 60%,var(--green));
-  opacity:.35;
-}
-.journey-event{
-  position:relative;margin-bottom:1.5rem;
-}
-.journey-event::before{
-  content:'';
-  position:absolute;left:-2.15rem;top:.3rem;
-  width:12px;height:12px;border-radius:50%;
-  background:var(--ev-color,var(--ice));
-  box-shadow:0 0 6px var(--ev-color,var(--ice));
-}
-.journey-when{
-  font-size:.65rem;text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--text3);margin-bottom:.2rem;
-}
-.journey-title{
-  font-size:.9rem;font-weight:700;
-  color:var(--text);margin-bottom:.25rem;
-}
-.journey-desc{font-size:.8rem;color:var(--text2);line-height:1.6}
-
-/* TOOLS */
-.tools-grid{
-  max-width:900px;margin:0 auto;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:1rem;
-}
-.tool{
-  background:var(--card-bg);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:1.1rem;
-  display:flex;flex-direction:column;gap:.5rem;
-  transition:all .2s;
-}
-.tool:hover{border-color:var(--tool-color,var(--ice));transform:translateY(-2px)}
-.tool-icon{
-  width:36px;height:36px;border-radius:8px;
-  background:rgba(74,155,190,.1);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;flex-shrink:0;
-}
-.tool-name{font-size:.8rem;font-weight:700;color:var(--text)}
-.tool-desc{font-size:.75rem;color:var(--text2);line-height:1.5;flex:1}
-.tool-status{
-  font-size:.65rem;font-weight:600;
-  padding:.15rem .4rem;border-radius:3px;
-  align-self:flex-start;
-}
-.status-live{background:rgba(46,204,113,.15);color:var(--green)}
-.status-dev{background:rgba(243,156,18,.15);color:var(--amber)}
-
-/* SECTION TITLE */
-.section-title{
-  text-align:center;
-  margin-bottom:2rem;
-}
-.section-title h2{
-  font-size:1.4rem;font-weight:700;
-  color:var(--text);margin-bottom:.4rem;
-}
-.section-title p{font-size:.85rem;color:var(--text2);max-width:520px;margin:0 auto}
-
-/* RESPONSIVE */
-@media(max-width:640px){
-  .flow-step{grid-template-columns:1fr}
-  .flow-center{display:none}
-  .flow-right,.flow-left{padding:0 0 1.25rem}
-  header{padding:1rem}
-  .kpis{gap:1rem}
-  .kpi-v{font-size:1.1rem}
-  .hero{padding:2rem 1rem 1rem}
-  .section{padding:0 1rem 3rem}
-  .pilares{grid-template-columns:1fr}
-  .tools-grid{grid-template-columns:1fr 1fr}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPC Endurance — Dashboard de Treinos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0f1117;--bg2:#171b24;--bg3:#1e2333;
+      --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+      --text:#eef0f5;--text2:#8b90a0;--text3:#565c70;
+      --blue:#4a9eff;--orange:#ff7c3a;--green:#4db87a;--purple:#9b8fff;--amber:#f5a623;--red:#ff5252;
+      --radius:10px;--radius-lg:14px;
+    }
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+    .page{max-width:1280px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+    /* Header */
+    .hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:1.25rem;border-bottom:0.5px solid var(--border);margin-bottom:1.5rem}
+    .logo-badge{font-size:11px;font-weight:700;letter-spacing:.12em;background:var(--orange);color:#fff;padding:4px 8px;border-radius:6px}
+    .logo-title{font-size:15px;font-weight:600;margin-left:8px}
+    .logo-sub{font-size:12px;color:var(--text2);margin-top:2px}
+    .ctrls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .tab-group{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+    .tab-btn{font-size:12px;font-weight:500;padding:7px 14px;background:transparent;border:none;cursor:pointer;color:var(--text2);transition:background .15s,color .15s;white-space:nowrap}
+    .tab-btn.active{background:var(--bg3);color:var(--text)}
+    .tab-btn:hover:not(.active){background:rgba(255,255,255,.04)}
+    select{font-size:12px;color:var(--text);background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:7px 10px;height:34px;cursor:pointer;outline:none}
+    select option{background:var(--bg2)}
+    /* Alerts */
+    .alerts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+    .alert-pill{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;padding:6px 12px;border-radius:var(--radius);border:0.5px solid}
+    .alert-icon{font-size:11px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700}
+    .a-danger{background:rgba(255,82,82,.1);color:#ff8080;border-color:rgba(255,82,82,.3)}
+    .a-danger .alert-icon{background:rgba(255,82,82,.2);color:var(--red)}
+    .a-warn{background:rgba(245,166,35,.1);color:#f5c060;border-color:rgba(245,166,35,.3)}
+    .a-warn .alert-icon{background:rgba(245,166,35,.2);color:var(--amber)}
+    .a-ok{background:rgba(77,184,122,.1);color:#6fcf97;border-color:rgba(77,184,122,.3)}
+    .a-ok .alert-icon{background:rgba(77,184,122,.2);color:var(--green)}
+    .a-info{background:rgba(74,158,255,.1);color:#7bbdff;border-color:rgba(74,158,255,.3)}
+    .a-info .alert-icon{background:rgba(74,158,255,.2);color:var(--blue)}
+    /* KPI */
+    .kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+    .kpi{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;position:relative;cursor:default}
+    .kpi:hover{border-color:var(--border2)}
+    .kpi-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .kpi-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .kpi:hover .kpi-tooltip{display:block}
+    .kpi.hl{border-color:var(--border2);background:var(--bg3)}
+    .kpi-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+    .kpi-value{font-size:26px;font-weight:600;color:var(--text);line-height:1}
+    .kpi-delta{font-size:11px;margin-top:5px}
+    .kpi-sub{font-size:10px;color:var(--text2);margin-top:5px;line-height:1.5}
+    .up{color:var(--green)}.dn{color:#ff7c3a}.nt{color:var(--text3)}
+    /* Cards */
+    .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem}
+    .card-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.875rem}
+    .card-title-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.875rem}
+    .card-title-row .card-title{margin-bottom:0}
+    .row1{margin-bottom:1.25rem}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+    .row3{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+    .row4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--text2)}
+    .legend span{display:flex;align-items:center;gap:5px}
+    .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+    /* Adherence */
+    .adh-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .adh-label{font-size:11px;color:var(--text2);width:60px;flex-shrink:0}
+    .adh-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden}
+    .adh-fill{height:100%;border-radius:4px;transition:width .5s}
+    .adh-pct{font-size:11px;font-weight:600;width:34px;text-align:right;flex-shrink:0}
+    .adh-detail{font-size:10px;color:var(--text3);width:90px;flex-shrink:0;text-align:right}
+    /* Sessions table */
+    .stbl{width:100%;border-collapse:collapse;font-size:12px}
+    .stbl th{text-align:left;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:0 10px 10px 0;border-bottom:0.5px solid var(--border)}
+    .stbl td{padding:9px 10px 9px 0;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle}
+    .stbl tr:last-child td{border-bottom:none}
+    .stbl tr:hover td{background:rgba(255,255,255,.025)}
+    .badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px}
+    .b-swim{background:rgba(74,158,255,.18);color:#7bbdff}
+    .b-bike{background:rgba(245,166,35,.18);color:#f5c060}
+    .b-run{background:rgba(77,184,122,.18);color:#6fcf97}
+    .b-strength{background:rgba(155,143,255,.18);color:#c4bbff}
+    /* Comparativo */
+    .cmp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.25rem}
+    .cmp-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem}
+    .cmp-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:.625rem;padding-bottom:.625rem;border-bottom:0.5px solid var(--border);padding-left:10px}
+    .cmp-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px;border-bottom:0.5px solid var(--border)}
+    .cmp-row:last-child{border-bottom:none}
+    .cmp-k{color:var(--text2)}.cmp-v{font-weight:600;color:var(--text)}
+    .section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin:0 0 .875rem}
+    /* Wellness mini cards */
+    .well-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+    .well-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;position:relative;cursor:default}
+    .well-card:hover{border-color:var(--border2)}
+    .well-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .well-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .well-card:hover .well-tooltip{display:block}
+    .well-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+    .well-value{font-size:22px;font-weight:600;color:var(--text);line-height:1}
+    .well-sub{font-size:10px;color:var(--text2);margin-top:4px}
+    /* Calendar */
+    .cal-week{margin-bottom:1.5rem}
+    .cal-week-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .cal-week-badge{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--text3)}
+    .cal-week-badge.current{background:rgba(74,158,255,.15);color:var(--blue)}
+    .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px;min-height:80px}
+    .cal-day-label{font-size:10px;color:var(--text3);margin-bottom:6px}
+    .cal-session{font-size:10px;padding:3px 6px;border-radius:4px;margin-bottom:3px;line-height:1.3;cursor:default}
+    .cal-session.done{opacity:1}
+    .cal-session.planned{opacity:0.55;border:0.5px dashed}
+    .cal-session.swim-done{background:rgba(74,158,255,.18);color:#7bbdff}
+    .cal-session.bike-done{background:rgba(245,166,35,.18);color:#f5c060}
+    .cal-session.run-done{background:rgba(77,184,122,.18);color:#6fcf97}
+    .cal-session.strength-done{background:rgba(155,143,255,.18);color:#c4bbff}
+    .cal-session.swim-planned{background:transparent;border-color:#4a9eff;color:#4a9eff}
+    .cal-session.bike-planned{background:transparent;border-color:#f5a623;color:#f5a623}
+    .cal-session.run-planned{background:transparent;border-color:#4db87a;color:#4db87a}
+    .cal-session.strength-planned{background:transparent;border-color:#9b8fff;color:#9b8fff}
+    /* Macro plan */
+    .macro-timeline{position:relative;margin-bottom:2rem}
+    .macro-bar{display:flex;height:40px;border-radius:var(--radius);overflow:hidden;margin-bottom:12px;cursor:pointer}
+    .macro-phase{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;transition:filter .15s;cursor:pointer;position:relative}
+    .macro-phase:hover{filter:brightness(1.15)}
+    .macro-phase.active{outline:2px solid #fff;outline-offset:-2px}
+    .macro-weeks{display:flex;gap:3px;margin-bottom:1.5rem;flex-wrap:wrap}
+    .macro-week{width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;cursor:pointer;transition:transform .1s}
+    .macro-week:hover{transform:scale(1.15)}
+    .macro-week.past{opacity:.5}
+    .macro-week.current{outline:2px solid #fff;outline-offset:1px}
+    .phase-detail{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem;margin-top:.5rem}
+    .phase-detail h3{font-size:15px;font-weight:600;margin-bottom:.75rem}
+    .phase-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:1rem;font-size:12px;color:var(--text2)}
+    .phase-meta span b{color:var(--text);font-weight:600}
+    .phase-goals{font-size:13px;color:var(--text2);line-height:1.8}
+    .phase-goals li{margin-bottom:4px}
+    /* Indicators */
+    .ind-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+    .ind-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem;position:relative;cursor:default}
+    .ind-card:hover{border-color:var(--border2)}
+    .ind-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+    .ind-value{font-size:17px;font-weight:700;margin-bottom:10px}
+    .ind-track{position:relative;height:7px;border-radius:4px;margin-bottom:6px}
+    .ind-pointer{position:absolute;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+    .ind-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+    .ind-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.6;width:260px;max-width:calc(100vw - 32px);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+    .ind-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e2333}
+    .ind-card:hover .ind-tooltip{display:block}
+    @media(max-width:640px){.ind-grid{grid-template-columns:1fr}}
+    /* Footer */
+    .footer{margin-top:3rem;padding-top:1rem;border-top:0.5px solid var(--border);text-align:center;font-size:11px;color:var(--text3)}
+    @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.row3,.cmp-grid{grid-template-columns:1fr 1fr}.well-grid,.row4{grid-template-columns:repeat(2,1fr)}.cal-days{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:640px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.row2,.row3,.cmp-grid{grid-template-columns:1fr}.well-grid,.row4{grid-template-columns:repeat(2,1fr)}.adh-detail{display:none}.cal-days{grid-template-columns:repeat(2,1fr)}}
+  </style>
 </head>
 <body>
-
-<header>
-  <div class="brand">
-    <div class="brand-dot"></div>
+<div class="page">
+  <div class="hdr">
     <div>
-      <div class="brand-name">NPC ENDURANCE</div>
-      <div class="brand-sub">Nordic Pain Cave · Método Norueguês</div>
+      <div style="display:flex;align-items:center">
+        <span class="logo-badge">NPC</span>
+        <span class="logo-title">Endurance</span>
+      </div>
+      <div class="logo-sub" id="logo-sub">Dashboard de Treinos · NPC Endurance</div>
+    </div>
+    <div class="ctrls">
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
+        <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
+        <button class="tab-btn" onclick="setView('macro',this)">Plano Macro</button>
+        <button class="tab-btn" id="tab-btn-nutri" onclick="setView('nutricao',this)">Nutrição</button>
+      </div>
+      <select id="sel-athlete" onchange="updateDash()">
+        <option value="bruno">Bruno Trevisan</option>
+        <option value="jean">Jean Romano</option>
+        <option value="gabriel">Gabriel Antunes</option>
+        <option value="rafael">Rafael Lemos</option>
+        <option value="simony">Simony Huck</option>
+        <option value="clara">Clara Helena</option>
+      </select>
     </div>
   </div>
-  <a href="atleta.html?mode=treinador" style="
-    background:rgba(232,93,36,.12);
-    border:1px solid rgba(232,93,36,.3);
-    border-radius:8px;
-    color:#e85d24;
-    cursor:pointer;
-    font-size:.78rem;
-    font-weight:600;
-    padding:.45rem 1rem;
-    text-decoration:none;
-    white-space:nowrap;
-    transition:all .2s;
-    display:flex;align-items:center;gap:.4rem;
-  " onmouseover="this.style.background='rgba(232,93,36,.22)';this.style.borderColor='#e85d24'"
-     onmouseout="this.style.background='rgba(232,93,36,.12)';this.style.borderColor='rgba(232,93,36,.3)'">
-    &#9654; Área do Treinador
-  </a>
-  <a href="atleta.html" style="
-    background:rgba(74,155,190,.12);
-    border:1px solid rgba(74,155,190,.3);
-    border-radius:8px;
-    color:var(--ice);
-    cursor:pointer;
-    font-size:.78rem;
-    font-weight:600;
-    padding:.45rem 1rem;
-    text-decoration:none;
-    white-space:nowrap;
-    transition:all .2s;
-    display:flex;align-items:center;gap:.4rem;
-  " onmouseover="this.style.background='rgba(74,155,190,.22)';this.style.borderColor='var(--ice)'"
-     onmouseout="this.style.background='rgba(74,155,190,.12)';this.style.borderColor='rgba(74,155,190,.3)'">
-    &#9654; Área do Atleta
-  </a>
-  <div class="kpis">
-    <div class="kpi"><div class="kpi-v">6</div><div class="kpi-l">Atletas</div></div>
-    <div class="kpi"><div class="kpi-v">576</div><div class="kpi-l">Treinos</div></div>
-    <div class="kpi"><div class="kpi-v">383</div><div class="kpi-l">Dias PMC</div></div>
-    <div class="kpi"><div class="kpi-v">88</div><div class="kpi-l">Tabelas DB</div></div>
-  </div>
-</header>
 
-<div class="hero">
-  <h1>Treinamento inteligente.<br>Dados reais. Resultado.</h1>
-  <p>O NPC Endurance combina o Método Norueguês com tecnologia de análise de dados para prescrever, monitorar e ajustar o treinamento de cada atleta individualmente.</p>
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('pilares')">Os 5 Pilares</button>
-    <button class="tab" onclick="showTab('fluxo')">Fluxo Semanal</button>
-    <button class="tab" onclick="showTab('jornada')">Jornada do Atleta</button>
-    <button class="tab" onclick="showTab('ferramentas')">Ferramentas</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB: PILARES -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="section active" id="tab-pilares">
-  <div class="section-title">
-    <h2>Os 5 Pilares do Sistema NPC</h2>
-    <p>Cada pilar trabalha de forma integrada. Nenhum funciona sozinho.</p>
-  </div>
-  <div class="pilares">
-
-    <div class="pilar" style="--pilar-color:#4a9bbe">
-      <div class="pilar-num">Pilar 1</div>
-      <div class="pilar-title">📊 Dados & Monitoramento</div>
-      <div class="pilar-desc">Todo treino é registrado e analisado. O sistema lê os dados do TrainingPeaks e Garmin automaticamente, calculando CTL, ATL, TSB e decoupling em tempo real.</div>
-      <div class="pilar-items">
-        <div class="pilar-item">HRV diário via Garmin / Polar</div>
-        <div class="pilar-item">Sono, FC de repouso, body battery</div>
-        <div class="pilar-item">PMC (CTL/ATL/TSB) calculado diariamente</div>
-        <div class="pilar-item">576 treinos históricos no banco</div>
+  <!-- Individual -->
+  <div id="view-individual">
+    <div id="alerts-bar" class="alerts"></div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="ind-grid" id="ind-grid"></div>
+    <div class="card row1">
+      <div class="card-title">Tendência de carga — CTL / ATL / TSB (75 dias)</div>
+      <div class="legend" id="pmc-legend"></div>
+      <div style="position:relative;height:190px"><canvas id="pmc-chart"></canvas></div>
+    </div>
+    <!-- Wellness -->
+    <div class="well-grid" id="well-grid"></div>
+    <div class="row3">
+      <div class="card">
+        <div class="card-title">HRV — 14 dias</div>
+        <div class="legend" id="hrv-legend"></div>
+        <div style="position:relative;height:180px"><canvas id="hrv-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Sono — 14 dias (horas)</div>
+        <div style="position:relative;height:180px"><canvas id="sleep-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">FC repouso — 14 dias</div>
+        <div style="position:relative;height:180px"><canvas id="hr-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Body Battery — 14 dias</div>
+        <div style="position:relative;height:180px"><canvas id="batt-chart"></canvas></div>
+        <p id="batt-nodata" style="display:none;color:var(--text3);font-size:12px;padding:1rem 0">Body Battery indisponível</p>
       </div>
     </div>
-
-    <div class="pilar" style="--pilar-color:#e85d24">
-      <div class="pilar-num">Pilar 2</div>
-      <div class="pilar-title">🧬 Fisiologia Individual</div>
-      <div class="pilar-desc">Cada atleta tem um passaporte fisiológico com LT1, LT2, FTP, CSS e VO2max calibrados. As zonas de treino são individuais — não genéricas.</div>
-      <div class="pilar-items">
-        <div class="pilar-item">Ergoespirometria como padrão ouro</div>
-        <div class="pilar-item">Zonas Z1/Z2/Z3 individualizadas</div>
-        <div class="pilar-item">Passaporte atualizado a cada calibração</div>
-        <div class="pilar-item">9 passaportes fisiológicos no banco</div>
+    <div class="row2">
+      <div class="card">
+        <div class="card-title">Distribuição de zonas (%)</div>
+        <div class="legend" id="zone-legend"></div>
+        <div style="position:relative;height:150px"><canvas id="zone-chart"></canvas></div>
       </div>
-    </div>
-
-    <div class="pilar" style="--pilar-color:#2ecc71">
-      <div class="pilar-num">Pilar 3</div>
-      <div class="pilar-title">📅 Periodização Macro</div>
-      <div class="pilar-desc">Cada atleta segue um plano macro com fases definidas: Base Aeróbia, Construção de Limiar, Específico e Taper. A progressão é planejada semana a semana.</div>
-      <div class="pilar-items">
-        <div class="pilar-item">Base → Build → Específico → Taper</div>
-        <div class="pilar-item">CTL alvo por semana e por fase</div>
-        <div class="pilar-item">Prova-alvo com prioridade A/B/C</div>
-        <div class="pilar-item">Feriados e disponibilidade integrados</div>
-      </div>
-    </div>
-
-    <div class="pilar" style="--pilar-color:#f39c12">
-      <div class="pilar-num">Pilar 4</div>
-      <div class="pilar-title">🤖 Análise & Prescrição com IA</div>
-      <div class="pilar-desc">Todo domingo: Claude analisa a semana passada, cruza dados de treino com wellness, e prescreve a semana seguinte respeitando o plano macro e o estado do atleta.</div>
-      <div class="pilar-items">
-        <div class="pilar-item">Análise semanal com contexto completo</div>
-        <div class="pilar-item">Prescrição ajustada por HRV e TSB</div>
-        <div class="pilar-item">Exportação automática para TrainingPeaks</div>
-        <div class="pilar-item">Histórico de análises salvo no banco</div>
-      </div>
-    </div>
-
-    <div class="pilar" style="--pilar-color:#9b59b6">
-      <div class="pilar-num">Pilar 5</div>
-      <div class="pilar-title">🥗 Nutrição Periodizada</div>
-      <div class="pilar-desc">A dieta da nutricionista é armazenada no sistema. Para cada dia, os macros são ajustados automaticamente conforme o tipo de treino: descanso, Z1, duplo limiar ou treino longo.</div>
-      <div class="pilar-items">
-        <div class="pilar-item">Dieta base da nutricionista</div>
-        <div class="pilar-item">9 tipos de dia com macros ajustados</div>
-        <div class="pilar-item">PDF semanal gerado automaticamente</div>
-        <div class="pilar-item">Protocolos de nutrição de prova</div>
-      </div>
-    </div>
-
-    <div class="pilar" style="--pilar-color:#4a9bbe">
-      <div class="pilar-num">Pilar 6</div>
-      <div class="pilar-title">📱 Portal do Atleta</div>
-      <div class="pilar-desc">Dashboard pessoal para cada atleta acompanhar seus dados diretamente — acessível pelo celular ou computador, com login por PIN individual.</div>
-      <div class="pilar-items">
-        <div class="pilar-item">Login por PIN individual (4 dígitos)</div>
-        <div class="pilar-item">CTL/ATL/TSB, HRV, zonas e sessões</div>
-        <div class="pilar-item">Nutrição do dia ajustada automaticamente</div>
-        <div class="pilar-item">Acesso em npc-dashboard-seven.vercel.app</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB: FLUXO SEMANAL -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="section" id="tab-fluxo">
-  <div class="section-title">
-    <h2>O Fluxo de Uma Semana NPC</h2>
-    <p>Como os dados fluem do treino à prescrição — de segunda a domingo.</p>
-  </div>
-  <div class="flow">
-
-    <div class="flow-step">
-      <div class="flow-left">
-        <div class="card">
-          <div class="card-icon">⌚</div>
-          <div class="card-title">Seg–Sáb · Durante a semana</div>
-          <div class="card-body">
-            O atleta treina conforme prescrito. O Garmin registra automaticamente: <strong>FC, pace, potência, HRV, sono e body battery</strong>. Os dados sincronizam para o TrainingPeaks via app.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-ice">Garmin</span>
-              <span class="badge badge-ice">Polar</span>
-              <span class="badge badge-ice">TrainingPeaks</span>
-            </div>
-          </div>
+      <div class="card">
+        <div class="card-title-row">
+          <span class="card-title">Volume semanal</span>
+          <span id="vol-total" style="font-size:13px;font-weight:600;color:var(--text)"></span>
         </div>
-      </div>
-      <div class="flow-center">
-        <div class="flow-dot" style="background:var(--ice);color:var(--dark)">1</div>
-        <div class="flow-line"></div>
-      </div>
-      <div class="flow-right">
-        <div class="card">
-          <div class="card-icon">🔄</div>
-          <div class="card-title">9h40 · Sync automático</div>
-          <div class="card-body">
-            O <strong>sync.py</strong> roda automaticamente: puxa os treinos, wellness e PMC do TP e grava no Supabase. 383 dias de CTL/ATL/TSB já acumulados. O context loader gera o bloco de contexto do atleta.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-green">automático</span>
-              <span class="badge badge-ice">Supabase</span>
-            </div>
-          </div>
-        </div>
+        <div class="legend" id="vol-legend"></div>
+        <div style="position:relative;height:150px"><canvas id="vol-chart"></canvas></div>
       </div>
     </div>
-
-    <div class="flow-step">
-      <div class="flow-left">
-        <div class="card">
-          <div class="card-icon">🧠</div>
-          <div class="card-title">Domingo · Análise semanal</div>
-          <div class="card-body">
-            O treinador cola o contexto no Claude Desktop. A skill de análise avalia: <strong>aderência, decoupling, TSB, HRV, dores</strong> e gera um relatório completo com destaques e alertas.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-amber">Claude Desktop</span>
-              <span class="badge badge-ice">skill analysis</span>
-            </div>
-          </div>
-        </div>
+    <div class="card row1">
+      <div class="card-title-row">
+        <span class="card-title">Aderência ao plano</span>
+        <span id="adh-overall" style="font-size:13px;font-weight:600"></span>
       </div>
-      <div class="flow-center">
-        <div class="flow-dot" style="background:var(--amber);color:var(--dark)">2</div>
-        <div class="flow-line"></div>
-      </div>
-      <div class="flow-right">
-        <div class="card">
-          <div class="card-icon">📋</div>
-          <div class="card-title">Domingo · Prescrição</div>
-          <div class="card-body">
-            Com a análise pronta, a skill de prescrição monta a semana seguinte: tipo de cada sessão, volume, intensidade e horário — respeitando o <strong>plano macro, HRV e disponibilidade</strong> do atleta.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-amber">Claude Desktop</span>
-              <span class="badge badge-ice">skill prescription</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div id="adh-bars"></div>
     </div>
-
-    <div class="flow-step">
-      <div class="flow-left">
-        <div class="card">
-          <div class="card-icon">⚡</div>
-          <div class="card-title">Domingo · Exportação TP</div>
-          <div class="card-body">
-            A skill de exportação envia cada treino para o TrainingPeaks via MCP: modalidade, duração, TSS alvo, estrutura de intervalados. O atleta já acorda na <strong>segunda com a semana prescrita</strong> no app.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-ice">MCP TrainingPeaks</span>
-              <span class="badge badge-green">automático</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flow-center">
-        <div class="flow-dot" style="background:var(--green);color:var(--dark)">3</div>
-        <div class="flow-line"></div>
-      </div>
-      <div class="flow-right">
-        <div class="card">
-          <div class="card-icon">🥗</div>
-          <div class="card-title">Domingo · PDF de Nutrição</div>
-          <div class="card-body">
-            Com os treinos já no TP, o sistema gera o <strong>PDF nutricional da semana</strong>: macros ajustados dia a dia conforme Z1, duplo limiar ou treino longo. Enviado pelo WhatsApp ao atleta.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-purple">PDF</span>
-              <span class="badge badge-green">WhatsApp</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flow-step">
-      <div class="flow-left" style="padding-bottom:0">
-        <div class="card">
-          <div class="card-icon">📊</div>
-          <div class="card-title">Contínuo · Dashboard NPC</div>
-          <div class="card-body">
-            O dashboard atualiza automaticamente às <strong>9h40 e 18h00</strong>: CTL/ATL/TSB, HRV trend, zonas de treino, aderência e sessões de todos os atletas — em tempo real.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-green">ao vivo</span>
-              <span class="badge badge-ice">Vercel</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flow-center">
-        <div class="flow-dot" style="background:var(--ice);color:var(--dark)">4</div>
-      </div>
-      <div class="flow-right" style="padding-bottom:0">
-        <div class="card">
-          <div class="card-icon">💾</div>
-          <div class="card-title">Contínuo · Banco de dados</div>
-          <div class="card-body">
-            Tudo fica salvo no Supabase: treinos, análises semanais, passaportes fisiológicos, planos nutricionais, plano macro. O <strong>histórico cresce a cada semana</strong> — tornando as análises cada vez mais precisas.
-            <div style="margin-top:.6rem">
-              <span class="badge badge-ice">Supabase</span>
-              <span class="badge badge-ice">88 tabelas</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB: JORNADA DO ATLETA -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="section" id="tab-jornada">
-  <div class="section-title">
-    <h2>Jornada do Atleta NPC</h2>
-    <p>Do primeiro contato até a linha de chegada — o que acontece em cada etapa.</p>
-  </div>
-  <div class="journey">
-    <div class="journey-line">
-
-      <div class="journey-event" style="--ev-color:#4a9bbe">
-        <div class="journey-when">Etapa 1 · Entrada</div>
-        <div class="journey-title">Anamnese & Avaliação Inicial</div>
-        <div class="journey-desc">O atleta preenche a anamnese completa: histórico de treinos, lesões, objetivos, disponibilidade de horários e equipamentos (GPS, medidor de potência, HRM). Tudo registrado no banco.</div>
-      </div>
-
-      <div class="journey-event" style="--ev-color:#e85d24">
-        <div class="journey-when">Etapa 2 · Fisiologia</div>
-        <div class="journey-title">Ergoespirometria & Passaporte Fisiológico</div>
-        <div class="journey-desc">Teste de esforço máximo em laboratório: identifica LT1, LT2, VO2max, FTP e economias de movimento. Gera o passaporte fisiológico individual — a base de todas as prescrições. Recalibrado a cada 3–4 meses.</div>
-      </div>
-
-      <div class="journey-event" style="--ev-color:#f39c12">
-        <div class="journey-when">Etapa 3 · Planejamento</div>
-        <div class="journey-title">Plano Macro & Prova-Alvo</div>
-        <div class="journey-desc">Define-se a prova principal (A), provas secundárias (B/C) e o caminho de CTL necessário para chegar em forma. O plano macro organiza as fases: Base Aeróbia → Construção de Limiar → Específico → Taper.</div>
-      </div>
-
-      <div class="journey-event" style="--ev-color:#2ecc71">
-        <div class="journey-when">Etapa 4 · Rotina semanal</div>
-        <div class="journey-title">Treino → Análise → Prescrição</div>
-        <div class="journey-desc">O ciclo semanal se repete: o atleta treina, os dados sincronizam automaticamente, a análise identifica o que funcionou e o que ajustar, e a prescrição da semana seguinte é entregue no domingo — já exportada para o app.</div>
-      </div>
-
-      <div class="journey-event" style="--ev-color:#9b59b6">
-        <div class="journey-when">Etapa 5 · Nutrição</div>
-        <div class="journey-title">Periodização Nutricional Integrada</div>
-        <div class="journey-desc">A nutricionista define o plano base. O sistema ajusta os macros dia a dia: dias de descanso com menos carbo, duplo limiar com +25% carbo, treinos longos com hidratação extra e suplementação específica.</div>
-      </div>
-
-      <div class="journey-event" style="--ev-color:#e85d24">
-        <div class="journey-when">Etapa 6 · Pré-prova</div>
-        <div class="journey-title">Taper & Preparação Final</div>
-        <div class="journey-desc">As últimas 2–4 semanas antes da prova: volume reduz 50–70%, intensidade mantida. Protocolo de nutrição de prova ativado: carbo-loading, hidratação, gel timing. TSB ajustado para chegar positivo no dia da largada.</div>
-      </div>
-
-      <div class="journey-event" style="--ev-color:#2ecc71">
-        <div class="journey-when">Etapa 7 · Pós-prova</div>
-        <div class="journey-title">Análise de Resultado & Próximo Ciclo</div>
-        <div class="journey-desc">O resultado é registrado com splits, RPE e percepções. A análise pós-prova compara performance com CTL/TSB no dia da largada. O histórico alimenta o planejamento da próxima temporada — cada ciclo mais preciso que o anterior.</div>
-      </div>
-
+    <div class="card">
+      <div class="card-title">Sessões recentes</div>
+      <table class="stbl">
+        <thead><tr><th>Dia</th><th>Modalidade</th><th>Descrição</th><th>Duração</th><th>TSS</th><th>Zonas</th></tr></thead>
+        <tbody id="sessions-body"></tbody>
+      </table>
     </div>
   </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB: FERRAMENTAS -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="section" id="tab-ferramentas">
-  <div class="section-title">
-    <h2>As Ferramentas do Sistema NPC</h2>
-    <p>Cada peça tem uma função. Juntas formam o ecossistema de treinamento.</p>
+  <!-- Comparativo -->
+  <div id="view-comparativo" style="display:none">
+    <div class="section-label">Métricas de carga</div>
+    <div class="cmp-grid" id="cmp-load"></div>
+    <div class="row2">
+      <div class="card">
+        <div class="card-title">CTL — evolução comparativa</div>
+        <div class="legend" id="cmp-ctl-legend"></div>
+        <div style="position:relative;height:190px"><canvas id="cmp-ctl-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">HRV — evolução comparativa (14 dias)</div>
+        <div class="legend" id="cmp-hrv-legend"></div>
+        <div style="position:relative;height:190px"><canvas id="cmp-hrv-chart"></canvas></div>
+      </div>
+    </div>
+    <div class="section-label">Volume semanal por disciplina (horas)</div>
+    <div class="card">
+      <div class="legend" id="cmp-vol-legend"></div>
+      <div style="position:relative;height:220px"><canvas id="cmp-vol-chart"></canvas></div>
+    </div>
   </div>
-  <div class="tools-grid">
 
-    <div class="tool" style="--tool-color:#4a9bbe">
-      <div class="tool-icon">🧠</div>
-      <div class="tool-name">Claude Desktop</div>
-      <div class="tool-desc">O "cérebro" do sistema. Analisa, prescreve, gera PDFs, exporta para o TP e responde perguntas fisiológicas com base no contexto completo do atleta.</div>
-      <span class="tool-status status-live">● ao vivo</span>
+  <!-- Calendário -->
+  <div id="view-calendario" style="display:none">
+    <div id="cal-athlete-select" style="margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
+      <span style="font-size:12px;color:var(--text2)">Atleta:</span>
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="setCalAthlete('bruno',this)">Bruno</button>
+        <button class="tab-btn" onclick="setCalAthlete('jean',this)">Jean</button>
+        <button class="tab-btn" onclick="setCalAthlete('gabriel',this)">Gabriel</button>
+        <button class="tab-btn" onclick="setCalAthlete('rafael',this)">Rafael</button>
+        <button class="tab-btn" onclick="setCalAthlete('simony',this)">Simony</button>
+        <button class="tab-btn" onclick="setCalAthlete('clara',this)">Clara</button>
+      </div>
+      <span style="font-size:11px;color:var(--text3)">Sólido = realizado · Tracejado = planejado</span>
     </div>
-
-    <div class="tool" style="--tool-color:#e85d24">
-      <div class="tool-icon">📈</div>
-      <div class="tool-name">TrainingPeaks</div>
-      <div class="tool-desc">Plataforma de treino. Recebe as prescrições via MCP, registra os treinos executados e calcula PMC. Sincroniza com Garmin automaticamente.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#2ecc71">
-      <div class="tool-icon">💾</div>
-      <div class="tool-name">Supabase</div>
-      <div class="tool-desc">Banco de dados PostgreSQL na nuvem. 88 tabelas, 576 treinos, 383 dias de PMC, 293 registros de wellness. Memória permanente do sistema.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#f39c12">
-      <div class="tool-icon">⌚</div>
-      <div class="tool-name">Garmin / Polar</div>
-      <div class="tool-desc">Wearables que coletam FC, pace, potência, HRV, sono e body battery. Dados sincronizam automaticamente para o TP e depois para o Supabase.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#4a9bbe">
-      <div class="tool-icon">📊</div>
-      <div class="tool-name">Dashboard NPC</div>
-      <div class="tool-desc">Painel visual com CTL/ATL/TSB, HRV trend, zonas de treino e sessões de todos os atletas. Atualiza automaticamente 2× ao dia.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#9b59b6">
-      <div class="tool-icon">🤖</div>
-      <div class="tool-name">Skills NPC</div>
-      <div class="tool-desc">6 habilidades especializadas do Claude: análise, prescrição, exportação, nutrição, recuperação e PDF. Cada uma com contexto e lógica específica do método norueguês.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#2ecc71">
-      <div class="tool-icon">🔄</div>
-      <div class="tool-name">Sync Automático</div>
-      <div class="tool-desc">Scripts Python que rodam 2× ao dia: sincronizam TP → Supabase e atualizam o dashboard no GitHub/Vercel. Zero intervenção manual na rotina diária.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#9b59b6">
-      <div class="tool-icon">📄</div>
-      <div class="tool-name">PDF Nutricional</div>
-      <div class="tool-desc">Gerado todo domingo após a prescrição. Mostra os macros ajustados para cada dia da semana: calorias, carbo, proteína e gordura por tipo de treino.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#f39c12">
-      <div class="tool-icon">🔬</div>
-      <div class="tool-name">Ergoespirometria</div>
-      <div class="tool-desc">Teste de laboratório para identificar LT1, LT2 e VO2max com precisão. Base do passaporte fisiológico individual. Realizado a cada 3–4 meses.</div>
-      <span class="tool-status status-live">● em uso</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#4a9bbe">
-      <div class="tool-icon">📱</div>
-      <div class="tool-name">Portal do Atleta</div>
-      <div class="tool-desc">Dashboard individual com login por PIN. Cada atleta acessa seus dados: CTL/ATL/TSB, HRV, zonas, sessões e nutrição do dia.</div>
-      <span class="tool-status status-live">● ao vivo</span>
-    </div>
-
-    <div class="tool" style="--tool-color:#4a6278;opacity:.75">
-      <div class="tool-icon">💬</div>
-      <div class="tool-name">WhatsApp NPC</div>
-      <div class="tool-desc">Envio automático do PDF de nutrição semanal e alertas de treino via WhatsApp para cada atleta.</div>
-      <span class="tool-status status-dev">◌ planejado</span>
-    </div>
-
+    <div id="calendar-body"></div>
   </div>
+
+  <!-- Plano Macro -->
+  <div id="view-macro" style="display:none">
+    <div style="margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
+      <span style="font-size:12px;color:var(--text2)">Atleta:</span>
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="setMacroAthlete('bruno',this)">Bruno ✓</button>
+        <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean ✓</button>
+        <button class="tab-btn" onclick="setMacroAthlete('gabriel',this)">Gabriel</button>
+        <button class="tab-btn" onclick="setMacroAthlete('rafael',this)">Rafael</button>
+        <button class="tab-btn" onclick="setMacroAthlete('simony',this)">Simony</button>
+        <button class="tab-btn" onclick="setMacroAthlete('clara',this)">Clara</button>
+      </div>
+    </div>
+    <div id="macro-body"></div>
+  </div>
+
+  <!-- Nutrição -->
+  <div id="view-nutricao" style="display:none">
+    <div id="nutri-body" style="padding:.5rem 0"></div>
+  </div>
+
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 19/05/2026 10:36 UTC</div>
 </div>
 
 <script>
-function showTab(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  event.target.classList.add('active');
-  window.scrollTo({top:document.querySelector('.tabs').offsetTop - 80, behavior:'smooth'});
+const DB = {
+  "bruno": {
+    "kpis": {
+      "ctl": 72,
+      "atl": 68,
+      "tsb": 4,
+      "tss_week": 412
+    },
+    "kpi_delta": {
+      "ctl": "+3",
+      "atl": "+8",
+      "tsb": "-4",
+      "tss_week": "+31"
+    },
+    "pmc": {
+      "labels": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8"
+      ],
+      "ctl": [
+        58,
+        61,
+        65,
+        68,
+        70,
+        74,
+        73,
+        72
+      ],
+      "atl": [
+        62,
+        70,
+        75,
+        72,
+        65,
+        78,
+        74,
+        68
+      ],
+      "tsb": [
+        -4,
+        -9,
+        -10,
+        -4,
+        5,
+        -4,
+        -1,
+        4
+      ]
+    },
+    "zones": {
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        72,
+        68,
+        65
+      ],
+      "z2": [
+        22,
+        25,
+        28
+      ],
+      "z3": [
+        6,
+        7,
+        7
+      ]
+    },
+    "vol": {
+      "swim": 2.1,
+      "bike": 5.8,
+      "run": 3.2,
+      "strength": 1.0
+    },
+    "hrv": {
+      "labels": [
+        "1/4",
+        "2/4",
+        "3/4",
+        "4/4",
+        "5/4",
+        "6/4",
+        "7/4",
+        "8/4",
+        "9/4",
+        "10/4",
+        "11/4",
+        "12/4",
+        "13/4",
+        "14/4"
+      ],
+      "vals": [
+        56,
+        54,
+        57,
+        59,
+        55,
+        53,
+        58,
+        60,
+        57,
+        54,
+        55,
+        58,
+        59,
+        60
+      ],
+      "baseline": 57
+    },
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 2.1,
+        "target": 2.5,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 5.8,
+        "target": 6.0,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 3.2,
+        "target": 3.5,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 1.0,
+        "target": 1.0,
+        "color": "#9b8fff"
+      }
+    ],
+    "alerts": [
+      {
+        "type": "warn",
+        "msg": "Erro ao buscar dados: 401 Client Error: Unauthorized for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/6285028/workouts/2026-03-05/2026-05-19"
+      }
+    ],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Limiar duplo — 3×10min Z2 + 2×8min Z3",
+        "dur": "1h15",
+        "tss": 82,
+        "zones": "60/30/10"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Volume Z1 — 3.200m aeróbico",
+        "dur": "1h05",
+        "tss": 48,
+        "zones": "80/18/2"
+      },
+      {
+        "day": "Qua",
+        "sport": "bike",
+        "desc": "Endurance Z1 — 90min fundo",
+        "dur": "1h30",
+        "tss": 65,
+        "zones": "75/22/3"
+      },
+      {
+        "day": "Qui",
+        "sport": "run",
+        "desc": "Limiar duplo — 4×6min Z2 + 3×5min Z3",
+        "dur": "1h10",
+        "tss": 78,
+        "zones": "55/32/13"
+      },
+      {
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "CSS — 8×100m no limiar",
+        "dur": "55min",
+        "tss": 55,
+        "zones": "40/42/18"
+      },
+      {
+        "day": "Sáb",
+        "sport": "bike",
+        "desc": "Longa Z1 — 3h base aeróbica",
+        "dur": "3h00",
+        "tss": 95,
+        "zones": "80/18/2"
+      }
+    ]
+  },
+  "jean": {
+    "kpis": {
+      "ctl": 85,
+      "atl": 79,
+      "tsb": 6,
+      "tss_week": 498
+    },
+    "kpi_delta": {
+      "ctl": "+5",
+      "atl": "+6",
+      "tsb": "+2",
+      "tss_week": "+44"
+    },
+    "pmc": {
+      "labels": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8"
+      ],
+      "ctl": [
+        68,
+        72,
+        76,
+        79,
+        82,
+        85,
+        84,
+        85
+      ],
+      "atl": [
+        70,
+        78,
+        82,
+        80,
+        76,
+        88,
+        82,
+        79
+      ],
+      "tsb": [
+        -2,
+        -6,
+        -6,
+        -1,
+        6,
+        -3,
+        2,
+        6
+      ]
+    },
+    "zones": {
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        70,
+        65,
+        60
+      ],
+      "z2": [
+        24,
+        28,
+        32
+      ],
+      "z3": [
+        6,
+        7,
+        8
+      ]
+    },
+    "vol": {
+      "swim": 2.8,
+      "bike": 7.2,
+      "run": 4.5,
+      "strength": 1.0
+    },
+    "hrv": {
+      "labels": [
+        "1/4",
+        "2/4",
+        "3/4",
+        "4/4",
+        "5/4",
+        "6/4",
+        "7/4",
+        "8/4",
+        "9/4",
+        "10/4",
+        "11/4",
+        "12/4",
+        "13/4",
+        "14/4"
+      ],
+      "vals": [
+        60,
+        62,
+        61,
+        58,
+        60,
+        63,
+        64,
+        62,
+        59,
+        61,
+        63,
+        64,
+        63,
+        65
+      ],
+      "baseline": 62
+    },
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 2.8,
+        "target": 3.0,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Bike",
+        "done": 7.2,
+        "target": 7.0,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 4.5,
+        "target": 4.5,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 1.0,
+        "target": 1.0,
+        "color": "#9b8fff"
+      }
+    ],
+    "alerts": [
+      {
+        "type": "warn",
+        "msg": "Erro ao buscar dados: 401 Client Error: Unauthorized for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/6286348/workouts/2026-03-05/2026-05-19"
+      }
+    ],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "bike",
+        "desc": "Limiar duplo — 5×8min Z2 + 3×6min Z3",
+        "dur": "1h30",
+        "tss": 95,
+        "zones": "50/36/14"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Técnica + CSS — 3.600m",
+        "dur": "1h10",
+        "tss": 58,
+        "zones": "65/28/7"
+      },
+      {
+        "day": "Qua",
+        "sport": "run",
+        "desc": "Volume Z1 — 12km fácil",
+        "dur": "1h15",
+        "tss": 62,
+        "zones": "78/20/2"
+      },
+      {
+        "day": "Qui",
+        "sport": "bike",
+        "desc": "Limiar duplo — FTP intervals",
+        "dur": "1h20",
+        "tss": 88,
+        "zones": "45/38/17"
+      },
+      {
+        "day": "Sex",
+        "sport": "swim",
+        "desc": "Endurance — 4.000m Z1/Z2",
+        "dur": "1h20",
+        "tss": 65,
+        "zones": "70/26/4"
+      },
+      {
+        "day": "Sáb",
+        "sport": "run",
+        "desc": "Longa Z1/Z2 — 18km progressivo",
+        "dur": "1h45",
+        "tss": 100,
+        "zones": "65/28/7"
+      }
+    ]
+  },
+  "gabriel": {
+    "kpis": {
+      "ctl": 58,
+      "atl": 72,
+      "tsb": -14,
+      "tss_week": 380
+    },
+    "kpi_delta": {
+      "ctl": "+2",
+      "atl": "+14",
+      "tsb": "-12",
+      "tss_week": "+55"
+    },
+    "pmc": {
+      "labels": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8"
+      ],
+      "ctl": [
+        46,
+        49,
+        52,
+        54,
+        56,
+        58,
+        57,
+        58
+      ],
+      "atl": [
+        50,
+        55,
+        60,
+        58,
+        52,
+        65,
+        70,
+        72
+      ],
+      "tsb": [
+        -4,
+        -6,
+        -8,
+        -4,
+        4,
+        -7,
+        -13,
+        -14
+      ]
+    },
+    "zones": {
+      "labels": [
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        60,
+        58
+      ],
+      "z2": [
+        28,
+        30
+      ],
+      "z3": [
+        12,
+        12
+      ]
+    },
+    "vol": {
+      "swim": 0,
+      "bike": 5.5,
+      "run": 4.2,
+      "strength": 1.5
+    },
+    "hrv": {
+      "labels": [
+        "1/4",
+        "2/4",
+        "3/4",
+        "4/4",
+        "5/4",
+        "6/4",
+        "7/4",
+        "8/4",
+        "9/4",
+        "10/4",
+        "11/4",
+        "12/4",
+        "13/4",
+        "14/4"
+      ],
+      "vals": [
+        58,
+        56,
+        54,
+        52,
+        55,
+        53,
+        51,
+        50,
+        52,
+        51,
+        53,
+        54,
+        55,
+        53
+      ],
+      "baseline": 55
+    },
+    "adherence": [
+      {
+        "label": "Bike",
+        "done": 5.5,
+        "target": 5.0,
+        "color": "#f5a623"
+      },
+      {
+        "label": "Corrida",
+        "done": 4.2,
+        "target": 4.0,
+        "color": "#4db87a"
+      },
+      {
+        "label": "Força",
+        "done": 1.5,
+        "target": 1.5,
+        "color": "#9b8fff"
+      }
+    ],
+    "alerts": [
+      {
+        "type": "warn",
+        "msg": "Erro ao buscar dados: 401 Client Error: Unauthorized for url: https://tpapi.trainingpeaks.com/fitness/v6/athletes/5775491/workouts/2026-03-05/2026-05-19"
+      }
+    ],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "run",
+        "desc": "Limiar — 3×10min Z2 pré-duatlon",
+        "dur": "1h00",
+        "tss": 70,
+        "zones": "55/33/12"
+      },
+      {
+        "day": "Ter",
+        "sport": "bike",
+        "desc": "Específico duatlon — 3×8min Z3",
+        "dur": "1h10",
+        "tss": 85,
+        "zones": "40/38/22"
+      },
+      {
+        "day": "Qua",
+        "sport": "strength",
+        "desc": "Alfredson + estabilização joelho",
+        "dur": "40min",
+        "tss": 25,
+        "zones": "—"
+      },
+      {
+        "day": "Qui",
+        "sport": "run",
+        "desc": "Taper ativo — 6km Z1 leve",
+        "dur": "40min",
+        "tss": 35,
+        "zones": "85/13/2"
+      },
+      {
+        "day": "Sex",
+        "sport": "bike",
+        "desc": "Ativação pré-prova — 30min Z1",
+        "dur": "30min",
+        "tss": 22,
+        "zones": "80/15/5"
+      },
+      {
+        "day": "Sáb",
+        "sport": "run",
+        "desc": "PROVA — Duatlon 5/20/2.5km",
+        "dur": "~56min",
+        "tss": 110,
+        "zones": "20/35/45"
+      }
+    ]
+  },
+  "rafael": {
+    "kpis": {
+      "ctl": 0,
+      "atl": 0,
+      "tsb": 0,
+      "tss_week": 0
+    },
+    "kpi_delta": {
+      "ctl": "—",
+      "atl": "—",
+      "tsb": "—",
+      "tss_week": "—"
+    },
+    "pmc": {
+      "labels": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8"
+      ],
+      "ctl": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "atl": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tsb": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "zones": {
+      "labels": [
+        "Natação",
+        "Bike",
+        "Corrida"
+      ],
+      "z1": [
+        80,
+        80,
+        80
+      ],
+      "z2": [
+        15,
+        15,
+        15
+      ],
+      "z3": [
+        5,
+        5,
+        5
+      ]
+    },
+    "vol": {
+      "swim": 0,
+      "bike": 0,
+      "run": 0,
+      "strength": 0
+    },
+    "hrv": {
+      "labels": [],
+      "vals": [],
+      "baseline": 0,
+      "sleep": [],
+      "resting_hr": [],
+      "body_battery": []
+    },
+    "adherence": [],
+    "alerts": [
+      {
+        "type": "info",
+        "msg": "TP ID pendente — dados disponíveis após integração"
+      }
+    ],
+    "sessions": [],
+    "planned": {},
+    "week_notes": {}
+  }
+};
+
+// ── Nutrition ──────────────────────────────────────────────────────
+const NUTR_ATHLETES = ['bruno'];
+const NUTR_PLAN = {
+  rest:      {label:'Descanso',    kcal:2350,carb:245,prot:225,fat:70, water:2500,tips:['Reduzir carbo no almoço (100g) e na janta (75g)','Aumentar oleaginosas para 70g no lanche tarde','Acrescentar azeite extra nas saladas','Manter proteína total']},
+  easy:      {label:'Z1 Leve',     kcal:2600,carb:300,prot:225,fat:62, water:2800,tips:['Desjejum 30min antes do treino','Manter dieta base sem ajustes','Pós-treino: fazer a próxima refeição normalmente']},
+  threshold: {label:'Limiar (DT)', kcal:3050,carb:400,prot:245,fat:52, water:3000,tips:['Desjejum: aumentar pão para 80g','Almoço: aumentar carbo para 250g','Lanche tarde: reduzir oleaginosas para 30g','1 dose whey extra pós-sessão']},
+  double:    {label:'Duplo Limiar',kcal:3200,carb:430,prot:250,fat:50, water:3200,tips:['Entre treinos: 1 gel + 350ml água de coco OBRIGATÓRIO','Almoço: 260g de carbo','Janta: aumentar carbo para 200g','Oleaginosas: 25g']},
+  vo2max:    {label:'VO2max / Z3', kcal:3100,carb:415,prot:245,fat:48, water:3200,tips:['Refeição imediata pós-sessão (máx 30min)','Almoço: 250g carbo','Desjejum: 80g pão','Oleaginosas: 25g']},
+  long:      {label:'Treino Longo',kcal:3150,carb:425,prot:245,fat:55, water:3500,tips:['1 liquidz OU jungle OU 1L água de coco hoje','DURANTE bike >2h: 60g xtratus + 1 gel a cada 30min','DURANTE corrida: 1 gel a cada 30min','600ml água/hora durante treino']},
+  pre_race:  {label:'Pré-Prova',  kcal:3100,carb:460,prot:225,fat:42, water:3000,tips:['Janta: macarrão à vontade','1 liquidz OU 1L água de coco','Reduzir fibra e gordura na janta','Não testar alimentos novos']},
+  race_day:  {label:'Dia de Prova',kcal:3200,carb:490,prot:225,fat:35,water:3000,tips:['Café da manhã normal — largada >2h: 1 gel no início','DURANTE: 1 gel a cada 30min + 600ml água/h + sal','Bike >2h: 60g xtratus + 1 gel a cada 30min','PÓS: ½ dose whey + 200ml água de coco + 200g frutas']},
+  post_race: {label:'Pós-Prova',  kcal:2900,carb:360,prot:275,fat:60, water:3500,tips:['½ dose whey + 200ml água de coco + 200g frutas vermelhas','Priorizar proteína para recuperação','Manter carboidrato moderado-alto','Hidratação: 3.500ml']},
+};
+const NUTR_MEALS = [
+  {time:'06:00',name:'Desjejum',      kcal:250, carb:52,prot:6, fat:2, desc:'2 fatias pão integral OU fermentação natural (60g) + 30g geleia + café'},
+  {time:'07:30',name:'Entre treinos', kcal:60,  carb:15,prot:0, fat:0, desc:'Dupla sessão apenas — 100g fruta OU ½ BTnitrato OU 1 gel OU 350ml água de coco'},
+  {time:'08:30',name:'Lanche manhã',  kcal:221, carb:29,prot:24,fat:1, desc:'1 dose whey protein + 200g de frutas'},
+  {time:'10:30',name:'Café da manhã', kcal:365, carb:17,prot:27,fat:21,desc:'Op.1: 1 fatia pão + 4 ovos | Op.2: 40g tapioca + 2 ovos + 90g frango'},
+  {time:'13:00',name:'Almoço',        kcal:641, carb:82,prot:67,fat:5, desc:'Salada à vontade + 100g vegetal + 200g carbo + 225g frango/peixe ou 150g carne'},
+  {time:'15:00',name:'Lanche tarde 1',kcal:397, carb:33,prot:10,fat:25,desc:'Op.1: 200g frutas + 50g oleaginosas | Op.2: 100g frutas + 25g aveia + 50g amendoim'},
+  {time:'18:00',name:'Lanche tarde 2',kcal:277, carb:42,prot:25,fat:1, desc:'1 dose whey protein + 300g de frutas'},
+  {time:'20:00',name:'Janta',         kcal:601, carb:72,prot:67,fat:5, desc:'Salada à vontade + 200g vegetal + 150g carbo + 225g frango/peixe ou 150g carne'},
+];
+const NUTR_BASE = 2750;
+function parseDurMin(dur) {
+  // Converte '1h49', '49min', '1h01' para minutos
+  if (!dur) return 0;
+  var h = dur.match(/(\d+)h/), m = dur.match(/(\d+)min/);
+  return (h ? +h[1]*60 : 0) + (m ? +m[1] : 0);
 }
+function classifyNutrDay(sessions) {
+  if (!sessions || !sessions.length) return 'rest';
+  // Filtrar Other/Alfredson (≤10min)
+  var real = sessions.filter(function(s) {
+    var title = (s.desc || '').toLowerCase();
+    var dur = parseDurMin(s.dur);
+    return !(title.indexOf('other') !== -1 && dur <= 10);
+  });
+  if (!real.length) return 'rest';
+  var titles  = real.map(function(s){ return (s.desc||'').toLowerCase(); }).join(' ');
+  var hasSwim = real.some(function(s){ return s.sport === 'swim'; });
+  var hasBike = real.some(function(s){ return s.sport === 'bike'; });
+  var hasRun  = real.some(function(s){ return s.sport === 'run'; });
+  var hasStr  = real.some(function(s){ return s.sport === 'strength'; });
+  var isDT    = /limiar|threshold|dt1|dt2|duplo|vo2|z3|intervalado/.test(titles);
+  // Duração da bike em minutos
+  var bikeDur = real.filter(function(s){ return s.sport==='bike'; })
+                    .reduce(function(a,s){ return a+parseDurMin(s.dur); }, 0);
+  var runDur  = real.filter(function(s){ return s.sport==='run'; })
+                    .reduce(function(a,s){ return a+parseDurMin(s.dur); }, 0);
+  // Hierarquia
+  if (isDT && hasSwim)  return 'double';
+  if (isDT)             return 'threshold';
+  if (bikeDur >= 120 || (bikeDur >= 90 && hasRun)) return 'long';
+  if (runDur >= 90)     return 'long';
+  if (hasSwim)          return 'threshold'; // natação sempre tem estímulo
+  if (hasStr && !hasSwim && !hasBike && !hasRun) return 'easy';
+  if ((hasBike || hasRun) && !hasSwim) return 'easy';
+  return 'rest';
+}
+function renderNutricao() {
+  var key=getA(), el=document.getElementById('nutri-body');
+  if(!el)return;
+  if(!NUTR_ATHLETES.includes(key)){
+    el.innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)"><div style="font-size:2rem;margin-bottom:.75rem">🥗</div><div>Plano nutricional não cadastrado para este atleta.</div></div>';
+    return;
+  }
+  var d=DB[key], sessions=d?(d.sessions||[]):[];
+  var DAYS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  var DAY_FULL=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+  var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
+  var tc_map={rest:'#7a9ab8',easy:'#2ecc71',threshold:'#4a9bbe',double:'#4a9bbe',vo2max:'#e85d24',long:'#f39c12',pre_race:'#e85d24',race_day:'#e74c3c',post_race:'#2ecc71'};
+
+  // Adjusted meals per day type
+  var MEAL_ADJUST = {
+    rest:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pão integral (60g) + geleia natural + café',                              c:52,  p:6,  g:2,  k:250},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 100g carbo + 225g frango/peixe',          c:41,  p:67, g:5,  k:481},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 70g oleaginosas (castanha/amêndoa/nozes)',                           c:33,  p:10, g:43, k:555},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 75g carbo + 225g frango/peixe',           c:27,  p:67, g:5,  k:421}],
+    easy:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pão integral (60g) + geleia natural + café',                              c:52,  p:6,  g:2,  k:250},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 200g carbo + 225g frango/peixe',          c:82,  p:67, g:5,  k:641},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 50g oleaginosas',                                                    c:33,  p:10, g:25, k:397},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 150g carbo + 225g frango/peixe',          c:72,  p:67, g:5,  k:601}],
+    threshold: [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia natural + café',                                         c:62,  p:7,  g:2,  k:293},
+                {t:'07:30',n:'Entre treinos',  d:'1 gel de carboidrato + 350ml água de coco',                                        c:35,  p:0,  g:0,  k:140},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 250g carbo + 225g frango/peixe',          c:102, p:67, g:5,  k:737},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 30g oleaginosas',                                                    c:33,  p:8,  g:15, k:295},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
+    double:    [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia natural + café',                                         c:62,  p:7,  g:2,  k:293},
+                {t:'07:30',n:'Entre treinos',  d:'1 gel OBRIGATÓRIO + 350ml água de coco',                                           c:50,  p:0,  g:0,  k:200},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'40g tapioca + 2 ovos + 90g frango desfiado',                                       c:32,  p:35, g:7,  k:335},
+                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 260g carbo + 225g frango/peixe',          c:107, p:67, g:5,  k:761},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 25g oleaginosas + 1 dose whey',                                      c:40,  p:34, g:13, k:413},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
+    long:      [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia + café + 1 liquidz OU 1L água de coco (preparação)',      c:72,  p:7,  g:2,  k:333},
+                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos',                                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'Almoço',         d:'Salada + 100g vegetal + 260g carbo + 225g frango/peixe',                           c:107, p:67, g:5,  k:761},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 50g oleaginosas',                                                    c:33,  p:10, g:25, k:397},
+                {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
+                {t:'20:00',n:'Janta',          d:'Salada + 200g vegetal + 200g carbo + 225g frango/peixe + azeite extra',            c:92,  p:67, g:10, k:741}],
+  };
+  // Use easy as fallback for types not explicitly mapped
+  ['vo2max','pre_race','race_day','post_race'].forEach(function(t){MEAL_ADJUST[t]=MEAL_ADJUST[t]||MEAL_ADJUST.easy;});
+  MEAL_ADJUST.vo2max = MEAL_ADJUST.threshold;
+  MEAL_ADJUST.pre_race = MEAL_ADJUST.double;
+  MEAL_ADJUST.post_race = MEAL_ADJUST.easy;
+
+  // Group sessions by day
+  var byDay={};
+  DAYS.forEach(function(d){byDay[d]=[];});
+  sessions.forEach(function(s){if(byDay[s.day])byDay[s.day].push(s);});
+
+  // Build day data
+  var dayData=DAYS.map(function(day,i){
+    var ds=byDay[day]||[];
+    var dt=classifyNutrDay(ds);
+    return {day:day,full:DAY_FULL[i],sessions:ds,dt:dt,nutr:NUTR_PLAN[dt]||NUTR_PLAN.easy,meals:MEAL_ADJUST[dt]||MEAL_ADJUST.easy,tc:tc_map[dt]||'#4a9bbe'};
+  });
+
+  // Week overview cards
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;margin-bottom:1.5rem">';
+  dayData.forEach(function(dd,i){
+    var nutr=dd.nutr, tc=dd.tc;
+    var delta=nutr.kcal-NUTR_BASE, ds=(delta>=0?'+':'')+delta;
+    html+='<div onclick="showNutrDay('+i+')" style="cursor:pointer;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s">';
+    html+='<div style="background:'+tc+'18;border-bottom:1px solid '+tc+'30;padding:.55rem .75rem;display:flex;align-items:center;justify-content:space-between">';
+    html+='<div><div style="font-size:13px;font-weight:700;color:var(--text)">'+dd.full+'</div>';
+    if(dd.sessions.length){
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:1px">'+dd.sessions.map(function(s){return (SPORT_ICON[s.sport]||'');}).join(' ')+'</div>';
+    } else {
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:1px">Descanso</div>';
+    }
+    html+='</div>';
+    html+='<span style="background:'+tc+'25;color:'+tc+';font-size:9px;font-weight:700;padding:.15rem .5rem;border-radius:8px;white-space:nowrap">'+nutr.label+'</span>';
+    html+='</div>';
+    html+='<div style="padding:.6rem .75rem">';
+    html+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.3rem;margin-bottom:.4rem">';
+    [{v:nutr.kcal+' kcal',c:tc},{v:nutr.carb+'g carbo',c:'#4a9bbe'},{v:nutr.prot+'g prot',c:'#2ecc71'},{v:nutr.fat+'g gord',c:'#f39c12'}].forEach(function(m){
+      html+='<div style="font-size:11px;font-weight:700;color:'+m.c+'">'+m.v+'</div>';
+    });
+    html+='</div>';
+    html+='<div style="font-size:10px;color:var(--text3)">💧 '+(nutr.water/1000).toFixed(1)+'L &nbsp;·&nbsp; <span style="color:'+tc+'">'+ds+'</span> kcal</div>';
+    html+='</div>';
+    html+='<div style="padding:.3rem .75rem .5rem;border-top:0.5px solid var(--border);font-size:10px;color:'+tc+';text-align:center">Toque para ver as refeições →</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Detail panel (hidden initially)
+  html+='<div id="nutr-detail" style="display:none;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:1rem;margin-bottom:1rem">';
+  html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">';
+  html+='<div id="nutr-detail-title" style="font-size:15px;font-weight:700;color:var(--text)"></div>';
+  html+='<button onclick="document.getElementById(\'nutr-detail\').style.display=\'none\'" '+
+        'style="background:none;border:0.5px solid var(--border2);border-radius:6px;color:var(--text3);cursor:pointer;font-size:11px;padding:.25rem .6rem">✕ Fechar</button>';
+  html+='</div>';
+  html+='<div id="nutr-detail-body"></div>';
+  html+='</div>';
+
+  el.innerHTML=html;
+
+  // Store dayData for click handler
+  el._dayData=dayData;
+}
+
+function showNutrDay(idx) {
+  var el=document.getElementById('nutri-body');
+  if(!el||!el._dayData)return;
+  var dd=el._dayData[idx];
+  var tc=dd.tc, nutr=dd.nutr, meals=dd.meals;
+  var panel=document.getElementById('nutr-detail');
+  var titleEl=document.getElementById('nutr-detail-title');
+  var bodyEl=document.getElementById('nutr-detail-body');
+  if(!panel||!titleEl||!bodyEl)return;
+
+  var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
+  var sessionStr=dd.sessions.length ? dd.sessions.map(function(s){return (SPORT_ICON[s.sport]||'')+' '+s.desc.split('—')[0].trim()+(s.dur?' ('+s.dur+')':'');}).join(' + ') : 'Descanso';
+
+  titleEl.innerHTML=dd.full+' &nbsp;<span style="background:'+tc+'20;color:'+tc+';font-size:10px;font-weight:700;padding:.2rem .6rem;border-radius:8px">'+nutr.label+'</span>';
+
+  // Session info
+  var html='';
+  if(dd.sessions.length){
+    html+='<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;padding:.4rem .6rem;background:var(--bg);border-radius:6px">📅 '+sessionStr+'</div>';
+  }
+
+  // Macro summary bar
+  html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1rem">';
+  [{v:nutr.kcal,l:'Calorias',u:'kcal',c:tc},{v:nutr.carb+'g',l:'Carboidratos',u:Math.round(nutr.carb*4/nutr.kcal*100)+'%',c:'#4a9bbe'},{v:nutr.prot+'g',l:'Proteínas',u:Math.round(nutr.prot*4/nutr.kcal*100)+'%',c:'#2ecc71'},{v:nutr.fat+'g',l:'Gorduras',u:Math.round(nutr.fat*9/nutr.kcal*100)+'%',c:'#f39c12'}].forEach(function(m){
+    html+='<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem;text-align:center">';
+    html+='<div style="font-size:16px;font-weight:700;color:'+m.c+'">'+m.v+'</div>';
+    html+='<div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.15rem 0">'+m.l+'</div>';
+    html+='<div style="font-size:10px;color:var(--text2)">'+m.u+'</div></div>';
+  });
+  html+='</div>';
+
+  // Tips
+  html+='<div style="background:'+tc+'10;border-left:3px solid '+tc+';border-radius:0 6px 6px 0;padding:.6rem .875rem;margin-bottom:1rem">';
+  nutr.tips.forEach(function(t){
+    html+='<div style="display:flex;gap:.4rem;font-size:11px;color:var(--text2);margin-bottom:.25rem"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';
+  });
+  html+='<div style="font-size:11px;color:var(--text3);margin-top:.3rem">💧 Hidratação: <strong style="color:'+tc+'">'+(nutr.water/1000).toFixed(1)+'L</strong></div>';
+  html+='</div>';
+
+  // Meals adjusted
+  html+='<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">O que comer hoje</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:.4rem">';
+  meals.forEach(function(m){
+    html+='<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.65rem .875rem;display:flex;align-items:center;gap:.75rem">';
+    html+='<span style="font-size:11px;color:var(--text3);width:2.5rem;text-align:right;flex-shrink:0;font-weight:600">'+m.t+'</span>';
+    html+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--text)">'+m.n+'</div>';
+    html+='<div style="font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4">'+m.d+'</div></div>';
+    html+='<div style="text-align:right;flex-shrink:0;min-width:60px">';
+    html+='<div style="font-size:12px;font-weight:700;color:var(--ice)">'+m.k+' kcal</div>';
+    html+='<div style="font-size:10px;color:var(--text3)">'+m.c+'c '+m.p+'p '+m.g+'g</div></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  bodyEl.innerHTML=html;
+  panel.style.display='block';
+  // Scroll to panel
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
+const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
+const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc',simony:'#f472b6',clara:'#fb923c'};
+const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força'};
+const DAYS_LABEL  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+const charts = {};
+let currentView = 'individual';
+let calAthlete  = 'bruno';
+let macroAthlete = 'bruno';
+const gc = 'rgba(255,255,255,0.06)';
+const tf = {size:11,family:'system-ui'};
+
+// ── Plano macro 29 semanas — Método Norueguês ──────────────────────
+const MACRO_PLAN = {
+  race_date:   '2026-10-04',
+  total_weeks: 29,
+  // Semanas de descarga (redução 45–55% de volume, intensidade mantida)
+  deload_weeks: [7, 12, 15, 19, 23],
+  phases: [
+    {name:'Fundação',  color:'#378ADD', weeks:[1,6],
+     goal:'Base aeróbia Z1 — tolerância de carga e construção de volume',
+     objectives:['Distribuição permanente: ~80% Z1, 18-20% Z2, <2% Z3','Ramp rate: +3–5 pts CTL/semana','Força 3×/semana — programa bilateral Fase 1','Natação: 4–10km/semana com foco técnico'],
+     key_sessions:['Bike Z1 longo sábado (90min → 3h)','Corrida Z1 longa domingo (40–100min)','Natação técnica 3–4×/semana']},
+    {name:'Limiar I',  color:'#1D9E75', weeks:[8,14],
+     goal:'Duplo limiar 2×/semana — qualidade antes de volume',
+     objectives:['Entrada do duplo limiar na semana 8','Run limiar: 2×10min → 2×14min Z2','Bike limiar: 3×8min → 3×12min Z2','Brick introduzido na semana 10','CSS natação integrado'],
+     key_sessions:['Duplo limiar bike (2× por semana)','Corrida limiar progressiva','Bike longo Z1 sábados (3h)','Brick bike+run sem 10+']},
+    {name:'Limiar II', color:'#EF9F27', weeks:[16,21],
+     goal:'Threshold 3×/semana — volume máximo do ciclo',
+     objectives:['Limiar 3× por semana','Volume: 3×15min Z2 + 2×8min Z3 no pico','Brick race-distance semana 18','Open water toda semana','Força reduzida para 1×/semana'],
+     key_sessions:['Bike 90km + Run 21km (dias separados, sem 18)','Brick completo sem 21','OWS semanal — sighting e viragem de boia']},
+    {name:'Específico',color:'#D85A30', weeks:[22,23],
+     goal:'Simulações parciais — ritmo e nutrição de prova',
+     objectives:['Simulações de percurso','Testar nutrição de prova (60–80g CHO/h bike)','Manter limiar 2×/semana','Força: apenas manutenção'],
+     key_sessions:['Simulação 1: Swim 1.9km + Bike 90km (sep.)','Ajuste de kit e transição']},
+    {name:'Pico',      color:'#c084fc', weeks:[24,25],
+     goal:'Simulações completas — sessão mais importante do ciclo',
+     objectives:['Simulação 1 semana 24: S+B+R dias separados','Simulação 2 semana 25: brick completo 1.9+90+21','Kit de prova completo','Nutrição de prova testada e validada'],
+     key_sessions:['★ Sem 24: Swim 1.9km OWS + Bike 90km + Run 21km','★ Sem 25: Brick completo com transições']},
+    {name:'Taper',     color:'#f472b6', weeks:[26,28],
+     goal:'Volume cai — intensidade NUNCA cai',
+     objectives:['Sem 26: −30% volume, 1 duplo limiar mantido','Sem 27: −45% volume, TSB começa a subir','Sem 28: −60% volume, apenas ativações e strides','TSB alvo na largada: +10 a +15'],
+     key_sessions:['Bike ativação 60min c/ 3×5min LT2','Corrida 30min c/ strides','Natação técnica 2×1.500m']},
+    {name:'Prova',     color:'#ff5252', weeks:[29,29],
+     goal:'70.3 Buenos Aires — 04 de outubro de 2026',
+     objectives:['Natação 1.9km · Bike 90km · Corrida 21.1km','Jean: Top 5 M40-44 + vaga Mundial','Bruno: Top 5 M40-44 + vaga Mundial','TSB alvo largada: +10 a +15'],
+     key_sessions:['Qua/Qui: chegada em Buenos Aires','Sáb: swim adaptação 15min + bike 20min + run 15min','Dom 07h: largada']},
+  ],
+  // Dados por semana (foco, TSS alvo Jean, TSS alvo Bruno, CTL alvo Jean, CTL alvo Bruno)
+  weeks_data: {
+    1:  {focus:'Adaptação — tolerância de carga',         tss_j:250,  tss_b:210,  ctl_j:20,  ctl_b:15},
+    2:  {focus:'Construção gradual de volume Z1',         tss_j:420,  tss_b:370,  ctl_j:28,  ctl_b:22},
+    3:  {focus:'Volume Z1 estabilizando — primeiras longas', tss_j:510, tss_b:450, ctl_j:36, ctl_b:30},
+    4:  {focus:'Volume Z1 crescendo — base sólida',       tss_j:640,  tss_b:590,  ctl_j:46,  ctl_b:38},
+    5:  {focus:'Pico de fase — maior semana até agora',   tss_j:720,  tss_b:640,  ctl_j:55,  ctl_b:46},
+    6:  {focus:'Consolidação — preparar 1ª descarga',     tss_j:760,  tss_b:680,  ctl_j:71,  ctl_b:53},
+    7:  {focus:'■ Recuperação ativa — absorção de carga', tss_j:400,  tss_b:360,  ctl_j:75,  ctl_b:56, deload:true},
+    8:  {focus:'★ Primeiro duplo limiar — baixo volume',  tss_j:660,  tss_b:590,  ctl_j:80,  ctl_b:61},
+    9:  {focus:'Limiar progressivo — qualidade > volume', tss_j:700,  tss_b:630,  ctl_j:85,  ctl_b:66},
+    10: {focus:'Brick semanal instaurado',                tss_j:740,  tss_b:670,  ctl_j:89,  ctl_b:70},
+    11: {focus:'Pico do bloco — maior volume com limiar', tss_j:790,  tss_b:710,  ctl_j:94,  ctl_b:74},
+    12: {focus:'■ Recuperação — check-in de forma',      tss_j:430,  tss_b:390,  ctl_j:96,  ctl_b:76, deload:true},
+    13: {focus:'Relançamento pós-descarga',               tss_j:770,  tss_b:690,  ctl_j:100, ctl_b:79},
+    14: {focus:'Fechamento bloco 1 — pico de eficiência', tss_j:820,  tss_b:740,  ctl_j:106, ctl_b:82},
+    15: {focus:'■ Descanso antes do novo patamar',       tss_j:440,  tss_b:400,  ctl_j:108, ctl_b:84, deload:true},
+    16: {focus:'★ Threshold 3×/semana — novo patamar',   tss_j:820,  tss_b:750,  ctl_j:111, ctl_b:87},
+    17: {focus:'Volume crescente — adaptação ao nível',   tss_j:860,  tss_b:780,  ctl_j:113, ctl_b:90},
+    18: {focus:'Brick race-distance — próximo da prova',  tss_j:890,  tss_b:810,  ctl_j:116, ctl_b:93},
+    19: {focus:'■ Recuperação crítica antes do pico',    tss_j:460,  tss_b:420,  ctl_j:117, ctl_b:95, deload:true},
+    20: {focus:'Volume pico aproximando-se',              tss_j:910,  tss_b:830,  ctl_j:120, ctl_b:97},
+    21: {focus:'Pico de volume da fase limiar',           tss_j:950,  tss_b:860,  ctl_j:124, ctl_b:99},
+    22: {focus:'★ Início específico — simulações parciais', tss_j:930, tss_b:850, ctl_j:125, ctl_b:101},
+    23: {focus:'■ Recuperação pré-pico',                 tss_j:490,  tss_b:450,  ctl_j:126, ctl_b:102, deload:true},
+    24: {focus:'★ SIMULAÇÃO 1 — distância de prova',     tss_j:970,  tss_b:880,  ctl_j:126, ctl_b:102},
+    25: {focus:'★ SIMULAÇÃO 2 — sessão de pico',         tss_j:960,  tss_b:870,  ctl_j:125, ctl_b:101},
+    26: {focus:'Volume cai, intensidade mantida',         tss_j:680,  tss_b:620,  ctl_j:121, ctl_b:98},
+    27: {focus:'Frescor em construção',                   tss_j:500,  tss_b:460,  ctl_j:115, ctl_b:93},
+    28: {focus:'Afiação final',                           tss_j:340,  tss_b:310,  ctl_j:109, ctl_b:88},
+    29: {focus:'Chegada em Buenos Aires — ativação',      tss_j:200,  tss_b:185,  ctl_j:104, ctl_b:84},
+  }
+};
+
+// ── Atletas com plano macro ativo ────────────────────────────────
+// Chave: athleteKey → plano aplicável (null = sem plano)
+const ATHLETE_PLAN = {
+  jean:    'buenos_aires_2026',
+  bruno:   'buenos_aires_2026',
+  gabriel: null,
+  rafael:  null,
+  simony:  null,
+  clara:   null,
+};
+
+function getPhaseForWeek(w) {
+  return MACRO_PLAN.phases.find(p => w >= p.weeks[0] && w <= p.weeks[1]);
+}
+
+function currentRaceWeek() {
+  const race = new Date(MACRO_PLAN.race_date);
+  const today = new Date();
+  const diff = Math.floor((race - today) / (7 * 86400000));
+  return Math.max(1, MACRO_PLAN.total_weeks - diff);
+}
+
+// ── Utils ──────────────────────────────────────────────────────────
+function fmtH(h) {
+  const hh = Math.floor(h), mm = Math.round((h-hh)*60);
+  return mm > 0 ? `${hh}h${String(mm).padStart(2,'0')}` : `${hh}h`;
+}
+function totalH(vol) { return Object.values(vol).reduce((a,b)=>a+b,0); }
+let _portalOverride = null;
+function getA()  { return _portalOverride || document.getElementById('sel-athlete').value; }
+function dc(id)  { if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+// ── URL Routing ────────────────────────────────────────────────────
+function getAthleteFromURL() {
+  const path = window.location.pathname.replace(/^\//, '').toLowerCase();
+  return ATHLETES.includes(path) ? path : null;
+}
+function setAthleteURL(key) {
+  history.pushState({athlete: key}, '', '/' + key);
+}
+function updateSubtitle(key) {
+  const d = DB[key];
+  const sub = document.getElementById('logo-sub');
+  if (!sub || !d) return;
+  const event = (d.alerts || []).find(a =>
+    a.type === 'info' && a.message &&
+    !a.message.includes('HRV') &&
+    !a.message.includes('Aniversário') &&
+    !a.message.includes('Aniversario')
+  );
+  sub.textContent = event
+    ? `Dashboard de Treinos · ${event.message}`
+    : `Dashboard de Treinos · NPC Endurance`;
+}
+window.addEventListener('popstate', e => {
+  const key = (e.state && e.state.athlete) || getAthleteFromURL() || 'bruno';
+  document.getElementById('sel-athlete').value = key;
+  updateDash();
+});
+
+// ── View toggle ────────────────────────────────────────────────────
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.tab-group:first-child .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  ['individual','comparativo','calendario','macro','nutricao'].forEach(id=>{
+    const el = document.getElementById('view-'+id);
+    if(el) el.style.display = v===id ? 'block':'none';
+  });
+  if(v==='comparativo') renderComparativo();
+  if(v==='calendario')  renderCalendar(calAthlete);
+  if(v==='macro')       renderMacro(macroAthlete);
+  if(v==='nutricao')    renderNutricao();
+}
+
+// ── Indicators ─────────────────────────────────────────────────────
+function renderIndicators(d) {
+  const ind = d.indicators || {};
+  const defs = [
+    {key:'fitness', title:'Fitness — Ramp Rate',
+     tooltip:'Velocidade de ganho de fitness (variação do CTL em 7 dias).<br><b>Recovering</b>: CTL caindo — corpo em recuperação.<br><b>Keeping Fit</b>: CTL estável ou crescendo saudável (0–3 pts/semana).<br><b>Going Hard</b>: CTL subindo rápido (>3 pts) — monitorar fadiga acumulada.'},
+    {key:'form',    title:'Form — TSB',
+     tooltip:'Forma atual = Fitness (CTL) − Fadiga (ATL).<br><b>Overloading</b>: TSB negativo elevado — atleta fatigado, risco de overtraining.<br><b>Optimal</b>: TSB entre −15 e +5 — janela ideal de treino produtivo.<br><b>Recharging</b>: TSB positivo — atleta fresco, pronto para competir.'},
+    {key:'fatigue', title:'Fatigue — Direção',
+     tooltip:'Direção da fadiga aguda hoje vs ontem (variação do ATL).<br><b>Decreasing</b>: ATL caindo — fadiga reduzindo, recuperação em curso.<br><b>Stable</b>: ATL estável — carga de treino constante.<br><b>Increasing</b>: ATL subindo — mais carga acumulada nas últimas 24h.'},
+  ];
+  const gradients = {
+    fitness: 'linear-gradient(to right,#4a9eff,#4db87a,#f5a623)',
+    form:    'linear-gradient(to right,#ff5252,#4db87a,#4a9eff)',
+    fatigue: 'linear-gradient(to right,#4db87a,#f5a623,#ff5252)',
+  };
+  document.getElementById('ind-grid').innerHTML = defs.map(def => {
+    const i = ind[def.key] || {label:'—', color:'#8b90a0', pos:50, start:'', end:''};
+    return `<div class="ind-card">
+      <div class="ind-tooltip">${def.tooltip}</div>
+      <div class="ind-label">${def.title}</div>
+      <div class="ind-value" style="color:${i.color}">${i.label}</div>
+      <div class="ind-track" style="background:${gradients[def.key]}">
+        <div class="ind-pointer" style="left:${i.pos}%"></div>
+      </div>
+      <div class="ind-ends"><span>${i.start}</span><span>${i.end}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Main ───────────────────────────────────────────────────────────
+function updateDash() {
+  if(currentView==='comparativo'){renderComparativo();return;}
+  if(currentView==='calendario') {renderCalendar(calAthlete);return;}
+  if(currentView==='macro')      {renderMacro(macroAthlete);return;}
+  const key = getA();
+  setAthleteURL(key);
+  updateSubtitle(key);
+  const d = DB[key];
+  if(!d){return;}
+  renderAlerts(d);
+  renderKPIs(d);
+  renderIndicators(d);
+  renderPMC(d);
+  renderWellness(d);
+  renderZone(d);
+  renderVol(d);
+  renderAdherence(d);
+  renderSessions(d);
+}
+
+// ── Alerts ─────────────────────────────────────────────────────────
+function renderAlerts(d) {
+  const icons={danger:'⚠',warn:'!',ok:'✓',info:'i'};
+  const cls={danger:'a-danger',warn:'a-warn',ok:'a-ok',info:'a-info'};
+  document.getElementById('alerts-bar').innerHTML=(d.alerts||[]).map(a=>
+    `<div class="alert-pill ${cls[a.type]}"><span class="alert-icon">${icons[a.type]}</span>${a.msg}</div>`
+  ).join('');
+}
+
+// ── KPIs ───────────────────────────────────────────────────────────
+const KPI_TOOLTIPS = {
+  ctl: 'Chronic Training Load — mede o fitness acumulado nas últimas 6 semanas (média exponencial de TSS diário). Quanto maior, melhor a base aeróbia. Cresce lentamente com treino consistente.',
+  atl: 'Acute Training Load — mede a fadiga das últimas 7–10 dias. Sobe rápido com treino intenso e cai rápido com descanso. ATL muito acima da CTL indica risco de overtraining.',
+  tsb: 'Training Stress Balance — a "forma" do atleta: CTL − ATL. Positivo = atleta fresco, ideal para competir. Negativo = fatigado, mas é onde o treino acontece. Janela ideal de treino: entre −15 e +5.',
+  tss_week: 'Training Stress Score semanal — carga total de treino acumulada na semana. Calculado a partir da intensidade e duração de cada sessão. Serve para comparar semanas e calibrar a progressão de carga.',
+};
+
+function renderKPIs(d) {
+  const total = totalH(d.vol);
+  const parts = ['swim','bike','run','strength']
+    .filter(k=>d.vol[k]>0).map(k=>`${SPORT_LABEL[k]} ${fmtH(d.vol[k])}`).join(' · ');
+  const defs = [{key:'ctl',label:'CTL — Fitness'},{key:'atl',label:'ATL — Fadiga'},
+                {key:'tsb',label:'TSB — Form'},{key:'tss_week',label:'TSS Semanal'}];
+  document.getElementById('kpi-grid').innerHTML =
+    defs.map(def=>{
+      const val=d.kpis[def.key], delta=d.kpi_delta[def.key];
+      const dir=String(delta).startsWith('+')?'up':String(delta).startsWith('-')?'dn':'nt';
+      const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
+      const tip=KPI_TOOLTIPS[def.key]||'';
+      return `<div class="kpi"><div class="kpi-tooltip">${tip}</div><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
+    }).join('') +
+    `<div class="kpi hl"><div class="kpi-label">Total de horas</div><div class="kpi-value">${fmtH(total)}</div><div class="kpi-sub">${parts}</div></div>`;
+}
+
+// ── PMC ────────────────────────────────────────────────────────────
+function renderPMC(d) {
+  dc('pmc');
+  document.getElementById('pmc-legend').innerHTML=`
+    <span><span class="dot" style="background:#4a9eff"></span>CTL</span>
+    <span><span class="dot" style="background:#ff7c3a"></span>ATL</span>
+    <span><span class="dot" style="background:#4db87a"></span>TSB</span>`;
+  charts['pmc']=new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:d.pmc.labels,datasets:[
+    {label:'CTL',data:d.pmc.ctl,borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,.07)',tension:.4,pointRadius:0,borderWidth:2,fill:true,spanGaps:true},
+    {label:'ATL',data:d.pmc.atl,borderColor:'#ff7c3a',backgroundColor:'rgba(255,124,58,.07)',tension:.4,pointRadius:0,borderWidth:2,fill:true,spanGaps:true},
+    {label:'TSB',data:d.pmc.tsb,borderColor:'#4db87a',borderDash:[5,3],tension:.4,pointRadius:0,borderWidth:2,spanGaps:true},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:items=>{const i=items[0].dataIndex;return d.pmc.labels[i]||'';} }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:'#565c70',font:tf,maxRotation:0,autoSkip:true,maxTicksLimit:11,callback:(v,i)=>{return d.pmc.labels[i]||null;}}},
+      y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}
+    }}});
+}
+
+// ── Wellness ───────────────────────────────────────────────────────
+function renderWellness(d) {
+  const hrv = d.hrv || {};
+  const vals = hrv.vals || [];
+  const sleep = hrv.sleep || [];
+  const rhr   = hrv.resting_hr || [];
+  const batt  = hrv.body_battery || [];
+  const labels= hrv.labels || [];
+
+  // Mini KPI cards
+  const lastHrv   = vals.filter(v=>v>0).slice(-1)[0] || 0;
+  const lastSleep = sleep.filter(v=>v>0).slice(-1)[0] || 0;
+  const lastHR    = rhr.filter(v=>v>0).slice(-1)[0] || 0;
+  const lastBatt  = batt.filter(v=>v>0).slice(-1)[0] || 0;
+
+  document.getElementById('well-grid').innerHTML = `
+    <div class="well-card">
+      <div class="well-tooltip">Variabilidade da frequência cardíaca — mede a capacidade de recuperação do sistema nervoso autônomo. Quanto maior e mais próximo do baseline, melhor a recuperação. Queda >10% por 2+ dias = sinal de alerta.</div>
+      <div class="well-label">HRV (último)</div>
+      <div class="well-value">${lastHrv || '—'}</div>
+      <div class="well-sub">Baseline: ${hrv.baseline || '—'}</div>
+    </div>
+    <div class="well-card">
+      <div class="well-tooltip">Duração do sono da última noite via Garmin Health. O ideal para atletas é 7h30–9h. Sono insuficiente (<7h) prejudica a síntese proteica, aumenta o cortisol e compromete a adaptação ao treino.</div>
+      <div class="well-label">Sono (última noite)</div>
+      <div class="well-value">${lastSleep ? lastSleep.toFixed(1)+'h' : '—'}</div>
+      <div class="well-sub">Via Garmin Health</div>
+    </div>
+    <div class="well-card">
+      <div class="well-tooltip">Frequência cardíaca em repouso — reflete o nível de fadiga acumulada e adaptação cardiovascular. Valores elevados vs. a média do atleta (>5 bpm acima) indicam estresse ou recuperação insuficiente. Tende a diminuir com o aumento do fitness.</div>
+      <div class="well-label">FC Repouso</div>
+      <div class="well-value">${lastHR || '—'}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
+      <div class="well-sub">Último registro</div>
+    </div>
+    <div class="well-card">
+      <div class="well-tooltip">Estimativa Garmin de energia disponível (0–100). Acima de 75 = bem recuperado. Entre 40–75 = recuperação parcial. Abaixo de 40 = fadiga elevada. Útil para calibrar a intensidade do treino do dia.</div>
+      <div class="well-label">Body Battery</div>
+      <div class="well-value">${lastBatt || '—'}</div>
+      <div class="well-sub">Média 14 dias: ${batt.filter(v=>v>0).length ? Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length) : '—'}</div>
+    </div>`;
+
+  // HRV chart
+  dc('hrv');
+  document.getElementById('hrv-legend').innerHTML=`
+    <span><span class="dot" style="background:#9b8fff"></span>HRV</span>
+    <span><span class="dot" style="background:#3a3f52;border:0.5px solid #565c70"></span>Baseline</span>`;
+  if(vals.some(v=>v>0)) {
+    charts['hrv']=new Chart(document.getElementById('hrv-chart'),{type:'line',data:{labels,datasets:[
+      {label:'HRV',data:vals,borderColor:'#9b8fff',backgroundColor:'rgba(155,143,255,.1)',tension:.3,pointRadius:3,borderWidth:2,fill:true},
+      {label:'Baseline',data:Array(vals.length).fill(hrv.baseline||0),borderColor:'#3a3f52',borderDash:[5,3],pointRadius:0,borderWidth:1.5},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
+              y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},suggestedMin:(hrv.baseline||50)-15,suggestedMax:(hrv.baseline||50)+15}}}});
+  } else {
+    document.getElementById('hrv-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">HRV indisponível — sincronize o Garmin no TP</p>';
+  }
+
+  // Sleep chart
+  dc('sleep');
+  if(sleep.some(v=>v>0)) {
+    const sleepAvg = +(sleep.filter(v=>v>0).reduce((a,b)=>a+b,0)/sleep.filter(v=>v>0).length).toFixed(1);
+    charts['sleep']=new Chart(document.getElementById('sleep-chart'),{type:'bar',data:{labels,datasets:[
+      {label:'Sono',data:sleep,backgroundColor:'rgba(74,158,255,.4)',borderColor:'#4a9eff',borderWidth:1,borderRadius:3,order:2},
+      {label:`Média ${sleepAvg}h`,data:Array(labels.length).fill(sleepAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
+              y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},suggestedMin:5,suggestedMax:10}}}});
+  } else {
+    document.getElementById('sleep-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Sono indisponível</p>';
+  }
+
+  // Resting HR chart
+  dc('hr');
+  if(rhr.some(v=>v>0)) {
+    const rhrAvg = Math.round(rhr.filter(v=>v>0).reduce((a,b)=>a+b,0)/rhr.filter(v=>v>0).length);
+    charts['hr']=new Chart(document.getElementById('hr-chart'),{type:'line',data:{labels,datasets:[
+      {label:'FC repouso',data:rhr,borderColor:'#ff5252',backgroundColor:'rgba(255,82,82,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true,order:2},
+      {label:`Média ${rhrAvg} bpm`,data:Array(labels.length).fill(rhrAvg),borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
+      scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
+              y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+' bpm'}}}}});
+  } else {
+    document.getElementById('hr-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">FC repouso indisponível</p>';
+  }
+
+  // Body Battery chart
+  dc('batt');
+  const battCanvas = document.getElementById('batt-chart');
+  const battNodata = document.getElementById('batt-nodata');
+  // Garantir que o canvas existe (pode ter sido escondido numa troca anterior)
+  battCanvas.style.display = '';
+  battNodata.style.display = 'none';
+  if(batt.some(v=>v>0)) {
+    const battAvg = Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length);
+    charts['batt']=new Chart(battCanvas,{type:'bar',data:{labels,datasets:[
+      {label:'Body Battery',data:batt,backgroundColor:batt.map(v=>v>=70?'rgba(77,184,122,.6)':v>=40?'rgba(245,166,35,.6)':'rgba(255,82,82,.6)'),borderRadius:3,order:2},
+      {label:`Média ${battAvg}`,data:Array(labels.length).fill(battAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{filter:i=>i.datasetIndex===0,callbacks:{label:c=>`Body Battery: ${c.raw.toFixed(0)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
+              y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},min:0,max:100}}}});
+  } else {
+    battCanvas.style.display = 'none';
+    battNodata.style.display = 'block';
+  }
+}
+
+// ── Zones ──────────────────────────────────────────────────────────
+function renderZone(d) {
+  dc('zone');
+  document.getElementById('zone-legend').innerHTML=`
+    <span><span class="dot" style="background:#2a5080"></span>Z1</span>
+    <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
+    <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;
+  if(!d.zones.labels.length){
+    document.getElementById('zone-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Dados de zona indisponíveis</p>';return;
+  }
+  charts['zone']=new Chart(document.getElementById('zone-chart'),{type:'bar',data:{labels:d.zones.labels,datasets:[
+    {label:'Z1',data:d.zones.z1,backgroundColor:'#2a5080',borderRadius:3},
+    {label:'Z2',data:d.zones.z2,backgroundColor:'#4a9eff',borderRadius:3},
+    {label:'Z3',data:d.zones.z3,backgroundColor:'#ff7c3a',borderRadius:3},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{stacked:true,max:100,ticks:{color:'#565c70',font:tf,callback:v=>v+'%'},grid:{color:gc}}}}});
+}
+
+// ── Volume ─────────────────────────────────────────────────────────
+function renderVol(d) {
+  dc('vol');
+  const map={swim:['Natação','#4a9eff'],bike:['Bike','#f5a623'],run:['Corrida','#4db87a'],strength:['Força','#9b8fff']};
+  const labels=[],vals=[],colors=[];
+  for(const[k,[l,c]]of Object.entries(map)){
+    // Força sempre aparece (mesmo se 0) para mostrar ausência explícita
+    if(d.vol[k]>0 || k==='strength'){labels.push(l);vals.push(d.vol[k]||0);colors.push(c);}
+  }
+  document.getElementById('vol-total').textContent=fmtH(totalH(d.vol))+' total';
+  document.getElementById('vol-legend').innerHTML=labels.map((l,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${l}</span>`).join('');
+  charts['vol']=new Chart(document.getElementById('vol-chart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${fmtH(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
+}
+
+// ── Adherence ──────────────────────────────────────────────────────
+function renderAdherence(d) {
+  const adh=d.adherence||[];
+  if(!adh.length){document.getElementById('adh-bars').innerHTML='<p style="color:var(--text3);font-size:12px">Sem dados</p>';document.getElementById('adh-overall').textContent='';return;}
+  const overall=Math.round(adh.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/adh.length*100);
+  const oc=overall>=90?'#4db87a':overall>=70?'#f5a623':'#ff7c3a';
+  document.getElementById('adh-overall').innerHTML=`<span style="color:${oc}">${overall}% aderência</span>`;
+  document.getElementById('adh-bars').innerHTML=adh.map(r=>{
+    const pct=Math.min(Math.round(r.done/r.target*100),100);
+    const bc=r.done>r.target?'#4db87a':pct>=85?r.color:'#ff7c3a';
+    return `<div class="adh-row"><span class="adh-label">${r.label}</span><div class="adh-track"><div class="adh-fill" style="width:${pct}%;background:${bc}"></div></div><span class="adh-pct" style="color:${bc}">${pct}%</span><span class="adh-detail">${r.done.toFixed(1)}h / ${r.target.toFixed(1)}h</span></div>`;
+  }).join('');
+}
+
+// ── Sessions ───────────────────────────────────────────────────────
+function renderSessions(d) {
+  const rows=(d.sessions||[]);
+  document.getElementById('sessions-body').innerHTML=rows.length
+    ? rows.map(s=>`<tr><td style="font-weight:600">${s.day}</td><td><span class="badge b-${s.sport}">${SPORT_LABEL[s.sport]||s.sport}</span></td><td style="color:#8b90a0">${s.desc}</td><td>${s.dur}</td><td style="font-weight:600">${s.tss}</td><td style="color:#565c70">${s.zones}</td></tr>`).join('')
+    : '<tr><td colspan="6" style="color:var(--text3);padding:1rem 0">Nenhuma sessão encontrada</td></tr>';
+}
+
+// ── Comparativo ────────────────────────────────────────────────────
+function renderComparativo() {
+  const activeAthletes = ATHLETES.filter(id => DB[id] && DB[id].kpis);
+  const loadMap=[{key:'ctl',label:'CTL'},{key:'atl',label:'ATL'},{key:'tsb',label:'TSB'},{key:'tss_week',label:'TSS semana'}];
+  document.getElementById('cmp-load').innerHTML=activeAthletes.map(id=>{
+    const d=DB[id],tsb=d.kpis.tsb;
+    const tc=tsb>5?'#4db87a':tsb<-10?'#ff7c3a':'#8b90a0';
+    return `<div class="cmp-card"><div class="cmp-name" style="border-left:3px solid ${COLORS[id]};padding-left:10px">${NAMES[id]}</div>${loadMap.map(m=>`<div class="cmp-row"><span class="cmp-k">${m.label}</span><span class="cmp-v" style="${m.key==='tsb'?`color:${tc}`:''}"> ${d.kpis[m.key]}</span></div>`).join('')}<div class="cmp-row"><span class="cmp-k">Horas</span><span class="cmp-v">${fmtH(totalH(d.vol))}</span></div></div>`;
+  }).join('');
+
+  dc('cmp-ctl');
+  document.getElementById('cmp-ctl-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const refLabels = (DB.bruno||DB.jean||Object.values(DB)[0]).pmc.labels;
+  charts['cmp-ctl']=new Chart(document.getElementById('cmp-ctl-chart'),{type:'line',
+    data:{labels:refLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:DB[id].pmc.ctl,borderColor:COLORS[id],tension:.4,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:(v,i)=>{return refLabels[i]||null;}}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+
+  dc('cmp-hrv');
+  document.getElementById('cmp-hrv-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  const hrvLabels=(DB.jean&&DB.jean.hrv||{}).labels||[];
+  charts['cmp-hrv']=new Chart(document.getElementById('cmp-hrv-chart'),{type:'line',
+    data:{labels:hrvLabels,datasets:activeAthletes.filter(id=>(DB[id].hrv||{}).vals?.some(v=>v>0)).map(id=>({label:NAMES[id],data:(DB[id].hrv||{}).vals||[],borderColor:COLORS[id],tension:.3,pointRadius:3,borderWidth:2,backgroundColor:'transparent'}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
+
+  dc('cmp-vol');
+  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];
+  document.getElementById('cmp-vol-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
+  charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',
+    data:{labels:vLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${NAMES[activeAthletes[c.datasetIndex]]}: ${fmtH(c.raw)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
+}
+
+// ── Calendar ───────────────────────────────────────────────────────
+function setCalAthlete(id, btn) {
+  calAthlete = id;
+  document.querySelectorAll('#cal-athlete-select .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderCalendar(id);
+}
+
+function renderCalendar(athleteKey) {
+  const d = DB[athleteKey];
+  const sessions = d.sessions || [];
+  const planned  = d.planned  || [];
+  const today    = new Date();
+  today.setHours(0,0,0,0);
+
+  // Build map of sessions by date
+  const byDate = {};
+  sessions.forEach(s => {
+    if(!byDate[s.date]) byDate[s.date] = [];
+    byDate[s.date].push({...s, done: true});
+  });
+  planned.forEach(s => {
+    if(!byDate[s.date]) byDate[s.date] = [];
+    byDate[s.date].push({...s, done: false});
+  });
+
+  // Show 3 weeks back + 4 weeks forward = 7 weeks total
+  const html = [];
+  for(let w = -2; w <= 4; w++) {
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay() + 1 + w*7); // Monday
+    const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate()+6);
+
+    const isCurrentWeek = w === 0;
+    const isPast = weekEnd < today;
+    const weekLabel = isCurrentWeek ? 'Semana atual' :
+                      w < 0 ? `${Math.abs(w)} semana(s) atrás` : `Em ${w} semana(s)`;
+
+    html.push(`<div class="cal-week">
+      <div class="cal-week-title">
+        ${weekStart.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})} – ${weekEnd.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}
+        <span class="cal-week-badge ${isCurrentWeek?'current':''}">${weekLabel}</span>
+      </div>
+      <div class="cal-days">`);
+
+    for(let dd = 0; dd < 7; dd++) {
+      const day = new Date(weekStart); day.setDate(weekStart.getDate()+dd);
+      const dateStr = day.toISOString().slice(0,10);
+      const dayLabel = DAYS_LABEL[day.getDay()];
+      const isToday  = day.getTime() === today.getTime();
+      const daySessions = byDate[dateStr] || [];
+
+      html.push(`<div class="cal-day" style="${isToday?'border-color:rgba(74,158,255,.5)':''}">
+        <div class="cal-day-label" style="${isToday?'color:var(--blue);font-weight:600':''}">${dayLabel} ${day.getDate()}</div>`);
+
+      daySessions.forEach(s => {
+        const cls = `${s.sport}-${s.done?'done':'planned'}`;
+        const label = s.done ? (s.desc||SPORT_LABEL[s.sport]||'Treino') : (s.desc||SPORT_LABEL[s.sport]||'Planejado');
+        const tss   = s.tss ? ` · ${s.tss} TSS` : '';
+        html.push(`<div class="cal-session ${s.done?'done':'planned'} ${cls}" title="${label}${tss}">${label.slice(0,28)}${label.length>28?'…':''}</div>`);
+      });
+
+      html.push('</div>');
+    }
+    html.push('</div></div>');
+  }
+
+  document.getElementById('calendar-body').innerHTML = html.join('') ||
+    '<p style="color:var(--text3);font-size:13px">Nenhuma sessão encontrada. Os treinos planejados aparecerão aqui quando sincronizados.</p>';
+}
+
+// ── Macro Plan ─────────────────────────────────────────────────────
+let activePhaseIdx = null;
+
+function setMacroAthlete(id, btn) {
+  macroAthlete = id;
+  document.querySelectorAll('#view-macro .tab-group .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderMacro(id);
+}
+
+function renderMacro(athleteKey) {
+  const hasPlan = !!ATHLETE_PLAN[athleteKey];
+
+  if (!hasPlan) {
+    document.getElementById('macro-body').innerHTML = `
+      <div class="card" style="padding:2rem;text-align:center">
+        <div style="font-size:32px;margin-bottom:1rem">📋</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:.5rem">${NAMES[athleteKey]} não tem plano macro cadastrado</div>
+        <div style="font-size:13px;color:var(--text3);line-height:1.7">
+          O plano macro de 29 semanas está ativo para <b style="color:var(--text2)">Jean Romano</b> e <b style="color:var(--text2)">Bruno Trevisan</b>.<br>
+          Para adicionar um plano para este atleta, defina uma prova alvo e periodização.
+        </div>
+      </div>`;
+    return;
+  }
+
+  const currentWeek = currentRaceWeek();
+  const totalW = MACRO_PLAN.total_weeks;
+
+  // Timeline bar
+  let barHtml = '<div class="macro-bar">';
+  MACRO_PLAN.phases.forEach((p,i) => {
+    const span = p.weeks[1] - p.weeks[0] + 1;
+    const pct  = (span / totalW * 100).toFixed(1);
+    barHtml += `<div class="macro-phase" style="background:${p.color};width:${pct}%;flex-shrink:0" onclick="togglePhase(${i})" title="${p.name}: Sem ${p.weeks[0]}–${p.weeks[1]}">${p.name}</div>`;
+  });
+  barHtml += '</div>';
+
+  // Week dots
+  let weeksHtml = '<div class="macro-weeks">';
+  for(let w = 1; w <= totalW; w++) {
+    const phase    = getPhaseForWeek(w);
+    const color    = phase ? phase.color : '#565c70';
+    const isCurrent = w === currentWeek;
+    const isPast    = w < currentWeek;
+    const isDeload  = MACRO_PLAN.deload_weeks.includes(w);
+    const dates     = weekDates(w);
+    const bg = isDeload ? `repeating-linear-gradient(45deg,${color}88,${color}88 3px,${color}44 3px,${color}44 6px)` : color;
+    weeksHtml += `<div class="macro-week ${isPast?'past':''} ${isCurrent?'current':''}" 
+      style="background:${isDeload?color+'66':color};color:#fff;opacity:${isPast?0.45:1};${isDeload?'border:1.5px dashed '+color+'cc;':''}" 
+      onclick="toggleWeek(${w},'${athleteKey}')" 
+      title="S${w}${isDeload?' ■ DESCARGA':''} · ${dates.label}">${w}</div>`;
+  }
+  weeksHtml += '</div>';
+
+  // Phase detail panel
+  const detailHtml = `<div id="phase-detail-panel"></div>`;
+
+  // Race countdown
+  const race = new Date(MACRO_PLAN.race_date);
+  const today2 = new Date(); today2.setHours(0,0,0,0);
+  const daysLeft = Math.ceil((race - today2) / 86400000);
+  const weeksLeft = Math.floor(daysLeft / 7);
+
+  document.getElementById('macro-body').innerHTML = `
+    <div class="card row1" style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center">
+      <div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Semana atual</div>
+        <div style="font-size:28px;font-weight:600">S${currentWeek}<span style="font-size:14px;color:var(--text2);font-weight:400"> / ${totalW}</span></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Buenos Aires 70.3</div>
+        <div style="font-size:28px;font-weight:600">${daysLeft}<span style="font-size:14px;color:var(--text2);font-weight:400"> dias · ${weeksLeft} semanas</span></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Fase atual</div>
+        <div style="font-size:18px;font-weight:600;color:${(getPhaseForWeek(currentWeek)||{}).color||'var(--text)'}">${(getPhaseForWeek(currentWeek)||{}).name||'—'}</div>
+      </div>
+    </div>
+    ${barHtml}
+    ${weeksHtml}
+    ${detailHtml}
+    <p style="font-size:11px;color:var(--text3);margin-top:.5rem">Clique em uma fase ou semana para ver os objetivos detalhados.</p>`;
+
+  // Auto-open semana atual
+  setTimeout(() => toggleWeek(currentWeek, athleteKey), 100);
+}
+
+function weekDates(weekNum) {
+  // Semana 1 começa em 16/mar/2026 (segunda-feira)
+  const week1 = new Date('2026-03-16');
+  const monday = new Date(week1);
+  monday.setDate(week1.getDate() + (weekNum - 1) * 7);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'});
+  return { monday, sunday, label: `${fmt(monday)} – ${fmt(sunday)}` };
+}
+
+function toggleWeek(weekNum, athleteKey) {
+  const panel = document.getElementById('phase-detail-panel');
+  if (!panel) return;
+
+  const phase   = getPhaseForWeek(weekNum);
+  const dates   = weekDates(weekNum);
+  const wd      = MACRO_PLAN.weeks_data[weekNum] || {};
+  const notes   = (DB[athleteKey] || {}).week_notes || {};
+  const note    = notes[weekNum];
+  const curWeek = currentRaceWeek();
+  const isPast  = weekNum < curWeek;
+  const isCur   = weekNum === curWeek;
+  const isDeload = !!wd.deload;
+
+  // CTL atual do atleta (do DB)
+  const d = DB[athleteKey];
+  const ctlActual = (d && isCur) ? d.kpis.ctl : null;
+  const ctlTarget = athleteKey === 'jean' ? wd.ctl_j : athleteKey === 'bruno' ? wd.ctl_b : null;
+  const tssTarget = athleteKey === 'jean' ? wd.tss_j : athleteKey === 'bruno' ? wd.tss_b : null;
+
+  if (panel.dataset.openWeek === String(weekNum)) {
+    panel.innerHTML = '';
+    panel.dataset.openWeek = '';
+    document.querySelectorAll('.macro-week').forEach(el => el.style.outline = '');
+    return;
+  }
+  panel.dataset.openWeek = String(weekNum);
+  document.querySelectorAll('.macro-week').forEach((el, i) => {
+    el.style.outline = (i + 1 === weekNum) ? '2px solid #fff' : '';
+  });
+
+  const statusBadge = isCur
+    ? `<span style="background:rgba(74,158,255,.2);color:#7bbdff;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">semana atual</span>`
+    : isPast
+    ? `<span style="background:rgba(255,255,255,.08);color:var(--text3);font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">concluída</span>`
+    : '';
+
+  const deloadBadge = isDeload
+    ? `<span style="background:rgba(255,124,58,.15);color:#ff7c3a;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:4px">■ DESCARGA</span>`
+    : '';
+
+  // CTL status vs target
+  let ctlHtml = '';
+  if (ctlTarget) {
+    if (ctlActual && isCur) {
+      const diff = (ctlActual - ctlTarget).toFixed(1);
+      const color = diff > 0 ? '#4db87a' : diff < -5 ? '#ff5252' : '#f5a623';
+      const sign  = diff > 0 ? '+' : '';
+      ctlHtml = `
+        <div style="margin-top:1rem;padding:12px;background:var(--bg3);border-radius:var(--radius);display:flex;gap:2rem;flex-wrap:wrap">
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL atual</div><div style="font-size:20px;font-weight:700">${ctlActual}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">${ctlTarget}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">Vs plano</div><div style="font-size:20px;font-weight:700;color:${color}">${sign}${diff}</div></div>
+          ${tssTarget ? `<div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">TSS alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">~${tssTarget}</div></div>` : ''}
+        </div>`;
+    } else {
+      ctlHtml = `
+        <div style="margin-top:1rem;padding:12px;background:var(--bg3);border-radius:var(--radius);display:flex;gap:2rem;flex-wrap:wrap">
+          <div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">CTL alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">${ctlTarget}</div></div>
+          ${tssTarget ? `<div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">TSS alvo</div><div style="font-size:20px;font-weight:700;color:var(--text2)">~${tssTarget}</div></div>` : ''}
+        </div>`;
+    }
+  }
+
+  const noteHtml = note
+    ? `<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Nota do coach</div>
+        <pre style="font-family:var(--font-sans);font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.7">${note.body}</pre>
+      </div>`
+    : `<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);font-size:12px;color:var(--text3)">
+        Nenhuma nota do coach para esta semana.
+      </div>`;
+
+  panel.innerHTML = `<div class="phase-detail">
+    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:.75rem">
+      <h3 style="color:${phase?.color||'var(--text)'}">Semana ${weekNum}</h3>
+      <span style="font-size:13px;color:var(--text2)">${dates.label}</span>
+      ${statusBadge}${deloadBadge}
+      ${phase ? `<span style="font-size:11px;background:${phase.color}22;color:${phase.color};padding:2px 8px;border-radius:4px">${phase.name}</span>` : ''}
+    </div>
+    ${wd.focus ? `<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem">📌 ${wd.focus}</div>` : ''}
+    ${ctlHtml}
+    ${noteHtml}
+  </div>`;
+}
+
+function togglePhase(idx) {
+  if (idx < 0) return;
+  const p = MACRO_PLAN.phases[idx];
+  const panel = document.getElementById('phase-detail-panel');
+  if (!panel) return;
+
+  if (activePhaseIdx === idx && !panel.dataset.openWeek) {
+    panel.innerHTML = '';
+    activePhaseIdx = null;
+    document.querySelectorAll('.macro-phase').forEach(el => el.classList.remove('active'));
+    return;
+  }
+  activePhaseIdx = idx;
+  panel.dataset.openWeek = '';
+  document.querySelectorAll('.macro-phase').forEach((el, i) => el.classList.toggle('active', i === idx));
+  document.querySelectorAll('.macro-week').forEach(el => el.style.outline = '');
+
+  panel.innerHTML = `<div class="phase-detail">
+    <h3 style="color:${p.color}">${p.name} <span style="font-size:13px;color:var(--text2);font-weight:400">· Semanas ${p.weeks[0]}–${p.weeks[1]} · ${weekDates(p.weeks[0]).label.split('–')[0].trim()} – ${weekDates(p.weeks[1]).sunday.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</span></h3>
+    <div class="phase-meta" style="margin-top:.75rem">
+      <span><b>Duração:</b> ${p.weeks[1]-p.weeks[0]+1} semanas</span>
+      <span><b>Objetivo:</b> ${p.goal}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem">
+      <div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Objetivos</div>
+        <ul class="phase-goals" style="padding-left:1.1rem">${(p.objectives||[]).map(o=>`<li>${o}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Sessões-chave</div>
+        <ul class="phase-goals" style="padding-left:1.1rem">${(p.key_sessions||[]).map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>
+    </div>
+  </div>`;
+}
+
+
+// ── Init ───────────────────────────────────────────────────────────
+(function() {
+  const portalAthlete = sessionStorage.getItem('npc_portal_athlete');
+  const portalCoach   = sessionStorage.getItem('npc_portal_coach') === '1';
+  const urlAthlete    = getAthleteFromURL();
+
+  // 1. Definir atleta inicial
+  const sel = document.getElementById('sel-athlete');
+  if (portalAthlete && ATHLETES.includes(portalAthlete)) {
+    _portalOverride = portalAthlete;
+  }
+  if (portalAthlete && ATHLETES.includes(portalAthlete)) {
+    sel.value = portalAthlete;
+  } else if (urlAthlete) {
+    sel.value = urlAthlete;
+  }
+
+  // 2. PORTAL ATLETA — travar interface
+  if (portalAthlete && ATHLETES.includes(portalAthlete)) {
+    sel.disabled = true;
+    sel.style.display = 'none';
+
+    // Esconder Comparativo
+    document.querySelectorAll('.tab-group:first-child .tab-btn').forEach(btn => {
+      if (btn.textContent.trim() === 'Comparativo') btn.style.display = 'none';
+    });
+
+    // Esconder aba Nutrição se atleta não tiver plano
+    const nutriBtn = document.getElementById('tab-btn-nutri');
+    if (nutriBtn && !NUTR_ATHLETES.includes(portalAthlete)) {
+      nutriBtn.style.display = 'none';
+    }
+
+    // Nome do atleta + botão Sair
+    const portalLabel = document.createElement('div');
+    portalLabel.style.cssText = 'display:flex;align-items:center;gap:.6rem';
+    portalLabel.innerHTML = `
+      <span style="font-size:.8rem;color:var(--text2);font-weight:600">${NAMES[portalAthlete] || portalAthlete}</span>
+      <button onclick="sessionStorage.removeItem('npc_portal_athlete');location.href='atleta.html'"
+        style="background:rgba(74,155,190,.12);border:1px solid rgba(74,155,190,.2);border-radius:6px;
+               color:var(--ice);cursor:pointer;font-size:.72rem;padding:.25rem .65rem;transition:all .2s"
+        onmouseover="this.style.borderColor='var(--ice)'"
+        onmouseout="this.style.borderColor='rgba(74,155,190,.2)'">Sair</button>`;
+    sel.parentNode.insertBefore(portalLabel, sel);
+
+    // Esconder outros atletas em Calendário e Macro
+    setTimeout(() => {
+      document.getElementById('cal-athlete-select')?.querySelectorAll('.tab-btn').forEach(btn => {
+        const txt = btn.textContent.trim().toLowerCase().replace(' ✓','');
+        btn.style.display = txt === portalAthlete ? '' : 'none';
+      });
+      document.querySelectorAll('#view-macro .tab-group .tab-btn').forEach(btn => {
+        const txt = btn.textContent.trim().toLowerCase().replace(' ✓','');
+        btn.style.display = txt === portalAthlete ? '' : 'none';
+      });
+      if (typeof setMacroAthlete === 'function') setMacroAthlete(portalAthlete);
+      if (typeof setCalAthlete   === 'function') setCalAthlete(portalAthlete);
+    }, 0);
+  }
+
+  // 3. PORTAL TREINADOR — só botão Sair
+  if (portalCoach) {
+    const sairDiv = document.createElement('div');
+    sairDiv.style.cssText = 'display:flex;align-items:center;gap:.6rem';
+    sairDiv.innerHTML = `
+      <button onclick="sessionStorage.removeItem('npc_portal_coach');location.href='index.html'"
+        style="background:rgba(232,93,36,.12);border:1px solid rgba(232,93,36,.2);border-radius:6px;
+               color:#e85d24;cursor:pointer;font-size:.72rem;padding:.25rem .65rem;transition:all .2s"
+        onmouseover="this.style.borderColor='#e85d24'"
+        onmouseout="this.style.borderColor='rgba(232,93,36,.2)'">Sair</button>`;
+    sel.parentNode.insertBefore(sairDiv, sel.nextSibling);
+
+    // Esconder aba Nutrição para o treinador
+    const nutriBtn = document.getElementById('tab-btn-nutri');
+    if (nutriBtn) nutriBtn.style.display = 'none';
+  }
+
+  // 4. Renderizar dashboard
+  updateDash();
+})();
 </script>
 </body>
 </html>
