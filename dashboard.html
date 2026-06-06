@@ -204,6 +204,8 @@
   <!-- Individual -->
   <div id="view-individual">
     <div id="alerts-bar" class="alerts"></div>
+    <div id="today-card" style="display:none"></div>
+
     <div class="kpi-grid" id="kpi-grid"></div>
     <div class="ind-grid" id="ind-grid"></div>
     <div class="card row1">
@@ -325,7 +327,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 06/06/2026 19:46 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 06/06/2026 20:27 (Supabase)</div>
 </div>
 
 <script>
@@ -3076,6 +3078,7 @@ function updateDash() {
   const d = DB[key];
   if(!d){return;}
   renderAlerts(d);
+  renderToday(key);
   renderKPIs(d);
   renderIndicators(d);
   renderPMC(d);
