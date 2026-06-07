@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NPC Endurance — Dashboard de Treinos</title>
+  <title>NPC Endurance â€” Dashboard de Treinos</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -181,14 +181,14 @@
         <span class="logo-badge">NPC</span>
         <span class="logo-title">Endurance</span>
       </div>
-      <div class="logo-sub" id="logo-sub">Dashboard de Treinos · NPC Endurance</div>
+      <div class="logo-sub" id="logo-sub">Dashboard de Treinos Â· NPC Endurance</div>
     </div>
     <div class="ctrls">
       <div class="tab-group">
         <button class="tab-btn active" onclick="setView('individual',this)">Individual</button>
         <button class="tab-btn" onclick="setView('comparativo',this)">Comparativo</button>
         <button class="tab-btn" onclick="setView('macro',this)">Plano Macro</button>
-        <button class="tab-btn" id="tab-btn-nutri" onclick="setView('nutricao',this)">Nutrição</button>
+        <button class="tab-btn" id="tab-btn-nutri" onclick="setView('nutricao',this)">NutriÃ§Ã£o</button>
       </div>
       <select id="sel-athlete" onchange="updateDash()">
         <option value="bruno">Bruno Trevisan</option>
@@ -204,10 +204,27 @@
   <!-- Individual -->
   <div id="view-individual">
     <div id="alerts-bar" class="alerts"></div>
+    <div id="today-card" class="today-card" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+        <span style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.09em">📅 Hoje</span>
+      </div>
+      <div id="today-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.75rem"></div>
+      <div id="today-rec-wrapper" style="margin-bottom:.75rem"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px">Treinos realizados</div>
+          <div id="today-done"></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px">Amanhã — planejado</div>
+          <div id="today-tomorrow"></div>
+        </div>
+      </div>
+    </div>
     <div class="kpi-grid" id="kpi-grid"></div>
     <div class="ind-grid" id="ind-grid"></div>
     <div class="card row1">
-      <div class="card-title">Tendência de carga — CTL / ATL / TSB (75 dias)</div>
+      <div class="card-title">TendÃªncia de carga â€” CTL / ATL / TSB (75 dias)</div>
       <div class="legend" id="pmc-legend"></div>
       <div style="position:relative;height:190px"><canvas id="pmc-chart"></canvas></div>
     </div>
@@ -215,27 +232,27 @@
     <div class="well-grid" id="well-grid"></div>
     <div class="row3">
       <div class="card">
-        <div class="card-title">HRV — 14 dias</div>
+        <div class="card-title">HRV â€” 14 dias</div>
         <div class="legend" id="hrv-legend"></div>
         <div style="position:relative;height:180px"><canvas id="hrv-chart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">Sono — 14 dias (horas)</div>
+        <div class="card-title">Sono â€” 14 dias (horas)</div>
         <div style="position:relative;height:180px"><canvas id="sleep-chart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">FC repouso — 14 dias</div>
+        <div class="card-title">FC repouso â€” 14 dias</div>
         <div style="position:relative;height:180px"><canvas id="hr-chart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">Body Battery — 14 dias</div>
+        <div class="card-title">Body Battery â€” 14 dias</div>
         <div style="position:relative;height:180px"><canvas id="batt-chart"></canvas></div>
-        <p id="batt-nodata" style="display:none;color:var(--text3);font-size:12px;padding:1rem 0">Body Battery indisponível</p>
+        <p id="batt-nodata" style="display:none;color:var(--text3);font-size:12px;padding:1rem 0">Body Battery indisponÃ­vel</p>
       </div>
     </div>
     <div class="row2">
       <div class="card">
-        <div class="card-title">Distribuição de zonas (%)</div>
+        <div class="card-title">DistribuiÃ§Ã£o de zonas (%)</div>
         <div class="legend" id="zone-legend"></div>
         <div style="position:relative;height:150px"><canvas id="zone-chart"></canvas></div>
       </div>
@@ -250,15 +267,15 @@
     </div>
     <div class="card row1">
       <div class="card-title-row">
-        <span class="card-title">Aderência ao plano</span>
+        <span class="card-title">AderÃªncia ao plano</span>
         <span id="adh-overall" style="font-size:13px;font-weight:600"></span>
       </div>
       <div id="adh-bars"></div>
     </div>
     <div class="card">
-      <div class="card-title">Sessões recentes</div>
+      <div class="card-title">SessÃµes recentes</div>
       <table class="stbl">
-        <thead><tr><th>Dia</th><th>Modalidade</th><th>Descrição</th><th>Duração</th><th>TSS</th><th>Zonas</th></tr></thead>
+        <thead><tr><th>Dia</th><th>Modalidade</th><th>DescriÃ§Ã£o</th><th>DuraÃ§Ã£o</th><th>TSS</th><th>Zonas</th></tr></thead>
         <tbody id="sessions-body"></tbody>
       </table>
     </div>
@@ -266,16 +283,16 @@
 
   <!-- Comparativo -->
   <div id="view-comparativo" style="display:none">
-    <div class="section-label">Métricas de carga</div>
+    <div class="section-label">MÃ©tricas de carga</div>
     <div class="cmp-grid" id="cmp-load"></div>
     <div class="row2">
       <div class="card">
-        <div class="card-title">CTL — evolução comparativa</div>
+        <div class="card-title">CTL â€” evoluÃ§Ã£o comparativa</div>
         <div class="legend" id="cmp-ctl-legend"></div>
         <div style="position:relative;height:190px"><canvas id="cmp-ctl-chart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">HRV — evolução comparativa (14 dias)</div>
+        <div class="card-title">HRV â€” evoluÃ§Ã£o comparativa (14 dias)</div>
         <div class="legend" id="cmp-hrv-legend"></div>
         <div style="position:relative;height:190px"><canvas id="cmp-hrv-chart"></canvas></div>
       </div>
@@ -287,7 +304,7 @@
     </div>
   </div>
 
-  <!-- Calendário -->
+  <!-- CalendÃ¡rio -->
   <div id="view-calendario" style="display:none">
     <div id="cal-athlete-select" style="margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
       <span style="font-size:12px;color:var(--text2)">Atleta:</span>
@@ -299,7 +316,7 @@
         <button class="tab-btn" onclick="setCalAthlete('simony',this)">Simony</button>
         <button class="tab-btn" onclick="setCalAthlete('clara',this)">Clara</button>
       </div>
-      <span style="font-size:11px;color:var(--text3)">Sólido = realizado · Tracejado = planejado</span>
+      <span style="font-size:11px;color:var(--text3)">SÃ³lido = realizado Â· Tracejado = planejado</span>
     </div>
     <div id="calendar-body"></div>
   </div>
@@ -309,8 +326,8 @@
     <div style="margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
       <span style="font-size:12px;color:var(--text2)">Atleta:</span>
       <div class="tab-group">
-        <button class="tab-btn active" onclick="setMacroAthlete('bruno',this)">Bruno ✓</button>
-        <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean ✓</button>
+        <button class="tab-btn active" onclick="setMacroAthlete('bruno',this)">Bruno âœ“</button>
+        <button class="tab-btn" onclick="setMacroAthlete('jean',this)">Jean âœ“</button>
         <button class="tab-btn" onclick="setMacroAthlete('gabriel',this)">Gabriel</button>
         <button class="tab-btn" onclick="setMacroAthlete('rafael',this)">Rafael</button>
         <button class="tab-btn" onclick="setMacroAthlete('simony',this)">Simony</button>
@@ -320,12 +337,12 @@
     <div id="macro-body"></div>
   </div>
 
-  <!-- Nutrição -->
+  <!-- NutriÃ§Ã£o -->
   <div id="view-nutricao" style="display:none">
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 06/06/2026 21:00 (Supabase)</div>
+  <div class="footer">NPC Endurance Â· MÃ©todo NorueguÃªs Â· Dados via TrainingPeaks Â· Gerado em 06/06/2026 21:02 (Supabase)</div>
 </div>
 
 <script>
@@ -2727,28 +2744,28 @@ const DB = {
   }
 };
 
-// ── Nutrition ──────────────────────────────────────────────────────
+// â”€â”€ Nutrition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NUTR_ATHLETES = ['bruno'];
 const NUTR_PLAN = {
-  rest:      {label:'Descanso',    kcal:2350,carb:245,prot:225,fat:70, water:2500,tips:['Reduzir carbo no almoço (100g) e na janta (75g)','Aumentar oleaginosas para 70g no lanche tarde','Acrescentar azeite extra nas saladas','Manter proteína total']},
-  easy:      {label:'Z1 Leve',     kcal:2600,carb:300,prot:225,fat:62, water:2800,tips:['Desjejum 30min antes do treino','Manter dieta base sem ajustes','Pós-treino: fazer a próxima refeição normalmente']},
-  threshold: {label:'Limiar (DT)', kcal:3050,carb:400,prot:245,fat:52, water:3000,tips:['Desjejum: aumentar pão para 80g','Almoço: aumentar carbo para 250g','Lanche tarde: reduzir oleaginosas para 30g','1 dose whey extra pós-sessão']},
-  double:    {label:'Duplo Limiar',kcal:3200,carb:430,prot:250,fat:50, water:3200,tips:['Entre treinos: 1 gel + 350ml água de coco OBRIGATÓRIO','Almoço: 260g de carbo','Janta: aumentar carbo para 200g','Oleaginosas: 25g']},
-  vo2max:    {label:'VO2max / Z3', kcal:3100,carb:415,prot:245,fat:48, water:3200,tips:['Refeição imediata pós-sessão (máx 30min)','Almoço: 250g carbo','Desjejum: 80g pão','Oleaginosas: 25g']},
-  long:      {label:'Treino Longo',kcal:3150,carb:425,prot:245,fat:55, water:3500,tips:['1 liquidz OU jungle OU 1L água de coco hoje','DURANTE bike >2h: 60g xtratus + 1 gel a cada 30min','DURANTE corrida: 1 gel a cada 30min','600ml água/hora durante treino']},
-  pre_race:  {label:'Pré-Prova',  kcal:3100,carb:460,prot:225,fat:42, water:3000,tips:['Janta: macarrão à vontade','1 liquidz OU 1L água de coco','Reduzir fibra e gordura na janta','Não testar alimentos novos']},
-  race_day:  {label:'Dia de Prova',kcal:3200,carb:490,prot:225,fat:35,water:3000,tips:['Café da manhã normal — largada >2h: 1 gel no início','DURANTE: 1 gel a cada 30min + 600ml água/h + sal','Bike >2h: 60g xtratus + 1 gel a cada 30min','PÓS: ½ dose whey + 200ml água de coco + 200g frutas']},
-  post_race: {label:'Pós-Prova',  kcal:2900,carb:360,prot:275,fat:60, water:3500,tips:['½ dose whey + 200ml água de coco + 200g frutas vermelhas','Priorizar proteína para recuperação','Manter carboidrato moderado-alto','Hidratação: 3.500ml']},
+  rest:      {label:'Descanso',    kcal:2350,carb:245,prot:225,fat:70, water:2500,tips:['Reduzir carbo no almoÃ§o (100g) e na janta (75g)','Aumentar oleaginosas para 70g no lanche tarde','Acrescentar azeite extra nas saladas','Manter proteÃ­na total']},
+  easy:      {label:'Z1 Leve',     kcal:2600,carb:300,prot:225,fat:62, water:2800,tips:['Desjejum 30min antes do treino','Manter dieta base sem ajustes','PÃ³s-treino: fazer a prÃ³xima refeiÃ§Ã£o normalmente']},
+  threshold: {label:'Limiar (DT)', kcal:3050,carb:400,prot:245,fat:52, water:3000,tips:['Desjejum: aumentar pÃ£o para 80g','AlmoÃ§o: aumentar carbo para 250g','Lanche tarde: reduzir oleaginosas para 30g','1 dose whey extra pÃ³s-sessÃ£o']},
+  double:    {label:'Duplo Limiar',kcal:3200,carb:430,prot:250,fat:50, water:3200,tips:['Entre treinos: 1 gel + 350ml Ã¡gua de coco OBRIGATÃ“RIO','AlmoÃ§o: 260g de carbo','Janta: aumentar carbo para 200g','Oleaginosas: 25g']},
+  vo2max:    {label:'VO2max / Z3', kcal:3100,carb:415,prot:245,fat:48, water:3200,tips:['RefeiÃ§Ã£o imediata pÃ³s-sessÃ£o (mÃ¡x 30min)','AlmoÃ§o: 250g carbo','Desjejum: 80g pÃ£o','Oleaginosas: 25g']},
+  long:      {label:'Treino Longo',kcal:3150,carb:425,prot:245,fat:55, water:3500,tips:['1 liquidz OU jungle OU 1L Ã¡gua de coco hoje','DURANTE bike >2h: 60g xtratus + 1 gel a cada 30min','DURANTE corrida: 1 gel a cada 30min','600ml Ã¡gua/hora durante treino']},
+  pre_race:  {label:'PrÃ©-Prova',  kcal:3100,carb:460,prot:225,fat:42, water:3000,tips:['Janta: macarrÃ£o Ã  vontade','1 liquidz OU 1L Ã¡gua de coco','Reduzir fibra e gordura na janta','NÃ£o testar alimentos novos']},
+  race_day:  {label:'Dia de Prova',kcal:3200,carb:490,prot:225,fat:35,water:3000,tips:['CafÃ© da manhÃ£ normal â€” largada >2h: 1 gel no inÃ­cio','DURANTE: 1 gel a cada 30min + 600ml Ã¡gua/h + sal','Bike >2h: 60g xtratus + 1 gel a cada 30min','PÃ“S: Â½ dose whey + 200ml Ã¡gua de coco + 200g frutas']},
+  post_race: {label:'PÃ³s-Prova',  kcal:2900,carb:360,prot:275,fat:60, water:3500,tips:['Â½ dose whey + 200ml Ã¡gua de coco + 200g frutas vermelhas','Priorizar proteÃ­na para recuperaÃ§Ã£o','Manter carboidrato moderado-alto','HidrataÃ§Ã£o: 3.500ml']},
 };
 const NUTR_MEALS = [
-  {time:'06:00',name:'Desjejum',      kcal:250, carb:52,prot:6, fat:2, desc:'2 fatias pão integral OU fermentação natural (60g) + 30g geleia + café'},
-  {time:'07:30',name:'Entre treinos', kcal:60,  carb:15,prot:0, fat:0, desc:'Dupla sessão apenas — 100g fruta OU ½ BTnitrato OU 1 gel OU 350ml água de coco'},
-  {time:'08:30',name:'Lanche manhã',  kcal:221, carb:29,prot:24,fat:1, desc:'1 dose whey protein + 200g de frutas'},
-  {time:'10:30',name:'Café da manhã', kcal:365, carb:17,prot:27,fat:21,desc:'Op.1: 1 fatia pão + 4 ovos | Op.2: 40g tapioca + 2 ovos + 90g frango'},
-  {time:'13:00',name:'Almoço',        kcal:641, carb:82,prot:67,fat:5, desc:'Salada à vontade + 100g vegetal + 200g carbo + 225g frango/peixe ou 150g carne'},
+  {time:'06:00',name:'Desjejum',      kcal:250, carb:52,prot:6, fat:2, desc:'2 fatias pÃ£o integral OU fermentaÃ§Ã£o natural (60g) + 30g geleia + cafÃ©'},
+  {time:'07:30',name:'Entre treinos', kcal:60,  carb:15,prot:0, fat:0, desc:'Dupla sessÃ£o apenas â€” 100g fruta OU Â½ BTnitrato OU 1 gel OU 350ml Ã¡gua de coco'},
+  {time:'08:30',name:'Lanche manhÃ£',  kcal:221, carb:29,prot:24,fat:1, desc:'1 dose whey protein + 200g de frutas'},
+  {time:'10:30',name:'CafÃ© da manhÃ£', kcal:365, carb:17,prot:27,fat:21,desc:'Op.1: 1 fatia pÃ£o + 4 ovos | Op.2: 40g tapioca + 2 ovos + 90g frango'},
+  {time:'13:00',name:'AlmoÃ§o',        kcal:641, carb:82,prot:67,fat:5, desc:'Salada Ã  vontade + 100g vegetal + 200g carbo + 225g frango/peixe ou 150g carne'},
   {time:'15:00',name:'Lanche tarde 1',kcal:397, carb:33,prot:10,fat:25,desc:'Op.1: 200g frutas + 50g oleaginosas | Op.2: 100g frutas + 25g aveia + 50g amendoim'},
   {time:'18:00',name:'Lanche tarde 2',kcal:277, carb:42,prot:25,fat:1, desc:'1 dose whey protein + 300g de frutas'},
-  {time:'20:00',name:'Janta',         kcal:601, carb:72,prot:67,fat:5, desc:'Salada à vontade + 200g vegetal + 150g carbo + 225g frango/peixe ou 150g carne'},
+  {time:'20:00',name:'Janta',         kcal:601, carb:72,prot:67,fat:5, desc:'Salada Ã  vontade + 200g vegetal + 150g carbo + 225g frango/peixe ou 150g carne'},
 ];
 const NUTR_BASE = 2750;
 function parseDurMin(dur) {
@@ -2759,7 +2776,7 @@ function parseDurMin(dur) {
 }
 function classifyNutrDay(sessions) {
   if (!sessions || !sessions.length) return 'rest';
-  // Filtrar Other/Alfredson (≤10min)
+  // Filtrar Other/Alfredson (â‰¤10min)
   var real = sessions.filter(function(s) {
     var title = (s.desc || '').toLowerCase();
     var dur = parseDurMin(s.dur);
@@ -2772,7 +2789,7 @@ function classifyNutrDay(sessions) {
   var hasRun  = real.some(function(s){ return s.sport === 'run'; });
   var hasStr  = real.some(function(s){ return s.sport === 'strength'; });
   var isDT    = /limiar|threshold|dt1|dt2|duplo|vo2|z3|intervalado/.test(titles);
-  // Duração da bike em minutos
+  // DuraÃ§Ã£o da bike em minutos
   var bikeDur = real.filter(function(s){ return s.sport==='bike'; })
                     .reduce(function(a,s){ return a+parseDurMin(s.dur); }, 0);
   var runDur  = real.filter(function(s){ return s.sport==='run'; })
@@ -2782,7 +2799,7 @@ function classifyNutrDay(sessions) {
   if (isDT)             return 'threshold';
   if (bikeDur >= 120 || (bikeDur >= 90 && hasRun)) return 'long';
   if (runDur >= 90)     return 'long';
-  if (hasSwim)          return 'threshold'; // natação sempre tem estímulo
+  if (hasSwim)          return 'threshold'; // nataÃ§Ã£o sempre tem estÃ­mulo
   if (hasStr && !hasSwim && !hasBike && !hasRun) return 'easy';
   if ((hasBike || hasRun) && !hasSwim) return 'easy';
   return 'rest';
@@ -2791,51 +2808,51 @@ function renderNutricao() {
   var key=getA(), el=document.getElementById('nutri-body');
   if(!el)return;
   if(!NUTR_ATHLETES.includes(key)){
-    el.innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)"><div style="font-size:2rem;margin-bottom:.75rem">🥗</div><div>Plano nutricional não cadastrado para este atleta.</div></div>';
+    el.innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)"><div style="font-size:2rem;margin-bottom:.75rem">ðŸ¥—</div><div>Plano nutricional nÃ£o cadastrado para este atleta.</div></div>';
     return;
   }
   var d=DB[key], sessions=d?(d.sessions||[]):[];
-  var DAYS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-  var DAY_FULL=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
-  var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
+  var DAYS=['Seg','Ter','Qua','Qui','Sex','SÃ¡b','Dom'];
+  var DAY_FULL=['Segunda','TerÃ§a','Quarta','Quinta','Sexta','SÃ¡bado','Domingo'];
+  var SPORT_ICON={swim:'ðŸŠ',bike:'ðŸš´',run:'ðŸƒ',strength:'ðŸ’ª'};
   var tc_map={rest:'#7a9ab8',easy:'#2ecc71',threshold:'#4a9bbe',double:'#4a9bbe',vo2max:'#e85d24',long:'#f39c12',pre_race:'#e85d24',race_day:'#e74c3c',post_race:'#2ecc71'};
 
   // Adjusted meals per day type
   var MEAL_ADJUST = {
-    rest:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pão integral (60g) + geleia natural + café',                              c:52,  p:6,  g:2,  k:250},
-                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
-                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
-                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 100g carbo + 225g frango/peixe',          c:41,  p:67, g:5,  k:481},
-                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 70g oleaginosas (castanha/amêndoa/nozes)',                           c:33,  p:10, g:43, k:555},
+    rest:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pÃ£o integral (60g) + geleia natural + cafÃ©',                              c:52,  p:6,  g:2,  k:250},
+                {t:'08:30',n:'Lanche manhÃ£',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'CafÃ© da manhÃ£',  d:'1 fatia pÃ£o + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'AlmoÃ§o',         d:'Salada Ã  vontade + 100g vegetal cozido + 100g carbo + 225g frango/peixe',          c:41,  p:67, g:5,  k:481},
+                {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 70g oleaginosas (castanha/amÃªndoa/nozes)',                           c:33,  p:10, g:43, k:555},
                 {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
-                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 75g carbo + 225g frango/peixe',           c:27,  p:67, g:5,  k:421}],
-    easy:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pão integral (60g) + geleia natural + café',                              c:52,  p:6,  g:2,  k:250},
-                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
-                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
-                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 200g carbo + 225g frango/peixe',          c:82,  p:67, g:5,  k:641},
+                {t:'20:00',n:'Janta',          d:'Salada Ã  vontade + 200g vegetal cozido + 75g carbo + 225g frango/peixe',           c:27,  p:67, g:5,  k:421}],
+    easy:      [{t:'06:00',n:'Desjejum',      d:'2 fatias pÃ£o integral (60g) + geleia natural + cafÃ©',                              c:52,  p:6,  g:2,  k:250},
+                {t:'08:30',n:'Lanche manhÃ£',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'CafÃ© da manhÃ£',  d:'1 fatia pÃ£o + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'AlmoÃ§o',         d:'Salada Ã  vontade + 100g vegetal cozido + 200g carbo + 225g frango/peixe',          c:82,  p:67, g:5,  k:641},
                 {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 50g oleaginosas',                                                    c:33,  p:10, g:25, k:397},
                 {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
-                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 150g carbo + 225g frango/peixe',          c:72,  p:67, g:5,  k:601}],
-    threshold: [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia natural + café',                                         c:62,  p:7,  g:2,  k:293},
-                {t:'07:30',n:'Entre treinos',  d:'1 gel de carboidrato + 350ml água de coco',                                        c:35,  p:0,  g:0,  k:140},
-                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
-                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
-                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 250g carbo + 225g frango/peixe',          c:102, p:67, g:5,  k:737},
+                {t:'20:00',n:'Janta',          d:'Salada Ã  vontade + 200g vegetal cozido + 150g carbo + 225g frango/peixe',          c:72,  p:67, g:5,  k:601}],
+    threshold: [{t:'06:00',n:'Desjejum',      d:'80g pÃ£o integral + geleia natural + cafÃ©',                                         c:62,  p:7,  g:2,  k:293},
+                {t:'07:30',n:'Entre treinos',  d:'1 gel de carboidrato + 350ml Ã¡gua de coco',                                        c:35,  p:0,  g:0,  k:140},
+                {t:'08:30',n:'Lanche manhÃ£',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'CafÃ© da manhÃ£',  d:'1 fatia pÃ£o + 4 ovos (mexido/cozido)',                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'AlmoÃ§o',         d:'Salada Ã  vontade + 100g vegetal cozido + 250g carbo + 225g frango/peixe',          c:102, p:67, g:5,  k:737},
                 {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 30g oleaginosas',                                                    c:33,  p:8,  g:15, k:295},
                 {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
-                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
-    double:    [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia natural + café',                                         c:62,  p:7,  g:2,  k:293},
-                {t:'07:30',n:'Entre treinos',  d:'1 gel OBRIGATÓRIO + 350ml água de coco',                                           c:50,  p:0,  g:0,  k:200},
-                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
-                {t:'10:30',n:'Café da manhã',  d:'40g tapioca + 2 ovos + 90g frango desfiado',                                       c:32,  p:35, g:7,  k:335},
-                {t:'13:00',n:'Almoço',         d:'Salada à vontade + 100g vegetal cozido + 260g carbo + 225g frango/peixe',          c:107, p:67, g:5,  k:761},
+                {t:'20:00',n:'Janta',          d:'Salada Ã  vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
+    double:    [{t:'06:00',n:'Desjejum',      d:'80g pÃ£o integral + geleia natural + cafÃ©',                                         c:62,  p:7,  g:2,  k:293},
+                {t:'07:30',n:'Entre treinos',  d:'1 gel OBRIGATÃ“RIO + 350ml Ã¡gua de coco',                                           c:50,  p:0,  g:0,  k:200},
+                {t:'08:30',n:'Lanche manhÃ£',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'CafÃ© da manhÃ£',  d:'40g tapioca + 2 ovos + 90g frango desfiado',                                       c:32,  p:35, g:7,  k:335},
+                {t:'13:00',n:'AlmoÃ§o',         d:'Salada Ã  vontade + 100g vegetal cozido + 260g carbo + 225g frango/peixe',          c:107, p:67, g:5,  k:761},
                 {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 25g oleaginosas + 1 dose whey',                                      c:40,  p:34, g:13, k:413},
                 {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
-                {t:'20:00',n:'Janta',          d:'Salada à vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
-    long:      [{t:'06:00',n:'Desjejum',      d:'80g pão integral + geleia + café + 1 liquidz OU 1L água de coco (preparação)',      c:72,  p:7,  g:2,  k:333},
-                {t:'08:30',n:'Lanche manhã',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
-                {t:'10:30',n:'Café da manhã',  d:'1 fatia pão + 4 ovos',                                                             c:17,  p:27, g:21, k:365},
-                {t:'13:00',n:'Almoço',         d:'Salada + 100g vegetal + 260g carbo + 225g frango/peixe',                           c:107, p:67, g:5,  k:761},
+                {t:'20:00',n:'Janta',          d:'Salada Ã  vontade + 200g vegetal cozido + 200g carbo + 225g frango/peixe',          c:92,  p:67, g:5,  k:721}],
+    long:      [{t:'06:00',n:'Desjejum',      d:'80g pÃ£o integral + geleia + cafÃ© + 1 liquidz OU 1L Ã¡gua de coco (preparaÃ§Ã£o)',      c:72,  p:7,  g:2,  k:333},
+                {t:'08:30',n:'Lanche manhÃ£',   d:'1 dose whey + 200g frutas',                                                        c:29,  p:24, g:1,  k:221},
+                {t:'10:30',n:'CafÃ© da manhÃ£',  d:'1 fatia pÃ£o + 4 ovos',                                                             c:17,  p:27, g:21, k:365},
+                {t:'13:00',n:'AlmoÃ§o',         d:'Salada + 100g vegetal + 260g carbo + 225g frango/peixe',                           c:107, p:67, g:5,  k:761},
                 {t:'15:00',n:'Lanche tarde 1', d:'200g frutas + 50g oleaginosas',                                                    c:33,  p:10, g:25, k:397},
                 {t:'18:00',n:'Lanche tarde 2', d:'1 dose whey + 300g frutas',                                                        c:42,  p:25, g:1,  k:277},
                 {t:'20:00',n:'Janta',          d:'Salada + 200g vegetal + 200g carbo + 225g frango/peixe + azeite extra',            c:92,  p:67, g:10, k:741}],
@@ -2880,9 +2897,9 @@ function renderNutricao() {
       html+='<div style="font-size:11px;font-weight:700;color:'+m.c+'">'+m.v+'</div>';
     });
     html+='</div>';
-    html+='<div style="font-size:10px;color:var(--text3)">💧 '+(nutr.water/1000).toFixed(1)+'L &nbsp;·&nbsp; <span style="color:'+tc+'">'+ds+'</span> kcal</div>';
+    html+='<div style="font-size:10px;color:var(--text3)">ðŸ’§ '+(nutr.water/1000).toFixed(1)+'L &nbsp;Â·&nbsp; <span style="color:'+tc+'">'+ds+'</span> kcal</div>';
     html+='</div>';
-    html+='<div style="padding:.3rem .75rem .5rem;border-top:0.5px solid var(--border);font-size:10px;color:'+tc+';text-align:center">Toque para ver as refeições →</div>';
+    html+='<div style="padding:.3rem .75rem .5rem;border-top:0.5px solid var(--border);font-size:10px;color:'+tc+';text-align:center">Toque para ver as refeiÃ§Ãµes â†’</div>';
     html+='</div>';
   });
   html+='</div>';
@@ -2892,7 +2909,7 @@ function renderNutricao() {
   html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">';
   html+='<div id="nutr-detail-title" style="font-size:15px;font-weight:700;color:var(--text)"></div>';
   html+='<button onclick="document.getElementById(\'nutr-detail\').style.display=\'none\'" '+
-        'style="background:none;border:0.5px solid var(--border2);border-radius:6px;color:var(--text3);cursor:pointer;font-size:11px;padding:.25rem .6rem">✕ Fechar</button>';
+        'style="background:none;border:0.5px solid var(--border2);border-radius:6px;color:var(--text3);cursor:pointer;font-size:11px;padding:.25rem .6rem">âœ• Fechar</button>';
   html+='</div>';
   html+='<div id="nutr-detail-body"></div>';
   html+='</div>';
@@ -2913,20 +2930,20 @@ function showNutrDay(idx) {
   var bodyEl=document.getElementById('nutr-detail-body');
   if(!panel||!titleEl||!bodyEl)return;
 
-  var SPORT_ICON={swim:'🏊',bike:'🚴',run:'🏃',strength:'💪'};
-  var sessionStr=dd.sessions.length ? dd.sessions.map(function(s){return (SPORT_ICON[s.sport]||'')+' '+s.desc.split('—')[0].trim()+(s.dur?' ('+s.dur+')':'');}).join(' + ') : 'Descanso';
+  var SPORT_ICON={swim:'ðŸŠ',bike:'ðŸš´',run:'ðŸƒ',strength:'ðŸ’ª'};
+  var sessionStr=dd.sessions.length ? dd.sessions.map(function(s){return (SPORT_ICON[s.sport]||'')+' '+s.desc.split('â€”')[0].trim()+(s.dur?' ('+s.dur+')':'');}).join(' + ') : 'Descanso';
 
   titleEl.innerHTML=dd.full+' &nbsp;<span style="background:'+tc+'20;color:'+tc+';font-size:10px;font-weight:700;padding:.2rem .6rem;border-radius:8px">'+nutr.label+'</span>';
 
   // Session info
   var html='';
   if(dd.sessions.length){
-    html+='<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;padding:.4rem .6rem;background:var(--bg);border-radius:6px">📅 '+sessionStr+'</div>';
+    html+='<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;padding:.4rem .6rem;background:var(--bg);border-radius:6px">ðŸ“… '+sessionStr+'</div>';
   }
 
   // Macro summary bar
   html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1rem">';
-  [{v:nutr.kcal,l:'Calorias',u:'kcal',c:tc},{v:nutr.carb+'g',l:'Carboidratos',u:Math.round(nutr.carb*4/nutr.kcal*100)+'%',c:'#4a9bbe'},{v:nutr.prot+'g',l:'Proteínas',u:Math.round(nutr.prot*4/nutr.kcal*100)+'%',c:'#2ecc71'},{v:nutr.fat+'g',l:'Gorduras',u:Math.round(nutr.fat*9/nutr.kcal*100)+'%',c:'#f39c12'}].forEach(function(m){
+  [{v:nutr.kcal,l:'Calorias',u:'kcal',c:tc},{v:nutr.carb+'g',l:'Carboidratos',u:Math.round(nutr.carb*4/nutr.kcal*100)+'%',c:'#4a9bbe'},{v:nutr.prot+'g',l:'ProteÃ­nas',u:Math.round(nutr.prot*4/nutr.kcal*100)+'%',c:'#2ecc71'},{v:nutr.fat+'g',l:'Gorduras',u:Math.round(nutr.fat*9/nutr.kcal*100)+'%',c:'#f39c12'}].forEach(function(m){
     html+='<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem;text-align:center">';
     html+='<div style="font-size:16px;font-weight:700;color:'+m.c+'">'+m.v+'</div>';
     html+='<div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.15rem 0">'+m.l+'</div>';
@@ -2937,9 +2954,9 @@ function showNutrDay(idx) {
   // Tips
   html+='<div style="background:'+tc+'10;border-left:3px solid '+tc+';border-radius:0 6px 6px 0;padding:.6rem .875rem;margin-bottom:1rem">';
   nutr.tips.forEach(function(t){
-    html+='<div style="display:flex;gap:.4rem;font-size:11px;color:var(--text2);margin-bottom:.25rem"><span style="color:'+tc+';flex-shrink:0">→</span>'+t+'</div>';
+    html+='<div style="display:flex;gap:.4rem;font-size:11px;color:var(--text2);margin-bottom:.25rem"><span style="color:'+tc+';flex-shrink:0">â†’</span>'+t+'</div>';
   });
-  html+='<div style="font-size:11px;color:var(--text3);margin-top:.3rem">💧 Hidratação: <strong style="color:'+tc+'">'+(nutr.water/1000).toFixed(1)+'L</strong></div>';
+  html+='<div style="font-size:11px;color:var(--text3);margin-top:.3rem">ðŸ’§ HidrataÃ§Ã£o: <strong style="color:'+tc+'">'+(nutr.water/1000).toFixed(1)+'L</strong></div>';
   html+='</div>';
 
   // Meals adjusted
@@ -2965,8 +2982,8 @@ function showNutrDay(idx) {
 const ATHLETES = ['bruno','jean','gabriel','rafael','simony','clara'];
 const NAMES    = {bruno:'Bruno Trevisan',jean:'Jean Romano',gabriel:'Gabriel Antunes',rafael:'Rafael Lemos',simony:'Simony Huck',clara:'Clara Helena'};
 const COLORS   = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#4db87a',rafael:'#c084fc',simony:'#f472b6',clara:'#fb923c'};
-const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força'};
-const DAYS_LABEL  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const SPORT_LABEL = {swim:'NataÃ§Ã£o',bike:'Bike',run:'Corrida',strength:'ForÃ§a'};
+const DAYS_LABEL  = ['Dom','Seg','Ter','Qua','Qui','Sex','SÃ¡b'];
 
 const charts = {};
 let currentView = 'individual';
@@ -2975,78 +2992,78 @@ let macroAthlete = 'bruno';
 const gc = 'rgba(255,255,255,0.06)';
 const tf = {size:11,family:'system-ui'};
 
-// ── Plano macro 29 semanas — Método Norueguês ──────────────────────
+// â”€â”€ Plano macro 29 semanas â€” MÃ©todo NorueguÃªs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MACRO_PLAN = {
   race_date:   '2026-10-04',
   total_weeks: 29,
-  // Semanas de descarga (redução 45–55% de volume, intensidade mantida)
+  // Semanas de descarga (reduÃ§Ã£o 45â€“55% de volume, intensidade mantida)
   deload_weeks: [7, 12, 15, 19, 23],
   phases: [
-    {name:'Fundação',  color:'#378ADD', weeks:[1,6],
-     goal:'Base aeróbia Z1 — tolerância de carga e construção de volume',
-     objectives:['Distribuição permanente: ~80% Z1, 18-20% Z2, <2% Z3','Ramp rate: +3–5 pts CTL/semana','Força 3×/semana — programa bilateral Fase 1','Natação: 4–10km/semana com foco técnico'],
-     key_sessions:['Bike Z1 longo sábado (90min → 3h)','Corrida Z1 longa domingo (40–100min)','Natação técnica 3–4×/semana']},
+    {name:'FundaÃ§Ã£o',  color:'#378ADD', weeks:[1,6],
+     goal:'Base aerÃ³bia Z1 â€” tolerÃ¢ncia de carga e construÃ§Ã£o de volume',
+     objectives:['DistribuiÃ§Ã£o permanente: ~80% Z1, 18-20% Z2, <2% Z3','Ramp rate: +3â€“5 pts CTL/semana','ForÃ§a 3Ã—/semana â€” programa bilateral Fase 1','NataÃ§Ã£o: 4â€“10km/semana com foco tÃ©cnico'],
+     key_sessions:['Bike Z1 longo sÃ¡bado (90min â†’ 3h)','Corrida Z1 longa domingo (40â€“100min)','NataÃ§Ã£o tÃ©cnica 3â€“4Ã—/semana']},
     {name:'Limiar I',  color:'#1D9E75', weeks:[8,14],
-     goal:'Duplo limiar 2×/semana — qualidade antes de volume',
-     objectives:['Entrada do duplo limiar na semana 8','Run limiar: 2×10min → 2×14min Z2','Bike limiar: 3×8min → 3×12min Z2','Brick introduzido na semana 10','CSS natação integrado'],
-     key_sessions:['Duplo limiar bike (2× por semana)','Corrida limiar progressiva','Bike longo Z1 sábados (3h)','Brick bike+run sem 10+']},
+     goal:'Duplo limiar 2Ã—/semana â€” qualidade antes de volume',
+     objectives:['Entrada do duplo limiar na semana 8','Run limiar: 2Ã—10min â†’ 2Ã—14min Z2','Bike limiar: 3Ã—8min â†’ 3Ã—12min Z2','Brick introduzido na semana 10','CSS nataÃ§Ã£o integrado'],
+     key_sessions:['Duplo limiar bike (2Ã— por semana)','Corrida limiar progressiva','Bike longo Z1 sÃ¡bados (3h)','Brick bike+run sem 10+']},
     {name:'Limiar II', color:'#EF9F27', weeks:[16,21],
-     goal:'Threshold 3×/semana — volume máximo do ciclo',
-     objectives:['Limiar 3× por semana','Volume: 3×15min Z2 + 2×8min Z3 no pico','Brick race-distance semana 18','Open water toda semana','Força reduzida para 1×/semana'],
-     key_sessions:['Bike 90km + Run 21km (dias separados, sem 18)','Brick completo sem 21','OWS semanal — sighting e viragem de boia']},
-    {name:'Específico',color:'#D85A30', weeks:[22,23],
-     goal:'Simulações parciais — ritmo e nutrição de prova',
-     objectives:['Simulações de percurso','Testar nutrição de prova (60–80g CHO/h bike)','Manter limiar 2×/semana','Força: apenas manutenção'],
-     key_sessions:['Simulação 1: Swim 1.9km + Bike 90km (sep.)','Ajuste de kit e transição']},
+     goal:'Threshold 3Ã—/semana â€” volume mÃ¡ximo do ciclo',
+     objectives:['Limiar 3Ã— por semana','Volume: 3Ã—15min Z2 + 2Ã—8min Z3 no pico','Brick race-distance semana 18','Open water toda semana','ForÃ§a reduzida para 1Ã—/semana'],
+     key_sessions:['Bike 90km + Run 21km (dias separados, sem 18)','Brick completo sem 21','OWS semanal â€” sighting e viragem de boia']},
+    {name:'EspecÃ­fico',color:'#D85A30', weeks:[22,23],
+     goal:'SimulaÃ§Ãµes parciais â€” ritmo e nutriÃ§Ã£o de prova',
+     objectives:['SimulaÃ§Ãµes de percurso','Testar nutriÃ§Ã£o de prova (60â€“80g CHO/h bike)','Manter limiar 2Ã—/semana','ForÃ§a: apenas manutenÃ§Ã£o'],
+     key_sessions:['SimulaÃ§Ã£o 1: Swim 1.9km + Bike 90km (sep.)','Ajuste de kit e transiÃ§Ã£o']},
     {name:'Pico',      color:'#c084fc', weeks:[24,25],
-     goal:'Simulações completas — sessão mais importante do ciclo',
-     objectives:['Simulação 1 semana 24: S+B+R dias separados','Simulação 2 semana 25: brick completo 1.9+90+21','Kit de prova completo','Nutrição de prova testada e validada'],
-     key_sessions:['★ Sem 24: Swim 1.9km OWS + Bike 90km + Run 21km','★ Sem 25: Brick completo com transições']},
+     goal:'SimulaÃ§Ãµes completas â€” sessÃ£o mais importante do ciclo',
+     objectives:['SimulaÃ§Ã£o 1 semana 24: S+B+R dias separados','SimulaÃ§Ã£o 2 semana 25: brick completo 1.9+90+21','Kit de prova completo','NutriÃ§Ã£o de prova testada e validada'],
+     key_sessions:['â˜… Sem 24: Swim 1.9km OWS + Bike 90km + Run 21km','â˜… Sem 25: Brick completo com transiÃ§Ãµes']},
     {name:'Taper',     color:'#f472b6', weeks:[26,28],
-     goal:'Volume cai — intensidade NUNCA cai',
-     objectives:['Sem 26: −30% volume, 1 duplo limiar mantido','Sem 27: −45% volume, TSB começa a subir','Sem 28: −60% volume, apenas ativações e strides','TSB alvo na largada: +10 a +15'],
-     key_sessions:['Bike ativação 60min c/ 3×5min LT2','Corrida 30min c/ strides','Natação técnica 2×1.500m']},
+     goal:'Volume cai â€” intensidade NUNCA cai',
+     objectives:['Sem 26: âˆ’30% volume, 1 duplo limiar mantido','Sem 27: âˆ’45% volume, TSB comeÃ§a a subir','Sem 28: âˆ’60% volume, apenas ativaÃ§Ãµes e strides','TSB alvo na largada: +10 a +15'],
+     key_sessions:['Bike ativaÃ§Ã£o 60min c/ 3Ã—5min LT2','Corrida 30min c/ strides','NataÃ§Ã£o tÃ©cnica 2Ã—1.500m']},
     {name:'Prova',     color:'#ff5252', weeks:[29,29],
-     goal:'70.3 Buenos Aires — 04 de outubro de 2026',
-     objectives:['Natação 1.9km · Bike 90km · Corrida 21.1km','Jean: Top 5 M40-44 + vaga Mundial','Bruno: Top 5 M40-44 + vaga Mundial','TSB alvo largada: +10 a +15'],
-     key_sessions:['Qua/Qui: chegada em Buenos Aires','Sáb: swim adaptação 15min + bike 20min + run 15min','Dom 07h: largada']},
+     goal:'70.3 Buenos Aires â€” 04 de outubro de 2026',
+     objectives:['NataÃ§Ã£o 1.9km Â· Bike 90km Â· Corrida 21.1km','Jean: Top 5 M40-44 + vaga Mundial','Bruno: Top 5 M40-44 + vaga Mundial','TSB alvo largada: +10 a +15'],
+     key_sessions:['Qua/Qui: chegada em Buenos Aires','SÃ¡b: swim adaptaÃ§Ã£o 15min + bike 20min + run 15min','Dom 07h: largada']},
   ],
   // Dados por semana (foco, TSS alvo Jean, TSS alvo Bruno, CTL alvo Jean, CTL alvo Bruno)
   weeks_data: {
-    1:  {focus:'Adaptação — tolerância de carga',         tss_j:250,  tss_b:210,  ctl_j:20,  ctl_b:15},
-    2:  {focus:'Construção gradual de volume Z1',         tss_j:420,  tss_b:370,  ctl_j:28,  ctl_b:22},
-    3:  {focus:'Volume Z1 estabilizando — primeiras longas', tss_j:510, tss_b:450, ctl_j:36, ctl_b:30},
-    4:  {focus:'Volume Z1 crescendo — base sólida',       tss_j:640,  tss_b:590,  ctl_j:46,  ctl_b:38},
-    5:  {focus:'Pico de fase — maior semana até agora',   tss_j:720,  tss_b:640,  ctl_j:55,  ctl_b:46},
-    6:  {focus:'Consolidação — preparar 1ª descarga',     tss_j:760,  tss_b:680,  ctl_j:71,  ctl_b:53},
-    7:  {focus:'■ Recuperação ativa — absorção de carga', tss_j:400,  tss_b:360,  ctl_j:75,  ctl_b:56, deload:true},
-    8:  {focus:'★ Primeiro duplo limiar — baixo volume',  tss_j:660,  tss_b:590,  ctl_j:80,  ctl_b:61},
-    9:  {focus:'Limiar progressivo — qualidade > volume', tss_j:700,  tss_b:630,  ctl_j:85,  ctl_b:66},
+    1:  {focus:'AdaptaÃ§Ã£o â€” tolerÃ¢ncia de carga',         tss_j:250,  tss_b:210,  ctl_j:20,  ctl_b:15},
+    2:  {focus:'ConstruÃ§Ã£o gradual de volume Z1',         tss_j:420,  tss_b:370,  ctl_j:28,  ctl_b:22},
+    3:  {focus:'Volume Z1 estabilizando â€” primeiras longas', tss_j:510, tss_b:450, ctl_j:36, ctl_b:30},
+    4:  {focus:'Volume Z1 crescendo â€” base sÃ³lida',       tss_j:640,  tss_b:590,  ctl_j:46,  ctl_b:38},
+    5:  {focus:'Pico de fase â€” maior semana atÃ© agora',   tss_j:720,  tss_b:640,  ctl_j:55,  ctl_b:46},
+    6:  {focus:'ConsolidaÃ§Ã£o â€” preparar 1Âª descarga',     tss_j:760,  tss_b:680,  ctl_j:71,  ctl_b:53},
+    7:  {focus:'â–  RecuperaÃ§Ã£o ativa â€” absorÃ§Ã£o de carga', tss_j:400,  tss_b:360,  ctl_j:75,  ctl_b:56, deload:true},
+    8:  {focus:'â˜… Primeiro duplo limiar â€” baixo volume',  tss_j:660,  tss_b:590,  ctl_j:80,  ctl_b:61},
+    9:  {focus:'Limiar progressivo â€” qualidade > volume', tss_j:700,  tss_b:630,  ctl_j:85,  ctl_b:66},
     10: {focus:'Brick semanal instaurado',                tss_j:740,  tss_b:670,  ctl_j:89,  ctl_b:70},
-    11: {focus:'Pico do bloco — maior volume com limiar', tss_j:790,  tss_b:710,  ctl_j:94,  ctl_b:74},
-    12: {focus:'■ Recuperação — check-in de forma',      tss_j:430,  tss_b:390,  ctl_j:96,  ctl_b:76, deload:true},
-    13: {focus:'Relançamento pós-descarga',               tss_j:770,  tss_b:690,  ctl_j:100, ctl_b:79},
-    14: {focus:'Fechamento bloco 1 — pico de eficiência', tss_j:820,  tss_b:740,  ctl_j:106, ctl_b:82},
-    15: {focus:'■ Descanso antes do novo patamar',       tss_j:440,  tss_b:400,  ctl_j:108, ctl_b:84, deload:true},
-    16: {focus:'★ Threshold 3×/semana — novo patamar',   tss_j:820,  tss_b:750,  ctl_j:111, ctl_b:87},
-    17: {focus:'Volume crescente — adaptação ao nível',   tss_j:860,  tss_b:780,  ctl_j:113, ctl_b:90},
-    18: {focus:'Brick race-distance — próximo da prova',  tss_j:890,  tss_b:810,  ctl_j:116, ctl_b:93},
-    19: {focus:'■ Recuperação crítica antes do pico',    tss_j:460,  tss_b:420,  ctl_j:117, ctl_b:95, deload:true},
+    11: {focus:'Pico do bloco â€” maior volume com limiar', tss_j:790,  tss_b:710,  ctl_j:94,  ctl_b:74},
+    12: {focus:'â–  RecuperaÃ§Ã£o â€” check-in de forma',      tss_j:430,  tss_b:390,  ctl_j:96,  ctl_b:76, deload:true},
+    13: {focus:'RelanÃ§amento pÃ³s-descarga',               tss_j:770,  tss_b:690,  ctl_j:100, ctl_b:79},
+    14: {focus:'Fechamento bloco 1 â€” pico de eficiÃªncia', tss_j:820,  tss_b:740,  ctl_j:106, ctl_b:82},
+    15: {focus:'â–  Descanso antes do novo patamar',       tss_j:440,  tss_b:400,  ctl_j:108, ctl_b:84, deload:true},
+    16: {focus:'â˜… Threshold 3Ã—/semana â€” novo patamar',   tss_j:820,  tss_b:750,  ctl_j:111, ctl_b:87},
+    17: {focus:'Volume crescente â€” adaptaÃ§Ã£o ao nÃ­vel',   tss_j:860,  tss_b:780,  ctl_j:113, ctl_b:90},
+    18: {focus:'Brick race-distance â€” prÃ³ximo da prova',  tss_j:890,  tss_b:810,  ctl_j:116, ctl_b:93},
+    19: {focus:'â–  RecuperaÃ§Ã£o crÃ­tica antes do pico',    tss_j:460,  tss_b:420,  ctl_j:117, ctl_b:95, deload:true},
     20: {focus:'Volume pico aproximando-se',              tss_j:910,  tss_b:830,  ctl_j:120, ctl_b:97},
     21: {focus:'Pico de volume da fase limiar',           tss_j:950,  tss_b:860,  ctl_j:124, ctl_b:99},
-    22: {focus:'★ Início específico — simulações parciais', tss_j:930, tss_b:850, ctl_j:125, ctl_b:101},
-    23: {focus:'■ Recuperação pré-pico',                 tss_j:490,  tss_b:450,  ctl_j:126, ctl_b:102, deload:true},
-    24: {focus:'★ SIMULAÇÃO 1 — distância de prova',     tss_j:970,  tss_b:880,  ctl_j:126, ctl_b:102},
-    25: {focus:'★ SIMULAÇÃO 2 — sessão de pico',         tss_j:960,  tss_b:870,  ctl_j:125, ctl_b:101},
+    22: {focus:'â˜… InÃ­cio especÃ­fico â€” simulaÃ§Ãµes parciais', tss_j:930, tss_b:850, ctl_j:125, ctl_b:101},
+    23: {focus:'â–  RecuperaÃ§Ã£o prÃ©-pico',                 tss_j:490,  tss_b:450,  ctl_j:126, ctl_b:102, deload:true},
+    24: {focus:'â˜… SIMULAÃ‡ÃƒO 1 â€” distÃ¢ncia de prova',     tss_j:970,  tss_b:880,  ctl_j:126, ctl_b:102},
+    25: {focus:'â˜… SIMULAÃ‡ÃƒO 2 â€” sessÃ£o de pico',         tss_j:960,  tss_b:870,  ctl_j:125, ctl_b:101},
     26: {focus:'Volume cai, intensidade mantida',         tss_j:680,  tss_b:620,  ctl_j:121, ctl_b:98},
-    27: {focus:'Frescor em construção',                   tss_j:500,  tss_b:460,  ctl_j:115, ctl_b:93},
-    28: {focus:'Afiação final',                           tss_j:340,  tss_b:310,  ctl_j:109, ctl_b:88},
-    29: {focus:'Chegada em Buenos Aires — ativação',      tss_j:200,  tss_b:185,  ctl_j:104, ctl_b:84},
+    27: {focus:'Frescor em construÃ§Ã£o',                   tss_j:500,  tss_b:460,  ctl_j:115, ctl_b:93},
+    28: {focus:'AfiaÃ§Ã£o final',                           tss_j:340,  tss_b:310,  ctl_j:109, ctl_b:88},
+    29: {focus:'Chegada em Buenos Aires â€” ativaÃ§Ã£o',      tss_j:200,  tss_b:185,  ctl_j:104, ctl_b:84},
   }
 };
 
-// ── Atletas com plano macro ativo ────────────────────────────────
-// Chave: athleteKey → plano aplicável (null = sem plano)
+// â”€â”€ Atletas com plano macro ativo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Chave: athleteKey â†’ plano aplicÃ¡vel (null = sem plano)
 const ATHLETE_PLAN = {
   jean:    'buenos_aires_2026',
   bruno:   'buenos_aires_2026',
@@ -3067,7 +3084,7 @@ function currentRaceWeek() {
   return Math.max(1, MACRO_PLAN.total_weeks - diff);
 }
 
-// ── Utils ──────────────────────────────────────────────────────────
+// â”€â”€ Utils â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmtH(h) {
   const hh = Math.floor(h), mm = Math.round((h-hh)*60);
   return mm > 0 ? `${hh}h${String(mm).padStart(2,'0')}` : `${hh}h`;
@@ -3077,7 +3094,7 @@ let _portalOverride = null;
 function getA()  { return _portalOverride || document.getElementById('sel-athlete').value; }
 function dc(id)  { if(charts[id]){charts[id].destroy();delete charts[id];} }
 
-// ── URL Routing ────────────────────────────────────────────────────
+// â”€â”€ URL Routing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getAthleteFromURL() {
   const path = window.location.pathname.replace(/^\//, '').toLowerCase();
   return ATHLETES.includes(path) ? path : null;
@@ -3092,12 +3109,12 @@ function updateSubtitle(key) {
   const event = (d.alerts || []).find(a =>
     a.type === 'info' && a.message &&
     !a.message.includes('HRV') &&
-    !a.message.includes('Aniversário') &&
+    !a.message.includes('AniversÃ¡rio') &&
     !a.message.includes('Aniversario')
   );
   sub.textContent = event
-    ? `Dashboard de Treinos · ${event.message}`
-    : `Dashboard de Treinos · NPC Endurance`;
+    ? `Dashboard de Treinos Â· ${event.message}`
+    : `Dashboard de Treinos Â· NPC Endurance`;
 }
 window.addEventListener('popstate', e => {
   const key = (e.state && e.state.athlete) || getAthleteFromURL() || 'bruno';
@@ -3105,7 +3122,7 @@ window.addEventListener('popstate', e => {
   updateDash();
 });
 
-// ── View toggle ────────────────────────────────────────────────────
+// â”€â”€ View toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setView(v, btn) {
   currentView = v;
   document.querySelectorAll('.tab-group:first-child .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -3120,16 +3137,16 @@ function setView(v, btn) {
   if(v==='nutricao')    renderNutricao();
 }
 
-// ── Indicators ─────────────────────────────────────────────────────
+// â”€â”€ Indicators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderIndicators(d) {
   const ind = d.indicators || {};
   const defs = [
-    {key:'fitness', title:'Fitness — Ramp Rate',
-     tooltip:'Velocidade de ganho de fitness (variação do CTL em 7 dias).<br><b>Recovering</b>: CTL caindo — corpo em recuperação.<br><b>Keeping Fit</b>: CTL estável ou crescendo saudável (0–3 pts/semana).<br><b>Going Hard</b>: CTL subindo rápido (>3 pts) — monitorar fadiga acumulada.'},
-    {key:'form',    title:'Form — TSB',
-     tooltip:'Forma atual = Fitness (CTL) − Fadiga (ATL).<br><b>Overloading</b>: TSB negativo elevado — atleta fatigado, risco de overtraining.<br><b>Optimal</b>: TSB entre −15 e +5 — janela ideal de treino produtivo.<br><b>Recharging</b>: TSB positivo — atleta fresco, pronto para competir.'},
-    {key:'fatigue', title:'Fatigue — Direção',
-     tooltip:'Direção da fadiga aguda hoje vs ontem (variação do ATL).<br><b>Decreasing</b>: ATL caindo — fadiga reduzindo, recuperação em curso.<br><b>Stable</b>: ATL estável — carga de treino constante.<br><b>Increasing</b>: ATL subindo — mais carga acumulada nas últimas 24h.'},
+    {key:'fitness', title:'Fitness â€” Ramp Rate',
+     tooltip:'Velocidade de ganho de fitness (variaÃ§Ã£o do CTL em 7 dias).<br><b>Recovering</b>: CTL caindo â€” corpo em recuperaÃ§Ã£o.<br><b>Keeping Fit</b>: CTL estÃ¡vel ou crescendo saudÃ¡vel (0â€“3 pts/semana).<br><b>Going Hard</b>: CTL subindo rÃ¡pido (>3 pts) â€” monitorar fadiga acumulada.'},
+    {key:'form',    title:'Form â€” TSB',
+     tooltip:'Forma atual = Fitness (CTL) âˆ’ Fadiga (ATL).<br><b>Overloading</b>: TSB negativo elevado â€” atleta fatigado, risco de overtraining.<br><b>Optimal</b>: TSB entre âˆ’15 e +5 â€” janela ideal de treino produtivo.<br><b>Recharging</b>: TSB positivo â€” atleta fresco, pronto para competir.'},
+    {key:'fatigue', title:'Fatigue â€” DireÃ§Ã£o',
+     tooltip:'DireÃ§Ã£o da fadiga aguda hoje vs ontem (variaÃ§Ã£o do ATL).<br><b>Decreasing</b>: ATL caindo â€” fadiga reduzindo, recuperaÃ§Ã£o em curso.<br><b>Stable</b>: ATL estÃ¡vel â€” carga de treino constante.<br><b>Increasing</b>: ATL subindo â€” mais carga acumulada nas Ãºltimas 24h.'},
   ];
   const gradients = {
     fitness: 'linear-gradient(to right,#4a9eff,#4db87a,#f5a623)',
@@ -3137,7 +3154,7 @@ function renderIndicators(d) {
     fatigue: 'linear-gradient(to right,#4db87a,#f5a623,#ff5252)',
   };
   document.getElementById('ind-grid').innerHTML = defs.map(def => {
-    const i = ind[def.key] || {label:'—', color:'#8b90a0', pos:50, start:'', end:''};
+    const i = ind[def.key] || {label:'â€”', color:'#8b90a0', pos:50, start:'', end:''};
     return `<div class="ind-card">
       <div class="ind-tooltip">${def.tooltip}</div>
       <div class="ind-label">${def.title}</div>
@@ -3150,7 +3167,7 @@ function renderIndicators(d) {
   }).join('');
 }
 
-// ── Main ───────────────────────────────────────────────────────────
+// â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function updateDash() {
   if(currentView==='comparativo'){renderComparativo();return;}
   if(currentView==='calendario') {renderCalendar(calAthlete);return;}
@@ -3171,41 +3188,41 @@ function updateDash() {
   renderSessions(d);
 }
 
-// ── Alerts ─────────────────────────────────────────────────────────
+// â”€â”€ Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderAlerts(d) {
-  const icons={danger:'⚠',warn:'!',ok:'✓',info:'i'};
+  const icons={danger:'âš ',warn:'!',ok:'âœ“',info:'i'};
   const cls={danger:'a-danger',warn:'a-warn',ok:'a-ok',info:'a-info'};
   document.getElementById('alerts-bar').innerHTML=(d.alerts||[]).map(a=>
     `<div class="alert-pill ${cls[a.type]}"><span class="alert-icon">${icons[a.type]}</span>${a.msg}</div>`
   ).join('');
 }
 
-// ── KPIs ───────────────────────────────────────────────────────────
+// â”€â”€ KPIs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const KPI_TOOLTIPS = {
-  ctl: 'Chronic Training Load — mede o fitness acumulado nas últimas 6 semanas (média exponencial de TSS diário). Quanto maior, melhor a base aeróbia. Cresce lentamente com treino consistente.',
-  atl: 'Acute Training Load — mede a fadiga das últimas 7–10 dias. Sobe rápido com treino intenso e cai rápido com descanso. ATL muito acima da CTL indica risco de overtraining.',
-  tsb: 'Training Stress Balance — a "forma" do atleta: CTL − ATL. Positivo = atleta fresco, ideal para competir. Negativo = fatigado, mas é onde o treino acontece. Janela ideal de treino: entre −15 e +5.',
-  tss_week: 'Training Stress Score semanal — carga total de treino acumulada na semana. Calculado a partir da intensidade e duração de cada sessão. Serve para comparar semanas e calibrar a progressão de carga.',
+  ctl: 'Chronic Training Load â€” mede o fitness acumulado nas Ãºltimas 6 semanas (mÃ©dia exponencial de TSS diÃ¡rio). Quanto maior, melhor a base aerÃ³bia. Cresce lentamente com treino consistente.',
+  atl: 'Acute Training Load â€” mede a fadiga das Ãºltimas 7â€“10 dias. Sobe rÃ¡pido com treino intenso e cai rÃ¡pido com descanso. ATL muito acima da CTL indica risco de overtraining.',
+  tsb: 'Training Stress Balance â€” a "forma" do atleta: CTL âˆ’ ATL. Positivo = atleta fresco, ideal para competir. Negativo = fatigado, mas Ã© onde o treino acontece. Janela ideal de treino: entre âˆ’15 e +5.',
+  tss_week: 'Training Stress Score semanal â€” carga total de treino acumulada na semana. Calculado a partir da intensidade e duraÃ§Ã£o de cada sessÃ£o. Serve para comparar semanas e calibrar a progressÃ£o de carga.',
 };
 
 function renderKPIs(d) {
   const total = totalH(d.vol);
   const parts = ['swim','bike','run','strength']
-    .filter(k=>d.vol[k]>0).map(k=>`${SPORT_LABEL[k]} ${fmtH(d.vol[k])}`).join(' · ');
-  const defs = [{key:'ctl',label:'CTL — Fitness'},{key:'atl',label:'ATL — Fadiga'},
-                {key:'tsb',label:'TSB — Form'},{key:'tss_week',label:'TSS Semanal'}];
+    .filter(k=>d.vol[k]>0).map(k=>`${SPORT_LABEL[k]} ${fmtH(d.vol[k])}`).join(' Â· ');
+  const defs = [{key:'ctl',label:'CTL â€” Fitness'},{key:'atl',label:'ATL â€” Fadiga'},
+                {key:'tsb',label:'TSB â€” Form'},{key:'tss_week',label:'TSS Semanal'}];
   document.getElementById('kpi-grid').innerHTML =
     defs.map(def=>{
       const val=d.kpis[def.key], delta=d.kpi_delta[def.key];
       const dir=String(delta).startsWith('+')?'up':String(delta).startsWith('-')?'dn':'nt';
-      const arr=dir==='up'?'↑':dir==='dn'?'↓':'→';
+      const arr=dir==='up'?'â†‘':dir==='dn'?'â†“':'â†’';
       const tip=KPI_TOOLTIPS[def.key]||'';
       return `<div class="kpi"><div class="kpi-tooltip">${tip}</div><div class="kpi-label">${def.label}</div><div class="kpi-value">${val}</div><div class="kpi-delta ${dir}">${arr} ${delta} vs sem. ant.</div></div>`;
     }).join('') +
     `<div class="kpi hl"><div class="kpi-label">Total de horas</div><div class="kpi-value">${fmtH(total)}</div><div class="kpi-sub">${parts}</div></div>`;
 }
 
-// ── PMC ────────────────────────────────────────────────────────────
+// â”€â”€ PMC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderPMC(d) {
   dc('pmc');
   document.getElementById('pmc-legend').innerHTML=`
@@ -3224,7 +3241,7 @@ function renderPMC(d) {
     }}});
 }
 
-// ── Wellness ───────────────────────────────────────────────────────
+// â”€â”€ Wellness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderWellness(d) {
   const hrv = d.hrv || {};
   const vals = hrv.vals || [];
@@ -3241,28 +3258,28 @@ function renderWellness(d) {
 
   document.getElementById('well-grid').innerHTML = `
     <div class="well-card">
-      <div class="well-tooltip">Variabilidade da frequência cardíaca — mede a capacidade de recuperação do sistema nervoso autônomo. Quanto maior e mais próximo do baseline, melhor a recuperação. Queda >10% por 2+ dias = sinal de alerta.</div>
-      <div class="well-label">HRV (último)</div>
-      <div class="well-value">${lastHrv || '—'}</div>
-      <div class="well-sub">Baseline: ${hrv.baseline || '—'}</div>
+      <div class="well-tooltip">Variabilidade da frequÃªncia cardÃ­aca â€” mede a capacidade de recuperaÃ§Ã£o do sistema nervoso autÃ´nomo. Quanto maior e mais prÃ³ximo do baseline, melhor a recuperaÃ§Ã£o. Queda >10% por 2+ dias = sinal de alerta.</div>
+      <div class="well-label">HRV (Ãºltimo)</div>
+      <div class="well-value">${lastHrv || 'â€”'}</div>
+      <div class="well-sub">Baseline: ${hrv.baseline || 'â€”'}</div>
     </div>
     <div class="well-card">
-      <div class="well-tooltip">Duração do sono da última noite via Garmin Health. O ideal para atletas é 7h30–9h. Sono insuficiente (<7h) prejudica a síntese proteica, aumenta o cortisol e compromete a adaptação ao treino.</div>
-      <div class="well-label">Sono (última noite)</div>
-      <div class="well-value">${lastSleep ? lastSleep.toFixed(1)+'h' : '—'}</div>
+      <div class="well-tooltip">DuraÃ§Ã£o do sono da Ãºltima noite via Garmin Health. O ideal para atletas Ã© 7h30â€“9h. Sono insuficiente (<7h) prejudica a sÃ­ntese proteica, aumenta o cortisol e compromete a adaptaÃ§Ã£o ao treino.</div>
+      <div class="well-label">Sono (Ãºltima noite)</div>
+      <div class="well-value">${lastSleep ? lastSleep.toFixed(1)+'h' : 'â€”'}</div>
       <div class="well-sub">Via Garmin Health</div>
     </div>
     <div class="well-card">
-      <div class="well-tooltip">Frequência cardíaca em repouso — reflete o nível de fadiga acumulada e adaptação cardiovascular. Valores elevados vs. a média do atleta (>5 bpm acima) indicam estresse ou recuperação insuficiente. Tende a diminuir com o aumento do fitness.</div>
+      <div class="well-tooltip">FrequÃªncia cardÃ­aca em repouso â€” reflete o nÃ­vel de fadiga acumulada e adaptaÃ§Ã£o cardiovascular. Valores elevados vs. a mÃ©dia do atleta (>5 bpm acima) indicam estresse ou recuperaÃ§Ã£o insuficiente. Tende a diminuir com o aumento do fitness.</div>
       <div class="well-label">FC Repouso</div>
-      <div class="well-value">${lastHR || '—'}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
-      <div class="well-sub">Último registro</div>
+      <div class="well-value">${lastHR || 'â€”'}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
+      <div class="well-sub">Ãšltimo registro</div>
     </div>
     <div class="well-card">
-      <div class="well-tooltip">Estimativa Garmin de energia disponível (0–100). Acima de 75 = bem recuperado. Entre 40–75 = recuperação parcial. Abaixo de 40 = fadiga elevada. Útil para calibrar a intensidade do treino do dia.</div>
+      <div class="well-tooltip">Estimativa Garmin de energia disponÃ­vel (0â€“100). Acima de 75 = bem recuperado. Entre 40â€“75 = recuperaÃ§Ã£o parcial. Abaixo de 40 = fadiga elevada. Ãštil para calibrar a intensidade do treino do dia.</div>
       <div class="well-label">Body Battery</div>
-      <div class="well-value">${lastBatt || '—'}</div>
-      <div class="well-sub">Média 14 dias: ${batt.filter(v=>v>0).length ? Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length) : '—'}</div>
+      <div class="well-value">${lastBatt || 'â€”'}</div>
+      <div class="well-sub">MÃ©dia 14 dias: ${batt.filter(v=>v>0).length ? Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length) : 'â€”'}</div>
     </div>`;
 
   // HRV chart
@@ -3278,7 +3295,7 @@ function renderWellness(d) {
       scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf},suggestedMin:(hrv.baseline||50)-15,suggestedMax:(hrv.baseline||50)+15}}}});
   } else {
-    document.getElementById('hrv-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">HRV indisponível — sincronize o Garmin no TP</p>';
+    document.getElementById('hrv-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">HRV indisponÃ­vel â€” sincronize o Garmin no TP</p>';
   }
 
   // Sleep chart
@@ -3287,12 +3304,12 @@ function renderWellness(d) {
     const sleepAvg = +(sleep.filter(v=>v>0).reduce((a,b)=>a+b,0)/sleep.filter(v=>v>0).length).toFixed(1);
     charts['sleep']=new Chart(document.getElementById('sleep-chart'),{type:'bar',data:{labels,datasets:[
       {label:'Sono',data:sleep,backgroundColor:'rgba(74,158,255,.4)',borderColor:'#4a9eff',borderWidth:1,borderRadius:3,order:2},
-      {label:`Média ${sleepAvg}h`,data:Array(labels.length).fill(sleepAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+      {label:`MÃ©dia ${sleepAvg}h`,data:Array(labels.length).fill(sleepAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+'h'},suggestedMin:5,suggestedMax:10}}}});
   } else {
-    document.getElementById('sleep-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Sono indisponível</p>';
+    document.getElementById('sleep-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Sono indisponÃ­vel</p>';
   }
 
   // Resting HR chart
@@ -3301,12 +3318,12 @@ function renderWellness(d) {
     const rhrAvg = Math.round(rhr.filter(v=>v>0).reduce((a,b)=>a+b,0)/rhr.filter(v=>v>0).length);
     charts['hr']=new Chart(document.getElementById('hr-chart'),{type:'line',data:{labels,datasets:[
       {label:'FC repouso',data:rhr,borderColor:'#ff5252',backgroundColor:'rgba(255,82,82,.08)',tension:.3,pointRadius:3,borderWidth:2,fill:true,order:2},
-      {label:`Média ${rhrAvg} bpm`,data:Array(labels.length).fill(rhrAvg),borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+      {label:`MÃ©dia ${rhrAvg} bpm`,data:Array(labels.length).fill(rhrAvg),borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0}},
       scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
               y:{grid:{color:gc},ticks:{color:'#565c70',font:tf,callback:v=>v+' bpm'}}}}});
   } else {
-    document.getElementById('hr-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">FC repouso indisponível</p>';
+    document.getElementById('hr-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">FC repouso indisponÃ­vel</p>';
   }
 
   // Body Battery chart
@@ -3320,7 +3337,7 @@ function renderWellness(d) {
     const battAvg = Math.round(batt.filter(v=>v>0).reduce((a,b)=>a+b,0)/batt.filter(v=>v>0).length);
     charts['batt']=new Chart(battCanvas,{type:'bar',data:{labels,datasets:[
       {label:'Body Battery',data:batt,backgroundColor:batt.map(v=>v>=70?'rgba(77,184,122,.6)':v>=40?'rgba(245,166,35,.6)':'rgba(255,82,82,.6)'),borderRadius:3,order:2},
-      {label:`Média ${battAvg}`,data:Array(labels.length).fill(battAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
+      {label:`MÃ©dia ${battAvg}`,data:Array(labels.length).fill(battAvg),type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false,order:1},
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
       tooltip:{filter:i=>i.datasetIndex===0,callbacks:{label:c=>`Body Battery: ${c.raw.toFixed(0)}`}}},
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},
@@ -3331,7 +3348,7 @@ function renderWellness(d) {
   }
 }
 
-// ── Zones ──────────────────────────────────────────────────────────
+// â”€â”€ Zones â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderZone(d) {
   dc('zone');
   document.getElementById('zone-legend').innerHTML=`
@@ -3339,7 +3356,7 @@ function renderZone(d) {
     <span><span class="dot" style="background:#4a9eff"></span>Z2</span>
     <span><span class="dot" style="background:#ff7c3a"></span>Z3</span>`;
   if(!d.zones.labels.length){
-    document.getElementById('zone-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Dados de zona indisponíveis</p>';return;
+    document.getElementById('zone-chart').parentElement.innerHTML='<p style="color:var(--text3);font-size:12px;padding:1rem 0">Dados de zona indisponÃ­veis</p>';return;
   }
   charts['zone']=new Chart(document.getElementById('zone-chart'),{type:'bar',data:{labels:d.zones.labels,datasets:[
     {label:'Z1',data:d.zones.z1,backgroundColor:'#2a5080',borderRadius:3},
@@ -3349,13 +3366,13 @@ function renderZone(d) {
     scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{stacked:true,max:100,ticks:{color:'#565c70',font:tf,callback:v=>v+'%'},grid:{color:gc}}}}});
 }
 
-// ── Volume ─────────────────────────────────────────────────────────
+// â”€â”€ Volume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderVol(d) {
   dc('vol');
-  const map={swim:['Natação','#4a9eff'],bike:['Bike','#f5a623'],run:['Corrida','#4db87a'],strength:['Força','#9b8fff']};
+  const map={swim:['NataÃ§Ã£o','#4a9eff'],bike:['Bike','#f5a623'],run:['Corrida','#4db87a'],strength:['ForÃ§a','#9b8fff']};
   const labels=[],vals=[],colors=[];
   for(const[k,[l,c]]of Object.entries(map)){
-    // Força sempre aparece (mesmo se 0) para mostrar ausência explícita
+    // ForÃ§a sempre aparece (mesmo se 0) para mostrar ausÃªncia explÃ­cita
     if(d.vol[k]>0 || k==='strength'){labels.push(l);vals.push(d.vol[k]||0);colors.push(c);}
   }
   document.getElementById('vol-total').textContent=fmtH(totalH(d.vol))+' total';
@@ -3365,13 +3382,13 @@ function renderVol(d) {
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
 }
 
-// ── Adherence ──────────────────────────────────────────────────────
+// â”€â”€ Adherence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderAdherence(d) {
   const adh=d.adherence||[];
   if(!adh.length){document.getElementById('adh-bars').innerHTML='<p style="color:var(--text3);font-size:12px">Sem dados</p>';document.getElementById('adh-overall').textContent='';return;}
   const overall=Math.round(adh.reduce((s,r)=>s+Math.min(r.done/r.target,1),0)/adh.length*100);
   const oc=overall>=90?'#4db87a':overall>=70?'#f5a623':'#ff7c3a';
-  document.getElementById('adh-overall').innerHTML=`<span style="color:${oc}">${overall}% aderência</span>`;
+  document.getElementById('adh-overall').innerHTML=`<span style="color:${oc}">${overall}% aderÃªncia</span>`;
   document.getElementById('adh-bars').innerHTML=adh.map(r=>{
     const pct=Math.min(Math.round(r.done/r.target*100),100);
     const bc=r.done>r.target?'#4db87a':pct>=85?r.color:'#ff7c3a';
@@ -3379,15 +3396,15 @@ function renderAdherence(d) {
   }).join('');
 }
 
-// ── Sessions ───────────────────────────────────────────────────────
+// â”€â”€ Sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderSessions(d) {
   const rows=(d.sessions||[]);
   document.getElementById('sessions-body').innerHTML=rows.length
     ? rows.map(s=>`<tr><td style="font-weight:600">${s.day}</td><td><span class="badge b-${s.sport}">${SPORT_LABEL[s.sport]||s.sport}</span></td><td style="color:#8b90a0">${s.desc}</td><td>${s.dur}</td><td style="font-weight:600">${s.tss}</td><td style="color:#565c70">${s.zones}</td></tr>`).join('')
-    : '<tr><td colspan="6" style="color:var(--text3);padding:1rem 0">Nenhuma sessão encontrada</td></tr>';
+    : '<tr><td colspan="6" style="color:var(--text3);padding:1rem 0">Nenhuma sessÃ£o encontrada</td></tr>';
 }
 
-// ── Comparativo ────────────────────────────────────────────────────
+// â”€â”€ Comparativo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderComparativo() {
   const activeAthletes = ATHLETES.filter(id => DB[id] && DB[id].kpis);
   const loadMap=[{key:'ctl',label:'CTL'},{key:'atl',label:'ATL'},{key:'tsb',label:'TSB'},{key:'tss_week',label:'TSS semana'}];
@@ -3412,7 +3429,7 @@ function renderComparativo() {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:'#565c70',font:{size:10,family:'system-ui'},maxTicksLimit:7}},y:{grid:{color:gc},ticks:{color:'#565c70',font:tf}}}}});
 
   dc('cmp-vol');
-  const vLabels=['Natação','Bike','Corrida','Força'],vKeys=['swim','bike','run','strength'];
+  const vLabels=['NataÃ§Ã£o','Bike','Corrida','ForÃ§a'],vKeys=['swim','bike','run','strength'];
   document.getElementById('cmp-vol-legend').innerHTML=activeAthletes.map(id=>`<span><span class="dot" style="background:${COLORS[id]}"></span>${NAMES[id]}</span>`).join('');
   charts['cmp-vol']=new Chart(document.getElementById('cmp-vol-chart'),{type:'bar',
     data:{labels:vLabels,datasets:activeAthletes.map(id=>({label:NAMES[id],data:vKeys.map(k=>DB[id].vol[k]||0),backgroundColor:COLORS[id],borderRadius:4}))},
@@ -3420,7 +3437,7 @@ function renderComparativo() {
       scales:{x:{grid:{display:false},ticks:{color:'#565c70',font:tf}},y:{ticks:{color:'#565c70',font:tf,callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`;}},grid:{color:gc}}}}});
 }
 
-// ── Calendar ───────────────────────────────────────────────────────
+// â”€â”€ Calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setCalAthlete(id, btn) {
   calAthlete = id;
   document.querySelectorAll('#cal-athlete-select .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -3456,11 +3473,11 @@ function renderCalendar(athleteKey) {
     const isCurrentWeek = w === 0;
     const isPast = weekEnd < today;
     const weekLabel = isCurrentWeek ? 'Semana atual' :
-                      w < 0 ? `${Math.abs(w)} semana(s) atrás` : `Em ${w} semana(s)`;
+                      w < 0 ? `${Math.abs(w)} semana(s) atrÃ¡s` : `Em ${w} semana(s)`;
 
     html.push(`<div class="cal-week">
       <div class="cal-week-title">
-        ${weekStart.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})} – ${weekEnd.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}
+        ${weekStart.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})} â€“ ${weekEnd.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}
         <span class="cal-week-badge ${isCurrentWeek?'current':''}">${weekLabel}</span>
       </div>
       <div class="cal-days">`);
@@ -3478,8 +3495,8 @@ function renderCalendar(athleteKey) {
       daySessions.forEach(s => {
         const cls = `${s.sport}-${s.done?'done':'planned'}`;
         const label = s.done ? (s.desc||SPORT_LABEL[s.sport]||'Treino') : (s.desc||SPORT_LABEL[s.sport]||'Planejado');
-        const tss   = s.tss ? ` · ${s.tss} TSS` : '';
-        html.push(`<div class="cal-session ${s.done?'done':'planned'} ${cls}" title="${label}${tss}">${label.slice(0,28)}${label.length>28?'…':''}</div>`);
+        const tss   = s.tss ? ` Â· ${s.tss} TSS` : '';
+        html.push(`<div class="cal-session ${s.done?'done':'planned'} ${cls}" title="${label}${tss}">${label.slice(0,28)}${label.length>28?'â€¦':''}</div>`);
       });
 
       html.push('</div>');
@@ -3488,10 +3505,10 @@ function renderCalendar(athleteKey) {
   }
 
   document.getElementById('calendar-body').innerHTML = html.join('') ||
-    '<p style="color:var(--text3);font-size:13px">Nenhuma sessão encontrada. Os treinos planejados aparecerão aqui quando sincronizados.</p>';
+    '<p style="color:var(--text3);font-size:13px">Nenhuma sessÃ£o encontrada. Os treinos planejados aparecerÃ£o aqui quando sincronizados.</p>';
 }
 
-// ── Macro Plan ─────────────────────────────────────────────────────
+// â”€â”€ Macro Plan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let activePhaseIdx = null;
 
 function setMacroAthlete(id, btn) {
@@ -3507,11 +3524,11 @@ function renderMacro(athleteKey) {
   if (!hasPlan) {
     document.getElementById('macro-body').innerHTML = `
       <div class="card" style="padding:2rem;text-align:center">
-        <div style="font-size:32px;margin-bottom:1rem">📋</div>
-        <div style="font-size:16px;font-weight:600;margin-bottom:.5rem">${NAMES[athleteKey]} não tem plano macro cadastrado</div>
+        <div style="font-size:32px;margin-bottom:1rem">ðŸ“‹</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:.5rem">${NAMES[athleteKey]} nÃ£o tem plano macro cadastrado</div>
         <div style="font-size:13px;color:var(--text3);line-height:1.7">
-          O plano macro de 29 semanas está ativo para <b style="color:var(--text2)">Jean Romano</b> e <b style="color:var(--text2)">Bruno Trevisan</b>.<br>
-          Para adicionar um plano para este atleta, defina uma prova alvo e periodização.
+          O plano macro de 29 semanas estÃ¡ ativo para <b style="color:var(--text2)">Jean Romano</b> e <b style="color:var(--text2)">Bruno Trevisan</b>.<br>
+          Para adicionar um plano para este atleta, defina uma prova alvo e periodizaÃ§Ã£o.
         </div>
       </div>`;
     return;
@@ -3525,7 +3542,7 @@ function renderMacro(athleteKey) {
   MACRO_PLAN.phases.forEach((p,i) => {
     const span = p.weeks[1] - p.weeks[0] + 1;
     const pct  = (span / totalW * 100).toFixed(1);
-    barHtml += `<div class="macro-phase" style="background:${p.color};width:${pct}%;flex-shrink:0" onclick="togglePhase(${i})" title="${p.name}: Sem ${p.weeks[0]}–${p.weeks[1]}">${p.name}</div>`;
+    barHtml += `<div class="macro-phase" style="background:${p.color};width:${pct}%;flex-shrink:0" onclick="togglePhase(${i})" title="${p.name}: Sem ${p.weeks[0]}â€“${p.weeks[1]}">${p.name}</div>`;
   });
   barHtml += '</div>';
 
@@ -3542,7 +3559,7 @@ function renderMacro(athleteKey) {
     weeksHtml += `<div class="macro-week ${isPast?'past':''} ${isCurrent?'current':''}" 
       style="background:${isDeload?color+'66':color};color:#fff;opacity:${isPast?0.45:1};${isDeload?'border:1.5px dashed '+color+'cc;':''}" 
       onclick="toggleWeek(${w},'${athleteKey}')" 
-      title="S${w}${isDeload?' ■ DESCARGA':''} · ${dates.label}">${w}</div>`;
+      title="S${w}${isDeload?' â–  DESCARGA':''} Â· ${dates.label}">${w}</div>`;
   }
   weeksHtml += '</div>';
 
@@ -3563,11 +3580,11 @@ function renderMacro(athleteKey) {
       </div>
       <div>
         <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Buenos Aires 70.3</div>
-        <div style="font-size:28px;font-weight:600">${daysLeft}<span style="font-size:14px;color:var(--text2);font-weight:400"> dias · ${weeksLeft} semanas</span></div>
+        <div style="font-size:28px;font-weight:600">${daysLeft}<span style="font-size:14px;color:var(--text2);font-weight:400"> dias Â· ${weeksLeft} semanas</span></div>
       </div>
       <div>
         <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Fase atual</div>
-        <div style="font-size:18px;font-weight:600;color:${(getPhaseForWeek(currentWeek)||{}).color||'var(--text)'}">${(getPhaseForWeek(currentWeek)||{}).name||'—'}</div>
+        <div style="font-size:18px;font-weight:600;color:${(getPhaseForWeek(currentWeek)||{}).color||'var(--text)'}">${(getPhaseForWeek(currentWeek)||{}).name||'â€”'}</div>
       </div>
     </div>
     ${barHtml}
@@ -3580,14 +3597,14 @@ function renderMacro(athleteKey) {
 }
 
 function weekDates(weekNum) {
-  // Semana 1 começa em 16/mar/2026 (segunda-feira)
+  // Semana 1 comeÃ§a em 16/mar/2026 (segunda-feira)
   const week1 = new Date('2026-03-16');
   const monday = new Date(week1);
   monday.setDate(week1.getDate() + (weekNum - 1) * 7);
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
   const fmt = d => d.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'});
-  return { monday, sunday, label: `${fmt(monday)} – ${fmt(sunday)}` };
+  return { monday, sunday, label: `${fmt(monday)} â€“ ${fmt(sunday)}` };
 }
 
 function toggleWeek(weekNum, athleteKey) {
@@ -3624,11 +3641,11 @@ function toggleWeek(weekNum, athleteKey) {
   const statusBadge = isCur
     ? `<span style="background:rgba(74,158,255,.2);color:#7bbdff;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">semana atual</span>`
     : isPast
-    ? `<span style="background:rgba(255,255,255,.08);color:var(--text3);font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">concluída</span>`
+    ? `<span style="background:rgba(255,255,255,.08);color:var(--text3);font-size:10px;padding:2px 8px;border-radius:4px;margin-left:8px">concluÃ­da</span>`
     : '';
 
   const deloadBadge = isDeload
-    ? `<span style="background:rgba(255,124,58,.15);color:#ff7c3a;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:4px">■ DESCARGA</span>`
+    ? `<span style="background:rgba(255,124,58,.15);color:#ff7c3a;font-size:10px;padding:2px 8px;border-radius:4px;margin-left:4px">â–  DESCARGA</span>`
     : '';
 
   // CTL status vs target
@@ -3670,7 +3687,7 @@ function toggleWeek(weekNum, athleteKey) {
       ${statusBadge}${deloadBadge}
       ${phase ? `<span style="font-size:11px;background:${phase.color}22;color:${phase.color};padding:2px 8px;border-radius:4px">${phase.name}</span>` : ''}
     </div>
-    ${wd.focus ? `<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem">📌 ${wd.focus}</div>` : ''}
+    ${wd.focus ? `<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem">ðŸ“Œ ${wd.focus}</div>` : ''}
     ${ctlHtml}
     ${noteHtml}
   </div>`;
@@ -3694,9 +3711,9 @@ function togglePhase(idx) {
   document.querySelectorAll('.macro-week').forEach(el => el.style.outline = '');
 
   panel.innerHTML = `<div class="phase-detail">
-    <h3 style="color:${p.color}">${p.name} <span style="font-size:13px;color:var(--text2);font-weight:400">· Semanas ${p.weeks[0]}–${p.weeks[1]} · ${weekDates(p.weeks[0]).label.split('–')[0].trim()} – ${weekDates(p.weeks[1]).sunday.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</span></h3>
+    <h3 style="color:${p.color}">${p.name} <span style="font-size:13px;color:var(--text2);font-weight:400">Â· Semanas ${p.weeks[0]}â€“${p.weeks[1]} Â· ${weekDates(p.weeks[0]).label.split('â€“')[0].trim()} â€“ ${weekDates(p.weeks[1]).sunday.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</span></h3>
     <div class="phase-meta" style="margin-top:.75rem">
-      <span><b>Duração:</b> ${p.weeks[1]-p.weeks[0]+1} semanas</span>
+      <span><b>DuraÃ§Ã£o:</b> ${p.weeks[1]-p.weeks[0]+1} semanas</span>
       <span><b>Objetivo:</b> ${p.goal}</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem">
@@ -3705,7 +3722,7 @@ function togglePhase(idx) {
         <ul class="phase-goals" style="padding-left:1.1rem">${(p.objectives||[]).map(o=>`<li>${o}</li>`).join('')}</ul>
       </div>
       <div>
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Sessões-chave</div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">SessÃµes-chave</div>
         <ul class="phase-goals" style="padding-left:1.1rem">${(p.key_sessions||[]).map(s=>`<li>${s}</li>`).join('')}</ul>
       </div>
     </div>
@@ -3714,13 +3731,13 @@ function togglePhase(idx) {
 
 
 
-// ── Card Hoje ──────────────────────────────────────────────────────
+// â”€â”€ Card Hoje â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderToday(key) {
   const card = document.getElementById('today-card');
   if (!card) return;
   const d = DB[key];
   if (!d || !d.today) { card.classList.remove('visible'); return; }
-  // Só mostrar no portal atleta
+  // SÃ³ mostrar no portal atleta
   const isPortal = !!sessionStorage.getItem('npc_portal_athlete');
   if (!isPortal) { card.classList.remove('visible'); return; }
   card.classList.add('visible');
@@ -3728,32 +3745,32 @@ function renderToday(key) {
 
   // Stats de wellness
   const hrvColor   = t.hrv_color || 'var(--text)';
-  const hrvPct     = t.hrv_pct ? t.hrv_pct + '% baseline' : '—';
+  const hrvPct     = t.hrv_pct ? t.hrv_pct + '% baseline' : 'â€”';
   const battColor  = t.battery >= 70 ? '#4db87a' : t.battery >= 40 ? '#f5a623' : t.battery ? '#ff5252' : 'var(--text)';
   const sleepColor = t.sleep >= 7.5 ? '#4db87a' : t.sleep >= 6 ? '#f5a623' : t.sleep ? '#ff5252' : 'var(--text)';
   document.getElementById('today-stats').innerHTML = `
     <div class="today-stat">
       <div class="today-stat-label">HRV</div>
-      <div class="today-stat-value" style="color:${hrvColor}">${t.hrv_ms ? t.hrv_ms + 'ms' : '—'}</div>
+      <div class="today-stat-value" style="color:${hrvColor}">${t.hrv_ms ? t.hrv_ms + 'ms' : 'â€”'}</div>
       <div class="today-stat-sub">${hrvPct}</div>
     </div>
     <div class="today-stat">
       <div class="today-stat-label">Sono</div>
-      <div class="today-stat-value" style="color:${sleepColor}">${t.sleep ? t.sleep.toFixed(1) + 'h' : '—'}</div>
+      <div class="today-stat-value" style="color:${sleepColor}">${t.sleep ? t.sleep.toFixed(1) + 'h' : 'â€”'}</div>
       <div class="today-stat-sub">Meta: 7h30+</div>
     </div>
     <div class="today-stat">
       <div class="today-stat-label">FC repouso</div>
-      <div class="today-stat-value">${t.rhr ? t.rhr + ' bpm' : '—'}</div>
+      <div class="today-stat-value">${t.rhr ? t.rhr + ' bpm' : 'â€”'}</div>
       <div class="today-stat-sub">&nbsp;</div>
     </div>
     <div class="today-stat">
       <div class="today-stat-label">Body Battery</div>
-      <div class="today-stat-value" style="color:${battColor}">${t.battery != null ? t.battery : '—'}</div>
-      <div class="today-stat-sub">${t.battery >= 70 ? 'Ótimo' : t.battery >= 40 ? 'Moderado' : t.battery ? 'Baixo' : '—'}</div>
+      <div class="today-stat-value" style="color:${battColor}">${t.battery != null ? t.battery : 'â€”'}</div>
+      <div class="today-stat-sub">${t.battery >= 70 ? 'Ã“timo' : t.battery >= 40 ? 'Moderado' : t.battery ? 'Baixo' : 'â€”'}</div>
     </div>`;
 
-  // Recomendação HRV
+  // RecomendaÃ§Ã£o HRV
   const recWrapper = document.getElementById('today-rec-wrapper');
   if (recWrapper && t.hrv_status) {
     const recBg  = t.hrv_color === '#4db87a' ? 'rgba(77,184,122,.1)'
@@ -3767,22 +3784,22 @@ function renderToday(key) {
     recWrapper.innerHTML = '';
   }
 
-  // Sessões de hoje
+  // SessÃµes de hoje
   const doneEl = document.getElementById('today-done');
   if (t.done && t.done.length) {
     doneEl.innerHTML = t.done.map(s => {
-      const meta = [s.dur, s.tss ? 'TSS ' + s.tss : null].filter(Boolean).join(' · ');
+      const meta = [s.dur, s.tss ? 'TSS ' + s.tss : null].filter(Boolean).join(' Â· ');
       return '<div class="today-session"><span class="today-session-title">' + s.title + '</span><span class="today-session-meta">' + meta + '</span></div>';
     }).join('');
   } else {
-    doneEl.innerHTML = '<div class="today-empty">Nenhuma sessão registrada ainda hoje</div>';
+    doneEl.innerHTML = '<div class="today-empty">Nenhuma sessÃ£o registrada ainda hoje</div>';
   }
 
-  // Amanhã
+  // AmanhÃ£
   const tomEl = document.getElementById('today-tomorrow');
   if (t.tomorrow && t.tomorrow.length) {
     tomEl.innerHTML = t.tomorrow.map(s => {
-      const meta = [s.dur, s.tss ? 'TSS ' + s.tss : null].filter(Boolean).join(' · ');
+      const meta = [s.dur, s.tss ? 'TSS ' + s.tss : null].filter(Boolean).join(' Â· ');
       return '<div class="today-session"><span class="today-session-title">' + s.title + '</span><span class="today-session-meta">' + meta + '</span></div>';
     }).join('');
   } else {
@@ -3790,7 +3807,7 @@ function renderToday(key) {
   }
 }
 
-// ── Init ───────────────────────────────────────────────────────────
+// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function() {
   const portalAthlete = sessionStorage.getItem('npc_portal_athlete');
   const portalCoach   = sessionStorage.getItem('npc_portal_coach') === '1';
@@ -3807,7 +3824,7 @@ function renderToday(key) {
     sel.value = urlAthlete;
   }
 
-  // 2. PORTAL ATLETA — travar interface
+  // 2. PORTAL ATLETA â€” travar interface
   if (portalAthlete && ATHLETES.includes(portalAthlete)) {
     sel.disabled = true;
     sel.style.display = 'none';
@@ -3817,13 +3834,13 @@ function renderToday(key) {
       if (btn.textContent.trim() === 'Comparativo') btn.style.display = 'none';
     });
 
-    // Esconder aba Nutrição se atleta não tiver plano
+    // Esconder aba NutriÃ§Ã£o se atleta nÃ£o tiver plano
     const nutriBtn = document.getElementById('tab-btn-nutri');
     if (nutriBtn && !NUTR_ATHLETES.includes(portalAthlete)) {
       nutriBtn.style.display = 'none';
     }
 
-    // Nome do atleta + botão Sair
+    // Nome do atleta + botÃ£o Sair
     const portalLabel = document.createElement('div');
     portalLabel.style.cssText = 'display:flex;align-items:center;gap:.6rem';
     portalLabel.innerHTML = `
@@ -3835,14 +3852,14 @@ function renderToday(key) {
         onmouseout="this.style.borderColor='rgba(74,155,190,.2)'">Sair</button>`;
     sel.parentNode.insertBefore(portalLabel, sel);
 
-    // Esconder outros atletas em Calendário e Macro
+    // Esconder outros atletas em CalendÃ¡rio e Macro
     setTimeout(() => {
       document.getElementById('cal-athlete-select')?.querySelectorAll('.tab-btn').forEach(btn => {
-        const txt = btn.textContent.trim().toLowerCase().replace(' ✓','');
+        const txt = btn.textContent.trim().toLowerCase().replace(' âœ“','');
         btn.style.display = txt === portalAthlete ? '' : 'none';
       });
       document.querySelectorAll('#view-macro .tab-group .tab-btn').forEach(btn => {
-        const txt = btn.textContent.trim().toLowerCase().replace(' ✓','');
+        const txt = btn.textContent.trim().toLowerCase().replace(' âœ“','');
         btn.style.display = txt === portalAthlete ? '' : 'none';
       });
       if (typeof setMacroAthlete === 'function') setMacroAthlete(portalAthlete);
@@ -3850,7 +3867,7 @@ function renderToday(key) {
     }, 0);
   }
 
-  // 3. PORTAL TREINADOR — só botão Sair
+  // 3. PORTAL TREINADOR â€” sÃ³ botÃ£o Sair
   if (portalCoach) {
     const sairDiv = document.createElement('div');
     sairDiv.style.cssText = 'display:flex;align-items:center;gap:.6rem';
@@ -3862,7 +3879,7 @@ function renderToday(key) {
         onmouseout="this.style.borderColor='rgba(232,93,36,.2)'">Sair</button>`;
     sel.parentNode.insertBefore(sairDiv, sel.nextSibling);
 
-    // Esconder aba Nutrição para o treinador
+    // Esconder aba NutriÃ§Ã£o para o treinador
     const nutriBtn = document.getElementById('tab-btn-nutri');
     if (nutriBtn) nutriBtn.style.display = 'none';
   }
@@ -3873,3 +3890,4 @@ function renderToday(key) {
 </script>
 </body>
 </html>
+
