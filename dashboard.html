@@ -342,7 +342,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/06/2026 10:01 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 30/06/2026 19:08 (Supabase)</div>
 </div>
 
 <script>
@@ -874,16 +874,16 @@ const DB = {
   },
   "bruno": {
     "kpis": {
-      "ctl": 67.6,
-      "atl": 75.8,
-      "tsb": -8.2,
-      "tss_week": 18
+      "ctl": 67.7,
+      "atl": 76.6,
+      "tsb": -8.8,
+      "tss_week": 108
     },
     "kpi_delta": {
       "ctl": "+1",
-      "atl": "-23",
+      "atl": "-22",
       "tsb": "+23",
-      "tss_week": "-680"
+      "tss_week": "-590"
     },
     "pmc": {
       "labels": [
@@ -1038,7 +1038,7 @@ const DB = {
         69.8,
         69.5,
         68.3,
-        67.6
+        67.7
       ],
       "atl": [
         98.8,
@@ -1115,7 +1115,7 @@ const DB = {
         98.2,
         92.4,
         81.8,
-        75.8
+        76.6
       ],
       "tsb": [
         -49.3,
@@ -1192,25 +1192,29 @@ const DB = {
         -28.4,
         -22.9,
         -13.5,
-        -8.2
+        -8.8
       ]
     },
     "zones": {
       "labels": [
+        "Natação",
         "Bike"
       ],
       "z1": [
+        38,
         95
       ],
       "z2": [
+        33,
         4
       ],
       "z3": [
+        29,
         1
       ]
     },
     "vol": {
-      "swim": 0.0,
+      "swim": 1.4,
       "bike": 0.6,
       "run": 0.0,
       "strength": 0.0
@@ -1305,8 +1309,8 @@ const DB = {
     "adherence": [
       {
         "label": "Natação",
-        "done": 0.0,
-        "target": 0.8,
+        "done": 1.4,
+        "target": 1.6,
         "color": "#4a9eff"
       },
       {
@@ -1319,7 +1323,7 @@ const DB = {
     "alerts": [
       {
         "type": "info",
-        "msg": "Fadiga moderada — TSB -8: zona de treino produtivo, manter plano"
+        "msg": "Fadiga moderada — TSB -9: zona de treino produtivo, manter plano"
       },
       {
         "type": "warn",
@@ -1327,7 +1331,7 @@ const DB = {
       },
       {
         "type": "warn",
-        "msg": "Aderência baixa — 21% do plano executado: identificar causa (lesão, agenda, motivação)"
+        "msg": "Aderência baixa — 65% do plano executado: identificar causa (lesão, agenda, motivação)"
       },
       {
         "type": "info",
@@ -1359,8 +1363,28 @@ const DB = {
         "day": "Ter",
         "sport": "swim",
         "desc": "Natação Z1 — 1.800m Técnica Descarga (Sem. 16 · Terça)",
-        "dur": "—",
-        "tss": 0,
+        "dur": "51min",
+        "tss": 45,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Lap Swimming",
+        "dur": "16min",
+        "tss": 30,
+        "zones": "—",
+        "hrv": 0,
+        "ht": "dn"
+      },
+      {
+        "day": "Ter",
+        "sport": "swim",
+        "desc": "Natação Z1 — 1.800m Técnica Descarga (Sem. 16 · Terça)",
+        "dur": "12min",
+        "tss": 15,
         "zones": "—",
         "hrv": 0,
         "ht": "dn"
@@ -1370,21 +1394,21 @@ const DB = {
       "form": {
         "label": "Optimal",
         "color": "#4db87a",
-        "pos": 44,
+        "pos": 43,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
         "label": "Keeping Fit",
         "color": "#4db87a",
-        "pos": 40,
+        "pos": 41,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 20,
+        "pos": 24,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -1402,8 +1426,18 @@ const DB = {
       "done": [
         {
           "title": "Natação Z1 — 1.800m Técnica Descarga (Sem. 16 · Terça)",
-          "dur": null,
-          "tss": null
+          "dur": "12min",
+          "tss": 14
+        },
+        {
+          "title": "Lap Swimming",
+          "dur": "16min",
+          "tss": 29
+        },
+        {
+          "title": "Natação Z1 — 1.800m Técnica Descarga (Sem. 16 · Terça)",
+          "dur": "51min",
+          "tss": 45
         }
       ],
       "tomorrow": [
@@ -1830,12 +1864,12 @@ const DB = {
         31.8,
         21.4,
         26.8,
-        30.9
+        36.8
       ],
       "last_hrv": 41,
       "last_sleep": 8.4,
       "last_rhr": 62,
-      "last_bb": 30.9
+      "last_bb": 36.8
     },
     "adherence": [
       {
@@ -1915,7 +1949,7 @@ const DB = {
       "hrv_status": "HRV dentro do baseline (89%) — proceder normalmente",
       "sleep": 8.4,
       "rhr": 62,
-      "battery": 31,
+      "battery": 37,
       "done": [
         {
           "title": "Descanso Ativo — Caminhada 30min (Race Week · Terça)",
@@ -2347,12 +2381,12 @@ const DB = {
         48.3,
         28.2,
         58.1,
-        89.7
+        76.4
       ],
       "last_hrv": 74,
       "last_sleep": 8.9,
       "last_rhr": 51,
-      "last_bb": 89.7
+      "last_bb": 76.4
     },
     "adherence": [
       {
@@ -2412,7 +2446,7 @@ const DB = {
       "hrv_status": "HRV elevado (114% baseline) — proceder normalmente",
       "sleep": 8.9,
       "rhr": 51,
-      "battery": 90,
+      "battery": 76,
       "done": [
         {
           "title": "Strength",
