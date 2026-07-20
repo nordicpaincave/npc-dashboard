@@ -342,23 +342,23 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 20/07/2026 13:35 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 20/07/2026 19:01 (Supabase)</div>
 </div>
 
 <script>
 const DB = {
   "jean": {
     "kpis": {
-      "ctl": 0.0,
-      "atl": 0.0,
-      "tsb": 0.0,
-      "tss_week": 0
+      "ctl": 88.9,
+      "atl": 86.4,
+      "tsb": 2.5,
+      "tss_week": 34
     },
     "kpi_delta": {
-      "ctl": "-90",
-      "atl": "-89",
-      "tsb": "-1",
-      "tss_week": "-552"
+      "ctl": "-1",
+      "atl": "-3",
+      "tsb": "+2",
+      "tss_week": "-532"
     },
     "pmc": {
       "labels": [
@@ -508,12 +508,12 @@ const DB = {
         91.0,
         89.7,
         89.3,
-        88.8,
-        88.6,
-        87.2,
-        89.7,
-        89.3,
-        null
+        89.2,
+        88.9,
+        87.5,
+        90.0,
+        89.6,
+        88.9
       ],
       "atl": [
         112.1,
@@ -585,12 +585,12 @@ const DB = {
         97.9,
         89.1,
         86.9,
-        84.6,
-        83.6,
-        76.0,
-        92.4,
-        89.5,
-        null
+        86.6,
+        85.3,
+        77.5,
+        93.7,
+        90.6,
+        86.4
       ],
       "tsb": [
         -33.8,
@@ -662,12 +662,12 @@ const DB = {
         -6.9,
         0.6,
         2.4,
-        4.3,
-        5.0,
-        11.2,
-        -2.7,
-        -0.3,
-        null
+        2.6,
+        3.6,
+        10.0,
+        -3.7,
+        -1.1,
+        2.5
       ]
     },
     "zones": {
@@ -680,7 +680,7 @@ const DB = {
       "swim": 0.0,
       "bike": 0.0,
       "run": 0.0,
-      "strength": 0.0
+      "strength": 1.1
     },
     "hrv": {
       "labels": [
@@ -713,9 +713,9 @@ const DB = {
         42,
         48,
         59,
-        0
+        66
       ],
-      "baseline": 57.9,
+      "baseline": 58.2,
       "sleep": [
         6.5,
         7.5,
@@ -730,7 +730,7 @@ const DB = {
         5.4,
         6.2,
         7.2,
-        0
+        5.7
       ],
       "resting_hr": [
         44,
@@ -746,7 +746,7 @@ const DB = {
         52,
         51,
         52,
-        0
+        51
       ],
       "body_battery": [
         53.2,
@@ -761,41 +761,79 @@ const DB = {
         43.8,
         12.9,
         14.3,
-        25.2,
-        0
+        21.0,
+        45.6
       ],
-      "last_hrv": 59,
-      "last_sleep": 7.2,
-      "last_rhr": 52,
-      "last_bb": 25.2
+      "last_hrv": 66,
+      "last_sleep": 5.7,
+      "last_rhr": 51,
+      "last_bb": 45.6
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 0.0,
+        "target": 0.8,
+        "color": "#4a9eff"
+      },
+      {
+        "label": "Força",
+        "done": 1.1,
+        "target": 1.0,
+        "color": "#9b8fff"
+      }
+    ],
     "alerts": [
+      {
+        "type": "warn",
+        "msg": "Aderência baixa — 50% do plano executado: identificar causa (lesão, agenda, motivação)"
+      },
       {
         "type": "info",
         "msg": "70.3 Buenos Aires em 10 semanas"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "strength",
+        "desc": "Força manutenção (Sem.19 · Seg)",
+        "dur": "1h05",
+        "tss": 34,
+        "zones": "—",
+        "hrv": 66,
+        "ht": "up"
+      },
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Natação técnica — aula (Sem.19 · Seg)",
+        "dur": "—",
+        "tss": 0,
+        "zones": "—",
+        "hrv": 66,
+        "ht": "up"
+      }
+    ],
     "indicators": {
       "form": {
         "label": "Optimal",
         "color": "#4db87a",
-        "pos": 58,
+        "pos": 62,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
         "label": "Recovering",
         "color": "#4a9eff",
-        "pos": 3,
+        "pos": 28,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 3,
+        "pos": 29,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -809,7 +847,7 @@ const DB = {
       "hrv_status": "HRV elevado (123% baseline) — proceder normalmente",
       "sleep": 5.7,
       "rhr": 51,
-      "battery": 44,
+      "battery": 46,
       "done": [
         {
           "title": "Natação técnica — aula (Sem.19 · Seg)",
@@ -818,8 +856,8 @@ const DB = {
         },
         {
           "title": "Força manutenção (Sem.19 · Seg)",
-          "dur": null,
-          "tss": null
+          "dur": "1h05",
+          "tss": 33
         }
       ],
       "tomorrow": [
