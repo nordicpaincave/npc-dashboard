@@ -342,23 +342,23 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 17/08/2026 10:01 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 17/08/2026 19:01 (Supabase)</div>
 </div>
 
 <script>
 const DB = {
   "jean": {
     "kpis": {
-      "ctl": 96.2,
-      "atl": 109.2,
-      "tsb": -13.0,
-      "tss_week": 0
+      "ctl": 97.7,
+      "atl": 118.7,
+      "tsb": -21.0,
+      "tss_week": 67
     },
     "kpi_delta": {
-      "ctl": "+3",
-      "atl": "-4",
-      "tsb": "+6",
-      "tss_week": "-841"
+      "ctl": "+4",
+      "atl": "+6",
+      "tsb": "-2",
+      "tss_week": "-775"
     },
     "pmc": {
       "labels": [
@@ -513,7 +513,7 @@ const DB = {
         95.1,
         95.4,
         98.5,
-        96.2
+        97.7
       ],
       "atl": [
         76.3,
@@ -590,7 +590,7 @@ const DB = {
         111.9,
         111.0,
         127.4,
-        109.2
+        118.7
       ],
       "tsb": [
         6.2,
@@ -667,17 +667,25 @@ const DB = {
         -16.7,
         -15.6,
         -28.9,
-        -13.0
+        -21.0
       ]
     },
     "zones": {
-      "labels": [],
-      "z1": [],
-      "z2": [],
-      "z3": []
+      "labels": [
+        "Natação"
+      ],
+      "z1": [
+        65
+      ],
+      "z2": [
+        30
+      ],
+      "z3": [
+        5
+      ]
     },
     "vol": {
-      "swim": 0.0,
+      "swim": 0.9,
       "bike": 0.0,
       "run": 0.0,
       "strength": 0.0
@@ -769,11 +777,18 @@ const DB = {
       "last_rhr": 49,
       "last_bb": 58.4
     },
-    "adherence": [],
+    "adherence": [
+      {
+        "label": "Natação",
+        "done": 0.9,
+        "target": 0.9,
+        "color": "#4a9eff"
+      }
+    ],
     "alerts": [
       {
-        "type": "info",
-        "msg": "Fadiga moderada — TSB -13: zona de treino produtivo, manter plano"
+        "type": "warn",
+        "msg": "Fadiga acumulada — TSB -21: HRV estável, monitorar próximas 48h"
       },
       {
         "type": "info",
@@ -781,29 +796,44 @@ const DB = {
       },
       {
         "type": "info",
+        "msg": "ATL acima da CTL — 119 vs 98: normal em semana de carga, vigiar fadiga"
+      },
+      {
+        "type": "info",
         "msg": "70.3 Buenos Aires em 6 semanas"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "day": "Seg",
+        "sport": "swim",
+        "desc": "Lap Swimming",
+        "dur": "52min",
+        "tss": 67,
+        "zones": "—",
+        "hrv": 60,
+        "ht": "up"
+      }
+    ],
     "indicators": {
       "form": {
-        "label": "Optimal",
-        "color": "#4db87a",
-        "pos": 36,
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 20,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
-        "label": "Keeping Fit",
-        "color": "#4db87a",
-        "pos": 63,
+        "label": "Going Hard",
+        "color": "#f5a623",
+        "pos": 71,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 3,
+        "pos": 6,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -818,7 +848,13 @@ const DB = {
       "sleep": 6.9,
       "rhr": 49,
       "battery": 58,
-      "done": [],
+      "done": [
+        {
+          "title": "Lap Swimming",
+          "dur": "52min",
+          "tss": 66
+        }
+      ],
       "tomorrow": [
         {
           "title": "Bike Z1 soltura 60min (Sem.23 · Ter)",
@@ -1734,12 +1770,12 @@ const DB = {
         42.4,
         61.1,
         23.9,
-        29.1
+        34.7
       ],
       "last_hrv": 43,
       "last_sleep": 7.3,
       "last_rhr": 60,
-      "last_bb": 29.1
+      "last_bb": 34.7
     },
     "adherence": [],
     "alerts": [
@@ -1781,7 +1817,7 @@ const DB = {
       "hrv_status": "HRV suprimido (80%) — monitorar intensidade",
       "sleep": 7.3,
       "rhr": 60,
-      "battery": 29,
+      "battery": 35,
       "done": [],
       "tomorrow": []
     }
@@ -2201,12 +2237,12 @@ const DB = {
         24.9,
         19.9,
         25.0,
-        49.1
+        47.5
       ],
       "last_hrv": 64,
       "last_sleep": 7.5,
       "last_rhr": 53,
-      "last_bb": 49.1
+      "last_bb": 47.5
     },
     "adherence": [],
     "alerts": [
@@ -2256,7 +2292,7 @@ const DB = {
       "hrv_status": "HRV dentro do baseline (94%) — proceder normalmente",
       "sleep": 7.5,
       "rhr": 53,
-      "battery": 49,
+      "battery": 48,
       "done": [],
       "tomorrow": []
     }
