@@ -342,23 +342,23 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 19/08/2026 10:01 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 19/08/2026 19:01 (Supabase)</div>
 </div>
 
 <script>
 const DB = {
   "jean": {
     "kpis": {
-      "ctl": 96.5,
-      "atl": 105.3,
-      "tsb": -8.8,
-      "tss_week": 127
+      "ctl": 98.3,
+      "atl": 116.0,
+      "tsb": -17.7,
+      "tss_week": 237
     },
     "kpi_delta": {
-      "ctl": "+2",
-      "atl": "-8",
-      "tsb": "+10",
-      "tss_week": "-714"
+      "ctl": "+4",
+      "atl": "+2",
+      "tsb": "+2",
+      "tss_week": "-605"
     },
     "pmc": {
       "labels": [
@@ -513,7 +513,7 @@ const DB = {
         98.5,
         98.4,
         98.0,
-        96.5
+        98.3
       ],
       "atl": [
         80.0,
@@ -590,7 +590,7 @@ const DB = {
         127.4,
         122.5,
         117.1,
-        105.3
+        116.0
       ],
       "tsb": [
         3.0,
@@ -667,31 +667,35 @@ const DB = {
         -28.9,
         -24.1,
         -19.0,
-        -8.8
+        -17.7
       ]
     },
     "zones": {
       "labels": [
         "Natação",
-        "Bike"
+        "Bike",
+        "Corrida"
       ],
       "z1": [
         65,
-        95
+        95,
+        82
       ],
       "z2": [
         30,
-        4
+        4,
+        16
       ],
       "z3": [
         5,
-        1
+        1,
+        2
       ]
     },
     "vol": {
-      "swim": 0.9,
+      "swim": 1.8,
       "bike": 1.1,
-      "run": 0.0,
+      "run": 0.7,
       "strength": 0.0
     },
     "hrv": {
@@ -774,17 +778,17 @@ const DB = {
         48.0,
         53.7,
         56.3,
-        58.6
+        56.2
       ],
       "last_hrv": 52,
       "last_sleep": 7.0,
       "last_rhr": 48,
-      "last_bb": 58.6
+      "last_bb": 56.2
     },
     "adherence": [
       {
         "label": "Natação",
-        "done": 0.9,
+        "done": 1.8,
         "target": 0.6,
         "color": "#4a9eff"
       },
@@ -796,19 +800,23 @@ const DB = {
       },
       {
         "label": "Corrida",
-        "done": 0.0,
+        "done": 0.7,
         "target": 0.7,
         "color": "#4db87a"
       }
     ],
     "alerts": [
       {
-        "type": "info",
-        "msg": "Fadiga moderada — TSB -9: zona de treino produtivo, manter plano"
+        "type": "warn",
+        "msg": "Fadiga acumulada — TSB -18: HRV estável, monitorar próximas 48h"
       },
       {
-        "type": "warn",
-        "msg": "Aderência baixa — 67% do plano executado: identificar causa (lesão, agenda, motivação)"
+        "type": "info",
+        "msg": "HRV preservado (56 ms) apesar da fadiga: sistema nervoso respondendo bem"
+      },
+      {
+        "type": "info",
+        "msg": "ATL acima da CTL — 116 vs 98: normal em semana de carga, vigiar fadiga"
       },
       {
         "type": "info",
@@ -848,10 +856,20 @@ const DB = {
       },
       {
         "day": "Qua",
+        "sport": "swim",
+        "desc": "Lap Swimming",
+        "dur": "51min",
+        "tss": 70,
+        "zones": "—",
+        "hrv": 52,
+        "ht": "nt"
+      },
+      {
+        "day": "Qua",
         "sport": "run",
         "desc": "Corrida Z1 40min (Sem.23 · Qua)",
-        "dur": "—",
-        "tss": 0,
+        "dur": "43min",
+        "tss": 40,
         "zones": "—",
         "hrv": 52,
         "ht": "nt"
@@ -859,23 +877,23 @@ const DB = {
     ],
     "indicators": {
       "form": {
-        "label": "Optimal",
-        "color": "#4db87a",
-        "pos": 43,
+        "label": "Overloading",
+        "color": "#ff5252",
+        "pos": 27,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
-        "label": "Keeping Fit",
-        "color": "#4db87a",
-        "pos": 54,
+        "label": "Going Hard",
+        "color": "#f5a623",
+        "pos": 69,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
         "label": "Decreasing",
         "color": "#4db87a",
-        "pos": 3,
+        "pos": 44,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -889,12 +907,17 @@ const DB = {
       "hrv_status": "HRV dentro do baseline (92%) — proceder normalmente",
       "sleep": 7.0,
       "rhr": 48,
-      "battery": 59,
+      "battery": 56,
       "done": [
         {
           "title": "Corrida Z1 40min (Sem.23 · Qua)",
-          "dur": null,
-          "tss": null
+          "dur": "43min",
+          "tss": 39
+        },
+        {
+          "title": "Lap Swimming",
+          "dur": "51min",
+          "tss": 69
         }
       ],
       "tomorrow": [
@@ -1301,7 +1324,7 @@ const DB = {
         8.6,
         7.8,
         9.5,
-        5.4
+        5.6
       ],
       "resting_hr": [
         41,
@@ -1317,7 +1340,7 @@ const DB = {
         46,
         45,
         44,
-        49
+        47
       ],
       "body_battery": [
         0,
@@ -1336,8 +1359,8 @@ const DB = {
         0
       ],
       "last_hrv": 57.8,
-      "last_sleep": 5.4,
-      "last_rhr": 49,
+      "last_sleep": 5.6,
+      "last_rhr": 47,
       "last_bb": 0
     },
     "adherence": [
@@ -1432,8 +1455,8 @@ const DB = {
       "hrv_pct": 0,
       "hrv_color": "#ff5252",
       "hrv_status": "HRV baixo (0%) — protocolo de descarga",
-      "sleep": 5.4,
-      "rhr": 49,
+      "sleep": 5.6,
+      "rhr": 47,
       "battery": null,
       "done": [
         {
@@ -2351,12 +2374,12 @@ const DB = {
         25.0,
         39.5,
         47.1,
-        60.9
+        58.0
       ],
       "last_hrv": 74,
       "last_sleep": 7.1,
       "last_rhr": 54,
-      "last_bb": 60.9
+      "last_bb": 58.0
     },
     "adherence": [
       {
@@ -2436,7 +2459,7 @@ const DB = {
       "hrv_status": "HRV elevado (113% baseline) — proceder normalmente",
       "sleep": 7.1,
       "rhr": 54,
-      "battery": 61,
+      "battery": 58,
       "done": [
         {
           "title": "Lap Swimming",
