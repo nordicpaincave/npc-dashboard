@@ -342,7 +342,7 @@
     <div id="nutri-body" style="padding:.5rem 0"></div>
   </div>
 
-  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 01/09/2026 10:01 (Supabase)</div>
+  <div class="footer">NPC Endurance · Método Norueguês · Dados via TrainingPeaks · Gerado em 01/09/2026 19:01 (Supabase)</div>
 </div>
 
 <script>
@@ -886,16 +886,16 @@ const DB = {
   },
   "bruno": {
     "kpis": {
-      "ctl": 81.7,
-      "atl": 86.7,
-      "tsb": -5.0,
-      "tss_week": 18
+      "ctl": 81.3,
+      "atl": 84.7,
+      "tsb": -3.4,
+      "tss_week": 50
     },
     "kpi_delta": {
       "ctl": "+2",
-      "atl": "+8",
-      "tsb": "-7",
-      "tss_week": "-733"
+      "atl": "+6",
+      "tsb": "-5",
+      "tss_week": "-702"
     },
     "pmc": {
       "labels": [
@@ -1050,7 +1050,7 @@ const DB = {
         79.0,
         83.2,
         81.6,
-        81.7
+        81.3
       ],
       "atl": [
         85.1,
@@ -1127,7 +1127,7 @@ const DB = {
         72.8,
         98.7,
         86.9,
-        86.7
+        84.7
       ],
       "tsb": [
         -22.4,
@@ -1204,25 +1204,29 @@ const DB = {
         6.2,
         -15.5,
         -5.4,
-        -5.0
+        -3.4
       ]
     },
     "zones": {
       "labels": [
+        "Natação",
         "Bike"
       ],
       "z1": [
+        90,
         95
       ],
       "z2": [
+        9,
         4
       ],
       "z3": [
+        1,
         1
       ]
     },
     "vol": {
-      "swim": 0.0,
+      "swim": 0.6,
       "bike": 0.5,
       "run": 0.0,
       "strength": 0.0
@@ -1275,7 +1279,7 @@ const DB = {
         8.8,
         5.8,
         9.8,
-        10.2
+        10.8
       ],
       "resting_hr": [
         47,
@@ -1310,14 +1314,14 @@ const DB = {
         0
       ],
       "last_hrv": 55,
-      "last_sleep": 10.2,
+      "last_sleep": 10.8,
       "last_rhr": 43,
       "last_bb": 0
     },
     "adherence": [
       {
         "label": "Natação",
-        "done": 0.0,
+        "done": 0.6,
         "target": 0.7,
         "color": "#4a9eff"
       },
@@ -1332,10 +1336,6 @@ const DB = {
       {
         "type": "warn",
         "msg": "HRV 85% do baseline nos últimos 3 dias: priorizar sono e recuperação"
-      },
-      {
-        "type": "warn",
-        "msg": "Aderência baixa — 31% do plano executado: identificar causa (lesão, agenda, motivação)"
       },
       {
         "type": "info",
@@ -1357,8 +1357,8 @@ const DB = {
         "day": "Ter",
         "sport": "swim",
         "desc": "Natação Z1 técnica recuperação 1.5km (Sem.25 · Ter)",
-        "dur": "—",
-        "tss": 0,
+        "dur": "37min",
+        "tss": 31,
         "zones": "—",
         "hrv": 55,
         "ht": "up"
@@ -1378,21 +1378,21 @@ const DB = {
       "form": {
         "label": "Optimal",
         "color": "#4db87a",
-        "pos": 50,
+        "pos": 52,
         "start": "Overloading",
         "end": "Recharging"
       },
       "fitness": {
         "label": "Keeping Fit",
         "color": "#4db87a",
-        "pos": 54,
+        "pos": 50,
         "start": "Recovering",
         "end": "Going Hard"
       },
       "fatigue": {
-        "label": "Stable",
-        "color": "#8b90a0",
-        "pos": 50,
+        "label": "Decreasing",
+        "color": "#4db87a",
+        "pos": 39,
         "start": "Decreasing",
         "end": "Increasing"
       }
@@ -1404,7 +1404,7 @@ const DB = {
       "hrv_pct": 88,
       "hrv_color": "#4db87a",
       "hrv_status": "HRV dentro do baseline (88%) — proceder normalmente",
-      "sleep": 10.2,
+      "sleep": 10.8,
       "rhr": 43,
       "battery": null,
       "done": [
@@ -1415,8 +1415,8 @@ const DB = {
         },
         {
           "title": "Natação Z1 técnica recuperação 1.5km (Sem.25 · Ter)",
-          "dur": null,
-          "tss": null
+          "dur": "37min",
+          "tss": 31
         }
       ],
       "tomorrow": [
@@ -1853,12 +1853,12 @@ const DB = {
         28.4,
         44.5,
         48.6,
-        72.2
+        74.6
       ],
       "last_hrv": 57,
       "last_sleep": 8.6,
       "last_rhr": 55,
-      "last_bb": 72.2
+      "last_bb": 74.6
     },
     "adherence": [],
     "alerts": [],
@@ -1895,7 +1895,7 @@ const DB = {
       "hrv_status": "HRV elevado (113% baseline) — proceder normalmente",
       "sleep": 8.6,
       "rhr": 55,
-      "battery": 72,
+      "battery": 75,
       "done": [],
       "tomorrow": []
     }
