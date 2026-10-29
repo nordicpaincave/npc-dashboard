@@ -496,8 +496,9 @@ function percBlock(a){
 }
 // ── Análises NPC (daily_recommendations / weekly_analyses) ─────────────
 const FLAG_PT = {proceed:['Seguir','g'], adjust:['Ajustar','y'], modify:['Ajustar','y'], caution:['Cautela','y'], reduce:['Reduzir','y'], rest:['Descanso','r'], stop:['Parar','r']};
-const HRV_PT = {ok:['HRV ok','g'], good:['HRV ok','g'], green:['HRV ok','g'], warn:['HRV em alerta','y'], yellow:['HRV em alerta','y'], low:['HRV baixa','r'], red:['HRV baixa','r'], bad:['HRV baixa','r'], none:['sem HRV',''], missing:['sem HRV','']};
+const HRV_PT = {ok:['HRV ok','g'], good:['HRV ok','g'], green:['HRV ok','g'], warn:['HRV em alerta','y'], yellow:['HRV em alerta','y'], low:['HRV baixa','r'], red:['HRV baixa','r'], bad:['HRV baixa','r'], critical:['HRV crítica','r'], none:['sem HRV',''], missing:['sem HRV','']};
 const STATUS_PT = {ok:['executado','g'], done:['executado','g'], partial:['parcial','y'], parcial:['parcial','y'], modified:['modificado','y'], over:['acima do prescrito','y'], under:['abaixo do prescrito','y'], skipped:['não feito','r'], missed:['não feito','r']};
+function statusPill(v){ if (!v) return ''; const k = String(v).toLowerCase(); if (STATUS_PT[k]) return pill(STATUS_PT, k); const t = String(v).replace(/_/g,' '); const c = /^(ok|conforme)/i.test(t) ? 'g' : /(not done|nao exec|não exec|missed|skip|invalid)/i.test(t) ? 'r' : 'y'; return `<span class="pill ${c}" title="${esc(t)}">${esc(t.length > 38 ? t.slice(0,36) + '…' : t)}</span>`; }
 function pill(map, v){ if (!v) return ''; const x = map[String(v).toLowerCase()] || [String(v), '']; return `<span class="pill ${x[1]}">${esc(x[0])}</span>`; }
 function sportKey(s){ s = (s || '').toLowerCase(); return /^(bike|cicl|bici|ciclo)/.test(s) ? 'bike' : /^(run|corr)/.test(s) ? 'run' : /^(swim|nat)/.test(s) ? 'swim' : /^(str|for|mus)/.test(s) ? 'strength' : s; }
 function matchItem(w, day){
@@ -507,7 +508,7 @@ function matchItem(w, day){
 function analysisBlock(w, day){
   if (!day) return '';
   const it = matchItem(w, day), others = (day.items || []).filter(x => x !== it);
-  return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? pill(STATUS_PT, it.status) : ''}</div>
+  return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? statusPill(it.status) : ''}</div>
     ${it ? `<div class="an-it">${it.summary ? esc(it.summary) : ''}${it.flags.length ? `<ul>${it.flags.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}</div>` : ''}
     ${day.short ? `<p class="an-short">${esc(day.short)}</p>` : ''}
     ${day.tech ? `<details><summary>Análise técnica completa</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(day.tech)}</p></details>` : ''}
