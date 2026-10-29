@@ -148,7 +148,7 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
   </nav>
   <div id="warn"></div>
   <main id="view"></main>
-  <footer>Gerado em 29/10/2026 15:52 (Brasília) · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
+  <footer>Gerado em 29/10/2026 16:12 (Brasília) · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
 </div>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box" id="modal-box"></div></div>
 
@@ -479,11 +479,11 @@ function vMacro(){
   const actual = p.weeks.map(w => (byMon[w.mon]||{}).tss ?? null);
   charts.macro = new Chart($('#macro-chart'), {
     data:{labels, datasets:[
-      {type:'bar', label:'Alvo', data:p.weeks.map(w=>w.tss), backgroundColor:'rgba(255,255,255,.10)', borderColor:'rgba(255,255,255,.35)', borderWidth:1, grouped:false, order:3},
-      {type:'bar', label:'Realizado', data:actual, backgroundColor:actual.map((v,i)=>{ const t=p.weeks[i].tss; if (v==null) return 'transparent'; if (p.weeks[i].mon===curM) return 'rgba(154,160,178,.7)'; return (t && v/t>=.9 && v/t<=1.15)?'rgba(63,191,111,.8)':'rgba(230,180,34,.8)'; }), grouped:false, barPercentage:.55, order:2},
+      {type:'bar', label:'TSS alvo', data:p.weeks.map(w=>w.tss), backgroundColor:'rgba(255,255,255,.10)', borderColor:'rgba(255,255,255,.35)', borderWidth:1, grouped:false, order:3},
+      {type:'bar', label:'TSS realizado', data:actual, backgroundColor:actual.map((v,i)=>{ const t=p.weeks[i].tss; if (v==null) return 'transparent'; if (p.weeks[i].mon===curM) return 'rgba(154,160,178,.7)'; return (t && v/t>=.9 && v/t<=1.15)?'rgba(63,191,111,.8)':'rgba(230,180,34,.8)'; }), grouped:false, barPercentage:.55, order:2},
       {type:'line', label:'CTL', data:endCtl, borderColor:'#4a9eff', pointRadius:2, yAxisID:'y1', segment:{borderDash: ctx => p.weeks[ctx.p1DataIndex].mon > TODAY ? [5,4] : undefined}, order:1},
     ]},
-    options:{interaction:{mode:'index',intersect:false}, plugins:{tooltip:{callbacks:{title: it => `Semana ${p.weeks[it[0].dataIndex].w} · ${ddmmyy(p.weeks[it[0].dataIndex].mon)}`, label: c => c.raw==null?null:`${c.dataset.label}: ${fmtN(c.raw)}`}}, markers:{lines:[{x:`S${(cur||{}).w}`, color:'#ff7c3a', label:'hoje'}].concat(races.map((e,i) => { const wk = p.weeks.find(w => e.date >= w.mon && e.date <= addDays(w.mon,6)); return wk ? {x:`S${wk.w}`, color:'#ff5252', label:`${e.priority||''} ${e.name}`, row:1+i%3, dash:[]} : null; }).filter(Boolean))}},
+    options:{interaction:{mode:'index',intersect:false}, plugins:{tooltip:{callbacks:{title: it => `Semana ${p.weeks[it[0].dataIndex].w} · ${ddmmyy(p.weeks[it[0].dataIndex].mon)}`, label: c => { if (c.raw==null) return null; const w = p.weeks[c.dataIndex]; let l = c.dataset.label; if (l === 'CTL') l = w.mon > TODAY ? 'CTL projetado (fim da semana)' : w.mon === curM ? 'CTL hoje' : 'CTL no fim da semana'; else if (l === 'TSS realizado' && w.mon === curM) l += ' até hoje'; return `${l}: ${fmtN(c.raw)}`; }}}, markers:{lines:[{x:`S${(cur||{}).w}`, color:'#ff7c3a', label:'hoje'}].concat(races.map((e,i) => { const wk = p.weeks.find(w => e.date >= w.mon && e.date <= addDays(w.mon,6)); return wk ? {x:`S${wk.w}`, color:'#ff5252', label:`${e.priority||''} ${e.name}`, row:1+i%3, dash:[]} : null; }).filter(Boolean))}},
       scales:{x:{grid:{display:false}}, y:{beginAtZero:true, title:{display:true,text:'TSS/semana'}}, y1:{position:'right', grid:{display:false}, title:{display:true,text:'CTL'}}}}
   });
 }
