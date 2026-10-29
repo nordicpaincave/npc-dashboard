@@ -104,6 +104,29 @@ tr.past td{color:var(--text2)}
 .rpebar{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
 .rpebar{max-width:260px}.rpebar i{height:10px;border-radius:2px;opacity:.18}.rpebar i.on{opacity:1}
 .faces{display:flex;gap:8px;font-size:22px;line-height:1;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}.faces span{opacity:.28;filter:grayscale(1)}.faces span.on{opacity:1;filter:none}
+.an{border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin:0 0 12px;background:linear-gradient(180deg,rgba(74,158,255,.06),transparent)}
+.an-h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.an-h .lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-right:4px}
+.an-it{font-size:13px;line-height:1.5}.an-it ul,.wa ul{margin:6px 0 0;padding-left:18px;color:var(--text2);font-size:12.5px;line-height:1.5}
+.an-short{font-size:13px;line-height:1.55;margin:8px 0 0;color:var(--text)}
+.an details{margin-top:8px;font-size:12.5px;color:var(--text2);line-height:1.55}.an summary,.wa summary{cursor:pointer;color:#7ab8ff;font-size:12px}
+.an .other{margin-top:8px;font-size:12px;color:var(--text2)}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--bg4);color:var(--text2)}
+.pill.g{background:#14532d;color:#bbf7d0}.pill.y{background:#78350f;color:#fde68a}.pill.r{background:#7f1d1d;color:#fecaca}.pill.b{background:#1e3a5f;color:#bfdbfe}
+details.hw{border:1px solid var(--border);border-radius:10px;margin-top:8px;background:var(--bg2)}
+details.hw>summary{list-style:none;cursor:pointer;padding:10px 14px;display:flex;gap:6px 16px;align-items:center;flex-wrap:wrap;font-size:13px}
+details.hw>summary::-webkit-details-marker{display:none}
+details.hw>summary .wn{font-weight:700;min-width:58px}details.hw>summary .wd{color:var(--text2);min-width:96px}
+details.hw>summary .wt{font-variant-numeric:tabular-nums}details.hw>summary .car{margin-left:auto;color:var(--text3);transition:transform .15s}
+details.hw[open]>summary .car{transform:rotate(180deg)}
+details.hw .hb{padding:0 14px 14px}
+.wa{background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.wa .k{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--text2);margin:6px 0 8px}.wa .k b{color:var(--text)}
+.wa p{margin:6px 0;font-size:13px;line-height:1.55}
+.wa .cols{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px}@media(max-width:700px){.wa .cols{grid-template-columns:1fr}}
+.wa h5{margin:8px 0 0;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.anlink{color:#7ab8ff;white-space:nowrap}
+tr.miss td{color:var(--text3)}
 .perc .foot{grid-column:1/-1;font-size:11px;color:var(--text2);border-top:1px solid var(--border);padding-top:7px}
 .mgrid div{background:var(--bg3);border-radius:8px;padding:8px}
 .mgrid b{display:block;font-size:16px}
@@ -152,6 +175,7 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
     <button data-tab="macro">Plano macro</button>
     <button data-tab="lactato">Lactato</button>
     <button data-tab="limiares">Limiares e zonas</button>
+    <button data-tab="hist">Histórico</button>
     <button data-tab="comp">Comparativo</button>
   </nav>
   <div id="warn"></div>
@@ -243,7 +267,7 @@ function render(){
   document.querySelectorAll('#ath-seg button').forEach(b => b.classList.toggle('on', b.dataset.ath === state.ath));
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
   Object.keys(charts).forEach(kill);
-  ({geral: vGeral, cal: vCal, macro: vMacro, lactato: vLactato, limiares: vLimiares, comp: vComp})[state.tab]();
+  ({geral: vGeral, cal: vCal, macro: vMacro, lactato: vLactato, limiares: vLimiares, hist: vHist, comp: vComp})[state.tab]();
 }
 
 const SRC_PT = {none:'estimado por % do FTP', estimated_pct_ftp:'estimado por % do FTP', estimated_from_run:'estimado a partir da corrida', measured_bike_v1:'copiada da ergo de corrida (não medida na bike)', estimated_css_plus_9s:'estimado (CSS + 9 s/100m)', css_test_2026_03:'teste de CSS (mar/2026)'};
@@ -425,7 +449,10 @@ function vCal(){
   bindWorkoutRows();
 }
 function openWorkout(id){
-  const w = A().workouts.find(x => String(x.id) === String(id)); if (!w) return;
+  const w = A().workouts.find(x => String(x.id) === String(id));
+  if (w) showWorkout(w, (A().daily || {})[w.date]);
+}
+function showWorkout(w, day){
   const a = w.act || {}, p = w.plan || {};
   const cell = (lbl, v) => `<div><span>${lbl}</span><b>${v}</b></div>`;
   const paceU = w.sport === 'swim' ? '/100m' : '/km';
@@ -444,6 +471,7 @@ function openWorkout(id){
       ${w.done ? cell('Altimetria', a.elev != null ? fmtN(a.elev)+' m' : '—') : ''}
     </div>
     ${w.done ? percBlock(a) : ''}
+    ${analysisBlock(w, day)}
     ${w.comments.length ? `<h3 class="small muted" style="margin:10px 0 6px">COMENTÁRIOS</h3>${w.comments.map(c => `<div class="note" style="margin-bottom:6px"><b>${esc(c.who)}</b><br>${esc(c.text)}</div>`).join('')}` : ''}
     ${w.desc ? `<h3 class="small muted" style="margin:10px 0 6px">DESCRIÇÃO DO TREINO</h3><pre class="desc">${esc(w.desc)}</pre>` : ''}`;
   $('#modal').classList.add('on');
@@ -465,6 +493,95 @@ function percBlock(a){
       <div class="faces">${FEEL.map((x,i) => `<span class="${i === f ? 'on' : ''}" title="${x[1]}">${x[0]}</span>`).join('')}</div></div>
     ${r != null && min ? `<div class="foot">Carga interna (sRPE, Foster 2001): ${r} × ${min} min = <b>${r*min} UA</b> — mede quanto o treino pesou para você, independente de potência ou FC.</div>` : ''}
   </div>`;
+}
+// ── Análises NPC (daily_recommendations / weekly_analyses) ─────────────
+const FLAG_PT = {proceed:['Seguir','g'], adjust:['Ajustar','y'], modify:['Ajustar','y'], caution:['Cautela','y'], reduce:['Reduzir','y'], rest:['Descanso','r'], stop:['Parar','r']};
+const HRV_PT = {ok:['HRV ok','g'], good:['HRV ok','g'], green:['HRV ok','g'], warn:['HRV em alerta','y'], yellow:['HRV em alerta','y'], low:['HRV baixa','r'], red:['HRV baixa','r'], bad:['HRV baixa','r'], none:['sem HRV',''], missing:['sem HRV','']};
+const STATUS_PT = {ok:['executado','g'], done:['executado','g'], partial:['parcial','y'], parcial:['parcial','y'], modified:['modificado','y'], over:['acima do prescrito','y'], under:['abaixo do prescrito','y'], skipped:['não feito','r'], missed:['não feito','r']};
+function pill(map, v){ if (!v) return ''; const x = map[String(v).toLowerCase()] || [String(v), '']; return `<span class="pill ${x[1]}">${esc(x[0])}</span>`; }
+function sportKey(s){ s = (s || '').toLowerCase(); return /^(bike|cicl|bici|ciclo)/.test(s) ? 'bike' : /^(run|corr)/.test(s) ? 'run' : /^(swim|nat)/.test(s) ? 'swim' : /^(str|for|mus)/.test(s) ? 'strength' : s; }
+function matchItem(w, day){
+  const its = (day && day.items) || [];
+  return its.find(i => i.wid && String(i.wid) === String(w.id)) || its.find(i => sportKey(i.sport) === w.sport) || (its.length === 1 ? its[0] : null);
+}
+function analysisBlock(w, day){
+  if (!day) return '';
+  const it = matchItem(w, day), others = (day.items || []).filter(x => x !== it);
+  return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? pill(STATUS_PT, it.status) : ''}</div>
+    ${it ? `<div class="an-it">${it.summary ? esc(it.summary) : ''}${it.flags.length ? `<ul>${it.flags.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}</div>` : ''}
+    ${day.short ? `<p class="an-short">${esc(day.short)}</p>` : ''}
+    ${day.tech ? `<details><summary>Análise técnica completa</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(day.tech)}</p></details>` : ''}
+    ${others.length ? `<div class="other">Outros treinos analisados no dia: ${others.map(o => `${esc(SPORT_LABEL[sportKey(o.sport)] || o.sport || '')}${o.summary ? ' — ' + esc(o.summary) : ''}`).join(' · ')}</div>` : ''}
+  </div>`;
+}
+function weeklyCard(x){
+  const li = (arr, cls) => arr && arr.length ? `<ul class="${cls||''}">${arr.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+  const stCls = /descarga|recupera/i.test(x.status||'') ? 'b' : /alert|risco|ruim|fadig/i.test(x.status||'') ? 'r' : /aten|ajust/i.test(x.status||'') ? 'y' : 'g';
+  return `<div class="wa"><div class="an-h"><span class="lbl">Análise semanal${x.at ? ' · feita em ' + ddmm(x.at) : ''}</span>${x.status ? `<span class="pill ${stCls}">${esc(x.status)}</span>` : ''}${x.descarga && !/descarga/i.test(x.status||'') ? '<span class="pill b">descarga</span>' : ''}${x.taper ? '<span class="pill y">antecipar taper</span>' : ''}${x.rev_zonas ? '<span class="pill y">revisar zonas</span>' : ''}${x.red_vol ? `<span class="pill y">reduzir volume ${x.red_vol}%</span>` : ''}</div>
+    <div class="k"><span>TSS <b>${fmtN(x.tss)}</b> / ${fmtN(x.tss_plan)}${x.adh != null ? ` (${x.adh}%)` : ''}</span><span>CTL <b>${fmtN(x.ctl,1)}</b></span><span>ATL <b>${fmtN(x.atl,1)}</b></span><span>TSB <b>${sign(x.tsb)}</b></span>${x.hrv != null ? `<span>HRV <b>${fmtN(x.hrv,1)}</b>${x.hrv_base != null ? ` (base ${fmtN(x.hrv_base,1)})` : ''}</span>` : ''}${x.sleep != null ? `<span>Sono <b>${fmtN(x.sleep,1)} h</b></span>` : ''}</div>
+    ${x.resumo ? `<p>${esc(x.resumo)}</p>` : ''}
+    <div class="cols">${x.destaques.length ? `<div><h5>Destaques</h5>${li(x.destaques)}</div>` : ''}${x.alertas.length ? `<div><h5>Alertas</h5>${li(x.alertas)}</div>` : ''}${x.bike_flags.length ? `<div><h5>Bike — sessões-chave</h5>${li(x.bike_flags)}</div>` : ''}${x.run_flags.length ? `<div><h5>Corrida — sessões-chave</h5>${li(x.run_flags)}</div>` : ''}</div>
+    ${x.prescricao ? `<h5>Para a semana seguinte</h5><p>${esc(x.prescricao)}</p>` : ''}
+    ${x.sessoes ? `<details><summary>Resumo das sessões</summary><p>${esc(x.sessoes)}</p></details>` : ''}
+  </div>`;
+}
+
+// ── HISTÓRICO (ciclos encerrados) ────────────────────────────────────
+const HIST = {};
+function vHist(){
+  const a = A(), H = a.history || [];
+  if (!H.length) { $('#view').innerHTML = '<div class="card empty">Nenhum ciclo encerrado no Supabase para este atleta.</div>'; return; }
+  if (!H.some(c => c.file === state.histCycle)) state.histCycle = H[0].file;
+  const c = H.find(x => x.file === state.histCycle);
+  const HD = HIST[c.file];
+  if (!HD) {
+    $('#view').innerHTML = '<div class="card empty">Carregando o histórico…</div>';
+    fetch(c.file, {cache:'no-cache'}).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(j => { HIST[c.file] = j; if (state.tab === 'hist' && state.histCycle === c.file) vHist(); })
+      .catch(e => { $('#view').innerHTML = `<div class="card empty">Não consegui carregar ${esc(c.file)} (${esc(String(e.message||e))}).</div>`; });
+    return;
+  }
+  const dmap = Object.fromEntries(HD.daily.map(x => [x.d, x]));
+  const wmap = Object.fromEntries(HD.weekly.map(x => [x.mon, x]));
+  const tmap = Object.fromEntries(HD.targets.map(x => [x.mon, x]));
+  const done = HD.workouts.filter(w => w.done);
+  const totH = done.reduce((s,w) => s + (w.act.h||0), 0), totT = done.reduce((s,w) => s + (w.act.tss||0), 0);
+  const mons = []; for (let m = mondayOf(HD.start); m <= HD.end; m = addDays(m, 7)) mons.push(m);
+  const weeksHtml = mons.slice().reverse().map((m, idx) => {
+    const ws = HD.workouts.filter(w => w.date >= m && w.date <= addDays(m, 6));
+    const wd = ws.filter(w => w.done), tg = tmap[m], wa = wmap[m];
+    const tss = wd.reduce((s,w) => s + (w.act.tss||0), 0), h = wd.reduce((s,w) => s + (w.act.h||0), 0);
+    const nAn = ws.filter(w => dmap[w.date]).map(w => w.date).filter((v,i,arr) => arr.indexOf(v) === i).length;
+    const rows = ws.map(w => { const an = dmap[w.date] && w.done; return `<tr data-hw="${w.id}" class="${w.done ? '' : 'miss'}" style="cursor:pointer"><td>${ddmm(w.date)}</td><td><span class="dot" style="background:${SPORT_COLOR[w.sport]}"></span> ${esc(w.title)}${w.done ? '' : ' <span class="small">· não realizado</span>'}</td><td class="n">${w.done ? fmtH(w.act.h) : fmtH(w.plan.h)}</td><td class="n">${w.done ? fmtN(w.act.tss) : '—'}</td><td class="n">${w.done ? fmtN(w.act.if,2) : '—'}</td><td class="n">${w.done && w.act.np ? w.act.np+' W' : w.done && w.act.pace ? fmtPace(w.act.pace) + (w.sport==='swim'?'/100m':'/km') : '—'}</td><td class="n">${w.done ? fmtN(w.act.hr) : '—'}</td><td class="n">${w.done ? fmtN(w.act.rpe) : '—'}</td><td>${an ? '<span class="anlink">📄 análise</span>' : ''}</td></tr>`; }).join('');
+    return `<details class="hw" ${idx === 0 ? 'open' : ''}><summary><span class="wn">${tg ? 'Sem. ' + tg.w : 'Semana'}</span><span class="wd">${ddmm(m)}–${ddmm(addDays(m,6))}</span>${tg && tg.type ? `<span class="muted">${esc(WEEK_TYPE[tg.type]||tg.type)}</span>` : ''}<span class="wt">TSS <b>${fmtN(tss)}</b>${tg && tg.tss ? ` / ${fmtN(tg.tss)}` : ''}</span><span class="wt">${fmtH(h)}</span>${wa ? '<span class="pill b">análise semanal</span>' : ''}${nAn ? `<span class="pill">${nAn} análise${nAn>1?'s':''} diária${nAn>1?'s':''}</span>` : ''}<span class="car">▾</span></summary>
+      <div class="hb">${wa ? weeklyCard(wa) : ''}${ws.length ? `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Treino</th><th class="n">Duração</th><th class="n">TSS</th><th class="n">IF</th><th class="n">NP / pace</th><th class="n">FC méd</th><th class="n">RPE</th><th>Análise</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="small muted">Sem treinos nesta semana.</div>'}</div></details>`;
+  }).join('');
+  $('#view').innerHTML = `
+  <div class="card"><h3>${esc(c.name)} <span class="sub">${ddmmyy(HD.start)} → ${ddmmyy(HD.end)}</span></h3>
+    ${H.length > 1 ? `<div class="seg section" id="hist-seg">${H.map(x => `<button data-f="${esc(x.file)}" class="${x.file === c.file ? 'on' : ''}">${esc(x.name)}</button>`).join('')}</div>` : ''}
+    <div class="grid g4 section">
+      <div class="kpi"><div class="l">Treinos realizados</div><div class="v">${done.length}</div><div class="s">${fmtH(totH)} no total</div></div>
+      <div class="kpi"><div class="l">TSS do ciclo</div><div class="v">${fmtN(totT)}</div><div class="s">${mons.length} semanas</div></div>
+      <div class="kpi"><div class="l">Análises diárias</div><div class="v">${HD.daily.length}</div><div class="s">${HD.daily.length ? `${ddmm(HD.daily[0].d)} → ${ddmm(HD.daily[HD.daily.length-1].d)}` : 'nenhuma registrada'}</div></div>
+      <div class="kpi"><div class="l">Análises semanais</div><div class="v">${HD.weekly.length}</div><div class="s">${HD.weekly.length ? `${ddmm(HD.weekly[0].mon)} → ${ddmm(HD.weekly[HD.weekly.length-1].mon)}` : 'nenhuma registrada'}</div></div>
+    </div>
+    <div class="chart-box md section"><canvas id="hist-chart"></canvas></div>
+    <div class="legend"><span><i class="dot" style="background:#4a9eff"></i>CTL (forma)</span><span><i class="dot" style="background:#f5c542"></i>TSB (frescor)</span><span><i class="dot" style="background:rgba(255,255,255,.3)"></i>TSS semanal</span></div>
+  </div>
+  <div class="card section"><h3>Semanas do ciclo <span class="sub">mais recente primeiro · clique numa semana para abrir · clique num treino para ver dados e análise</span></h3>${weeksHtml}</div>`;
+  const hs = $('#hist-seg'); if (hs) hs.onclick = e => { const b = e.target.closest('button'); if (b) { state.histCycle = b.dataset.f; vHist(); } };
+  const wById = Object.fromEntries(HD.workouts.map(w => [String(w.id), w]));
+  document.querySelectorAll('[data-hw]').forEach(el => el.onclick = () => { const w = wById[el.dataset.hw]; if (w) showWorkout(w, w.done ? dmap[w.date] : null); });
+  const pm = a.pmc.filter(p => p.d >= HD.start && p.d <= HD.end);
+  if (pm.length) {
+    const wk = mons.map(m => ({x: addDays(m, 3), y: HD.workouts.filter(w => w.done && w.date >= m && w.date <= addDays(m,6)).reduce((s,w) => s + (w.act.tss||0), 0)}));
+    charts.hist = new Chart($('#hist-chart'), {data:{labels: pm.map(p => p.d), datasets:[
+      {type:'bar', label:'TSS semanal', data: pm.map(p => { const f = wk.find(q => q.x === p.d); return f ? f.y : null; }), backgroundColor:'rgba(255,255,255,.14)', yAxisID:'y1', barThickness:10, order:3},
+      {type:'line', label:'CTL', data: pm.map(p => p.ctl), borderColor:'#4a9eff', backgroundColor:'rgba(74,158,255,.10)', fill:true, pointRadius:0, borderWidth:2, order:1},
+      {type:'line', label:'TSB', data: pm.map(p => p.tsb), borderColor:'#f5c542', pointRadius:0, borderWidth:1.5, order:2}]},
+      options:{interaction:{mode:'index',intersect:false}, plugins:{legend:{display:false}, tooltip:{callbacks:{title: it => ddmmyy(pm[it[0].dataIndex].d), label: x => x.raw == null ? null : `${x.dataset.label}: ${fmtN(x.raw, x.dataset.label === 'TSS semanal' ? 0 : 1)}`}}},
+        scales:{x:{ticks:{callback:(v,i) => pm[i] && pm[i].d.slice(8) === '01' ? pm[i].d.slice(5,7) + '/' + pm[i].d.slice(2,4) : '', autoSkip:false, maxRotation:0}}, y:{title:{display:true,text:'CTL / TSB'}}, y1:{position:'right', grid:{display:false}, title:{display:true,text:'TSS/semana'}}}}});
+  }
 }
 function closeModal(){ $('#modal').classList.remove('on'); }
 
