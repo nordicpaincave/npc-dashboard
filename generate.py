@@ -1,22 +1,27 @@
 """
-NPC Endurance — Dashboard Generator v4
-Busca dados do TrainingPeaks via cookie de sessão e injeta no template HTML.
-Sem custo adicional — nenhuma API externa paga.
+NPC Endurance — Dashboard Generator v5
+Busca dados do TrainingPeaks e injeta no template HTML.
 
-Variável de ambiente necessária:
-  TP_COOKIE  — valor do cookie Production_tpAuth do TrainingPeaks
+Autenticação (v5):
+  TP_COOKIE — valor do cookie Production_tpAuth do TrainingPeaks (secret do GitHub).
+  A cada execução o cookie é trocado em /users/v3/token por um access token
+  novo (válido ~1h), do mesmo jeito que o conector MCP faz. Não use mais um
+  Bearer fixo: ele expira em ~1h e fazia o dashboard publicar dados falsos.
+
+Política de erro (v5):
+  Se qualquer atleta falhar (auth, rede, API), o script termina com código 1
+  e NÃO reescreve o index.html. A Action fica vermelha e o GitHub avisa por
+  e-mail; o site continua com a última versão boa. Nunca publica protótipo.
 """
 
-import os, json
+import os, sys, json, time
 from datetime import datetime, timedelta
 import requests
 
 # ── Atletas ───────────────────────────────────────────────────────────
 ATHLETES = {
-    "bruno":   {"id": 6285028, "name": "Bruno Trevisan"},
-    "jean":    {"id": 6286348, "name": "Jean Romano"},
-    "gabriel": {"id": 5775491, "name": "Gabriel"},
-    "rafael":  {"id": None,    "name": "Rafael Lemos"},
+    "bruno": {"id": 6285028, "name": "Bruno Trevisan"},
+    "jean":  {"id": 6286348, "name": "Jean Romano"},
 }
 TP_BASE = "https://tpapi.trainingpeaks.com"
 
@@ -27,118 +32,57 @@ SPORT_LABEL = {"swim":"Natação","bike":"Bike","run":"Corrida","strength":"For�
 SPORT_COLOR = {"swim":"#4a9eff","bike":"#f5a623","run":"#4db87a","strength":"#9b8fff"}
 DAYS_PT = ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"]
 
-# ── Dados de referência (fallback visual) ─────────────────────────────
-PROTOTYPE = {
-    "bruno": {
-        "kpis":{"ctl":72,"atl":68,"tsb":4,"tss_week":412},
-        "kpi_delta":{"ctl":"+3","atl":"+8","tsb":"-4","tss_week":"+31"},
-        "pmc":{"labels":["S1","S2","S3","S4","S5","S6","S7","S8"],
-               "ctl":[58,61,65,68,70,74,73,72],"atl":[62,70,75,72,65,78,74,68],"tsb":[-4,-9,-10,-4,5,-4,-1,4]},
-        "zones":{"labels":["Natação","Bike","Corrida"],"z1":[72,68,65],"z2":[22,25,28],"z3":[6,7,7]},
-        "vol":{"swim":2.1,"bike":5.8,"run":3.2,"strength":1.0},
-        "hrv":{"labels":["1/4","2/4","3/4","4/4","5/4","6/4","7/4","8/4","9/4","10/4","11/4","12/4","13/4","14/4"],
-               "vals":[56,54,57,59,55,53,58,60,57,54,55,58,59,60],"baseline":57},
-        "adherence":[{"label":"Natação","done":2.1,"target":2.5,"color":"#4a9eff"},
-                     {"label":"Bike","done":5.8,"target":6.0,"color":"#f5a623"},
-                     {"label":"Corrida","done":3.2,"target":3.5,"color":"#4db87a"},
-                     {"label":"Força","done":1.0,"target":1.0,"color":"#9b8fff"}],
-        "alerts":[{"type":"ok","msg":"Forma positiva — TSB +4"},
-                  {"type":"info","msg":"ATL elevada — monitorar recuperação"}],
-        "sessions":[
-            {"day":"Seg","sport":"run","desc":"Limiar duplo — 3×10min Z2 + 2×8min Z3","dur":"1h15","tss":82,"zones":"60/30/10"},
-            {"day":"Ter","sport":"swim","desc":"Volume Z1 — 3.200m aeróbico","dur":"1h05","tss":48,"zones":"80/18/2"},
-            {"day":"Qua","sport":"bike","desc":"Endurance Z1 — 90min fundo","dur":"1h30","tss":65,"zones":"75/22/3"},
-            {"day":"Qui","sport":"run","desc":"Limiar duplo — 4×6min Z2 + 3×5min Z3","dur":"1h10","tss":78,"zones":"55/32/13"},
-            {"day":"Sex","sport":"swim","desc":"CSS — 8×100m no limiar","dur":"55min","tss":55,"zones":"40/42/18"},
-            {"day":"Sáb","sport":"bike","desc":"Longa Z1 — 3h base aeróbica","dur":"3h00","tss":95,"zones":"80/18/2"},
-        ]
-    },
-    "jean": {
-        "kpis":{"ctl":85,"atl":79,"tsb":6,"tss_week":498},
-        "kpi_delta":{"ctl":"+5","atl":"+6","tsb":"+2","tss_week":"+44"},
-        "pmc":{"labels":["S1","S2","S3","S4","S5","S6","S7","S8"],
-               "ctl":[68,72,76,79,82,85,84,85],"atl":[70,78,82,80,76,88,82,79],"tsb":[-2,-6,-6,-1,6,-3,2,6]},
-        "zones":{"labels":["Natação","Bike","Corrida"],"z1":[70,65,60],"z2":[24,28,32],"z3":[6,7,8]},
-        "vol":{"swim":2.8,"bike":7.2,"run":4.5,"strength":1.0},
-        "hrv":{"labels":["1/4","2/4","3/4","4/4","5/4","6/4","7/4","8/4","9/4","10/4","11/4","12/4","13/4","14/4"],
-               "vals":[60,62,61,58,60,63,64,62,59,61,63,64,63,65],"baseline":62},
-        "adherence":[{"label":"Natação","done":2.8,"target":3.0,"color":"#4a9eff"},
-                     {"label":"Bike","done":7.2,"target":7.0,"color":"#f5a623"},
-                     {"label":"Corrida","done":4.5,"target":4.5,"color":"#4db87a"},
-                     {"label":"Força","done":1.0,"target":1.0,"color":"#9b8fff"}],
-        "alerts":[{"type":"ok","msg":"Excelente aderência — 97% do plano executado"},
-                  {"type":"info","msg":"Buenos Aires (70.3) em 25 semanas"}],
-        "sessions":[
-            {"day":"Seg","sport":"bike","desc":"Limiar duplo — 5×8min Z2 + 3×6min Z3","dur":"1h30","tss":95,"zones":"50/36/14"},
-            {"day":"Ter","sport":"swim","desc":"Técnica + CSS — 3.600m","dur":"1h10","tss":58,"zones":"65/28/7"},
-            {"day":"Qua","sport":"run","desc":"Volume Z1 — 12km fácil","dur":"1h15","tss":62,"zones":"78/20/2"},
-            {"day":"Qui","sport":"bike","desc":"Limiar duplo — FTP intervals","dur":"1h20","tss":88,"zones":"45/38/17"},
-            {"day":"Sex","sport":"swim","desc":"Endurance — 4.000m Z1/Z2","dur":"1h20","tss":65,"zones":"70/26/4"},
-            {"day":"Sáb","sport":"run","desc":"Longa Z1/Z2 — 18km progressivo","dur":"1h45","tss":100,"zones":"65/28/7"},
-        ]
-    },
-    "rafael": {
-        "kpis":{"ctl":0,"atl":0,"tsb":0,"tss_week":0},
-        "kpi_delta":{"ctl":"—","atl":"—","tsb":"—","tss_week":"—"},
-        "pmc":{"labels":["S1","S2","S3","S4","S5","S6","S7","S8"],
-               "ctl":[0,0,0,0,0,0,0,0],"atl":[0,0,0,0,0,0,0,0],"tsb":[0,0,0,0,0,0,0,0]},
-        "zones":{"labels":["Natação","Bike","Corrida"],"z1":[80,80,80],"z2":[15,15,15],"z3":[5,5,5]},
-        "vol":{"swim":0,"bike":0,"run":0,"strength":0},
-        "hrv":{"labels":[],"vals":[],"baseline":0,"sleep":[],"resting_hr":[],"body_battery":[]},
-        "adherence":[],
-        "alerts":[{"type":"info","msg":"TP ID pendente — dados disponíveis após integração"}],
-        "sessions":[],"planned":{},"week_notes":{}
-    },
-    "gabriel": {
-        "kpis":{"ctl":58,"atl":72,"tsb":-14,"tss_week":380},
-        "kpi_delta":{"ctl":"+2","atl":"+14","tsb":"-12","tss_week":"+55"},
-        "pmc":{"labels":["S1","S2","S3","S4","S5","S6","S7","S8"],
-               "ctl":[46,49,52,54,56,58,57,58],"atl":[50,55,60,58,52,65,70,72],"tsb":[-4,-6,-8,-4,4,-7,-13,-14]},
-        "zones":{"labels":["Bike","Corrida"],"z1":[60,58],"z2":[28,30],"z3":[12,12]},
-        "vol":{"swim":0,"bike":5.5,"run":4.2,"strength":1.5},
-        "hrv":{"labels":["1/4","2/4","3/4","4/4","5/4","6/4","7/4","8/4","9/4","10/4","11/4","12/4","13/4","14/4"],
-               "vals":[58,56,54,52,55,53,51,50,52,51,53,54,55,53],"baseline":55},
-        "adherence":[{"label":"Bike","done":5.5,"target":5.0,"color":"#f5a623"},
-                     {"label":"Corrida","done":4.2,"target":4.0,"color":"#4db87a"},
-                     {"label":"Força","done":1.5,"target":1.5,"color":"#9b8fff"}],
-        "alerts":[{"type":"danger","msg":"Risco de overtraining — TSB −14"},
-                  {"type":"warn","msg":"HRV em queda há 7 dias"}],
-        "sessions":[
-            {"day":"Seg","sport":"run","desc":"Limiar — 3×10min Z2 pré-duatlon","dur":"1h00","tss":70,"zones":"55/33/12"},
-            {"day":"Ter","sport":"bike","desc":"Específico duatlon — 3×8min Z3","dur":"1h10","tss":85,"zones":"40/38/22"},
-            {"day":"Qua","sport":"strength","desc":"Alfredson + estabilização joelho","dur":"40min","tss":25,"zones":"—"},
-            {"day":"Qui","sport":"run","desc":"Taper ativo — 6km Z1 leve","dur":"40min","tss":35,"zones":"85/13/2"},
-            {"day":"Sex","sport":"bike","desc":"Ativação pré-prova — 30min Z1","dur":"30min","tss":22,"zones":"80/15/5"},
-            {"day":"Sáb","sport":"run","desc":"PROVA — Duatlon 5/20/2.5km","dur":"~56min","tss":110,"zones":"20/35/45"},
-        ]
-    },
-}
-
 # ── Autenticação ──────────────────────────────────────────────────────
-def hdrs():
-    # TP migrou para Bearer token — usa TP_BEARER se disponível, senão tenta TP_COOKIE
-    bearer = os.environ.get("TP_BEARER", "")
-    cookie = os.environ.get("TP_COOKIE", "")
-    if bearer:
-        return {
-            "Authorization": f"Bearer {bearer}",
-            "Accept":        "application/json, text/javascript, */*; q=0.01",
-            "Content-Type":  "application/json",
-            "User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Origin":        "https://app.trainingpeaks.com",
-            "Referer":       "https://app.trainingpeaks.com/",
-        }
-    elif cookie:
-        return {
-            "Cookie":     f"Production_tpAuth={cookie}",
-            "Accept":     "application/json",
-            "User-Agent": "Mozilla/5.0",
-        }
-    else:
-        raise ValueError("Nenhuma credencial do TP encontrada. Configure TP_BEARER ou TP_COOKIE nos secrets do GitHub.")
+class TPAuthError(RuntimeError):
+    """Credencial do TrainingPeaks ausente, expirada ou recusada."""
+
+TOKEN_ENDPOINT = "/users/v3/token"
+_token = {"value": None, "exp": 0.0}
+
+def _cookie():
+    cookie = os.environ.get("TP_COOKIE", "").strip().strip('"').strip("'")
+    if cookie.startswith("Production_tpAuth="):        # aceita colado com o nome
+        cookie = cookie.split("=", 1)[1]
+    if not cookie:
+        raise TPAuthError("Secret TP_COOKIE ausente. Configure em Settings → "
+                          "Secrets and variables → Actions.")
+    return cookie
+
+def get_access_token(force=False):
+    """Troca o cookie Production_tpAuth por um access token (cache até 60s antes de expirar)."""
+    if not force and _token["value"] and time.time() < _token["exp"] - 60:
+        return _token["value"]
+    r = requests.get(f"{TP_BASE}{TOKEN_ENDPOINT}",
+                     headers={"Cookie": f"Production_tpAuth={_cookie()}",
+                              "Accept": "application/json"},
+                     timeout=20)
+    if r.status_code in (401, 403):
+        raise TPAuthError(f"Cookie Production_tpAuth expirado ou inválido (HTTP {r.status_code}). "
+                          "Atualize o secret TP_COOKIE.")
+    r.raise_for_status()
+    data  = r.json()
+    tok   = data.get("token") or {}
+    value = tok.get("access_token")
+    if data.get("success") is False or not value:
+        raise TPAuthError("Resposta inesperada de /users/v3/token — sem access_token.")
+    _token["value"] = value
+    _token["exp"]   = time.time() + float(tok.get("expires_in") or 3600)
+    print(f"  token TP renovado (expira em {int(float(tok.get('expires_in') or 3600))//60} min)")
+    return value
+
+def hdrs(force=False):
+    return {
+        "Authorization": f"Bearer {get_access_token(force)}",
+        "Accept":        "application/json",
+        "Content-Type":  "application/json",
+    }
 
 def tp_get(path):
     r = requests.get(f"{TP_BASE}{path}", headers=hdrs(), timeout=20)
+    if r.status_code == 401:                       # token pode ter vencido: renova 1x
+        r = requests.get(f"{TP_BASE}{path}", headers=hdrs(force=True), timeout=20)
+        if r.status_code == 401:
+            raise TPAuthError(f"401 mesmo com token novo em {path}")
     r.raise_for_status()
     return r.json()
 
@@ -175,6 +119,8 @@ def fetch_fitness(athlete_id, weeks=8):
             if data:
                 print(f"    fitness: {len(data)} registros")
                 return data
+        except TPAuthError:
+            raise
         except Exception:
             continue
     print(f"    fitness: nenhum endpoint funcionou — PMC calculado dos workouts")
@@ -193,6 +139,8 @@ def fetch_wellness(athlete_id, days=14):
                 data = data.get("Items") or data.get("items") or []
             print(f"    metrics: {len(data)} registros")
             return data
+    except TPAuthError:
+        raise
     except Exception as ex:
         print(f"    metrics: erro — {ex}")
     return []
@@ -208,6 +156,8 @@ def fetch_calendar_notes(athlete_id):
         notes = data if isinstance(data, list) else []
         print(f"    calendar notes: {len(notes)} notas")
         return notes
+    except TPAuthError:
+        raise
     except Exception as ex:
         print(f"    calendar notes: erro — {ex}")
         return []
@@ -656,13 +606,10 @@ def build_adherence(vol):
 
 # ── Build DB ──────────────────────────────────────────────────────────
 def build_db():
-    db = {}
+    """Retorna (db, falhas). Nunca preenche com dados de protótipo."""
+    db, failures = {}, []
     for key, cfg in ATHLETES.items():
         print(f"\n  [{key.upper()}] id={cfg['id']}")
-        if cfg.get("id") is None:
-            print(f"    sem TP ID — usando protótipo vazio")
-            db[key] = json.loads(json.dumps(PROTOTYPE[key]))
-            continue
         try:
             raw_w  = fetch_workouts(cfg["id"], days=75)
             raw_f  = fetch_fitness(cfg["id"],  weeks=8)
@@ -674,32 +621,26 @@ def build_db():
             week_notes = process_calendar_notes(raw_cn)
             print(f"    processado: {len(sessions)} sessões, vol={total_vol:.1f}h, {len(week_notes)} notas semanais")
 
-            # Fallback se não chegaram dados reais
-            if len(sessions) < 1 and total_vol < 0.5:
-                print(f"    sem dados — usando protótipo")
-                entry = json.loads(json.dumps(PROTOTYPE[key]))
-                entry["alerts"] = [{"type":"warn","msg":"Dados em sincronização com o TrainingPeaks"}]
-                db[key] = entry
-                continue
-
             kpis      = build_kpis(raw_f, raw_w)
             kpi_delta = build_deltas(raw_f, raw_w)
             pmc       = build_pmc(raw_f, raw_w)
             hrv       = build_hrv(raw_we)
             alerts    = build_alerts(kpis, hrv)
             adherence = build_adherence(vol)
+            if not sessions:
+                alerts.insert(0, {"type":"info","msg":"Nenhum treino realizado nesta semana até agora"})
 
             print(f"    CTL={kpis['ctl']} ATL={kpis['atl']} TSB={kpis['tsb']} TSS={kpis['tss_week']}")
             db[key] = {"kpis":kpis,"kpi_delta":kpi_delta,"pmc":pmc,"zones":zones,
                        "vol":vol,"hrv":hrv,"adherence":adherence,"alerts":alerts,
                        "sessions":sessions,"planned":planned,"week_notes":week_notes}
 
+        except TPAuthError:
+            raise                                   # credencial ruim: não adianta seguir
         except Exception as e:
-            print(f"    ERRO: {e} — usando protótipo")
-            entry = json.loads(json.dumps(PROTOTYPE[key]))
-            entry["alerts"] = [{"type":"warn","msg":f"Erro ao buscar dados: {e}"}]
-            db[key] = entry
-    return db
+            print(f"    ERRO: {e}")
+            failures.append(f"{key}: {e}")
+    return db, failures
 
 # ── Injeta no template ────────────────────────────────────────────────
 def inject(db):
@@ -713,10 +654,21 @@ def inject(db):
 
 # ── Main ──────────────────────────────────────────────────────────────
 def main():
-    print("=== NPC Dashboard Generator v4 ===")
+    print("=== NPC Dashboard Generator v5 ===")
     print(f"Data: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC")
     print("\n[1/3] Buscando dados do TrainingPeaks...")
-    db = build_db()
+    try:
+        get_access_token()
+        db, failures = build_db()
+    except TPAuthError as e:
+        print(f"\n::error title=TrainingPeaks — autenticação::{e}")
+        print("index.html NÃO foi alterado.")
+        sys.exit(1)
+    if failures:
+        for f in failures:
+            print(f"::error title=TrainingPeaks — falha ao buscar dados::{f}")
+        print("index.html NÃO foi alterado.")
+        sys.exit(1)
     print("\n[2/3] Injetando no template...")
     inject(db)
     print("[3/3] Concluído.")
