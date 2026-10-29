@@ -1,7 +1,7 @@
 # NPC Endurance — Dashboard de Treinos
 
-Dashboard interativo de análise de treinos para os atletas Bruno, Jean e Gabriel.
-Atualizado automaticamente a cada 2 dias via GitHub Actions + TrainingPeaks + Claude API.
+Dashboard interativo de análise de treinos para os atletas Bruno e Jean.
+Atualizado automaticamente a cada 2 dias via GitHub Actions + TrainingPeaks.
 
 ---
 
@@ -25,25 +25,23 @@ npc-dashboard/
 2. Abra o DevTools (F12) → aba **Application** → **Cookies**
 3. Copie o valor do cookie chamado **`Production_tpAuth`**
 
-> O cookie expira em ~2 semanas. Quando o workflow falhar por autenticação,
-> repita este passo e atualize o secret `TP_COOKIE` no GitHub.
+> O `generate.py` troca esse cookie por um token de acesso novo (válido ~1h) a cada
+> execução, então só o cookie precisa ficar no secret. O cookie em si dura algumas
+> semanas. Quando expirar, o workflow **falha (fica vermelho)** e o GitHub manda
+> e-mail — o site continua com a última versão boa. Aí é só repetir este passo e
+> atualizar o secret `TP_COOKIE`.
+>
+> Não use mais o secret `TP_BEARER`: um Bearer fixo expira em ~1h.
 
-### 3. Obter a chave da API do Claude (Anthropic)
-
-1. Acesse [console.anthropic.com](https://console.anthropic.com)
-2. Vá em **API Keys → Create Key**
-3. Copie a chave gerada (`sk-ant-...`)
-
-### 4. Adicionar os secrets no GitHub
+### 3. Adicionar os secrets no GitHub
 
 No repositório, vá em **Settings → Secrets and variables → Actions → New repository secret**:
 
 | Nome               | Valor                          |
 |--------------------|--------------------------------|
 | `TP_COOKIE`        | valor do cookie `Production_tpAuth` |
-| `ANTHROPIC_API_KEY`| sua chave `sk-ant-...`         |
 
-### 5. Ativar o workflow
+### 4. Ativar o workflow
 
 - Vá em **Actions → Atualizar Dashboard NPC → Enable workflow**
 - Para testar imediatamente: clique em **Run workflow**
@@ -52,7 +50,7 @@ No repositório, vá em **Settings → Secrets and variables → Actions → New
 
 ## Manutenção recorrente
 
-### Cookie expirou (a cada ~2 semanas)
+### Cookie expirou (workflow vermelho com erro de autenticação)
 
 1. Repita o passo 2 acima para extrair o novo cookie
 2. Atualize o secret `TP_COOKIE` no GitHub (**Settings → Secrets**)
@@ -83,4 +81,3 @@ Exemplos:
 |---------|-----------------|-----------|
 | Bruno   | 6285028         | M40-44    |
 | Jean    | 6286348         | M40-44    |
-| Gabriel | 5775491         | M18-24    |
