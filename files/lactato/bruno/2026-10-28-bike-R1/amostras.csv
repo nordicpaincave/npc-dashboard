@@ -1,0 +1,8 @@
+﻿degrau,rotulo,lactato_mmol,potencia_w,fc_bpm,cadencia,rpe,erro,observacoes
+0,Pré-teste (após 20min Z1 + 15min parado),1.5,,,,,,"Velódromo · coleta feita pelo Jean · bate com repouso validado 1,4–1,5 → técnica OK · café 6h–6h20 (2 crepiocas: queijo branco / geleia s/ açúcar; 2,5 xíc. café puro; 1 copo água)"
+1,D1 175W 5min,1.8,175,130,91,2,,FC méd 130 / máx 136 · VALIDADO
+2,D2 200W 5min,2.0,201,138,87,3,,FC méd 138 / máx 145 · VALIDADO
+3,D3 225W 5min,2.7,225,147,92,5,,FC méd 147 / máx 153 · VALIDADO
+4,D4 250W 5min,4.3,250,153,85,7,,FC méd 153 / máx 159 · VALIDADO
+5,D5 275W 5min,7.9,275,164,88,9,,FC méd 164 / máx 172 · VALIDADO
+6,D6 300W 5min,12.8,301,171,91,10,,FC méd 171 / máx 178 · VALIDADO · degrau extra além da regra de parada (repetir no R2)
