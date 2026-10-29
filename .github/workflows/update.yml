@@ -13,7 +13,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: write
 
@@ -27,21 +27,22 @@ jobs:
           python-version: "3.11"
 
       - name: Instalar dependências
-        run: pip install requests
+        run: pip install requests "psycopg[binary]"
 
-      # Se a autenticação ou a busca falhar, o generate.py sai com código 1:
+      # Se o TP ou o Supabase falhar, o generate.py sai com código 1:
       # o job fica vermelho, o GitHub avisa por e-mail e o passo de publicação
       # abaixo NÃO roda (o site mantém a última versão boa).
-      - name: Gerar dashboard com dados do TrainingPeaks
+      - name: Gerar dashboard (TrainingPeaks + Supabase)
         env:
           TP_COOKIE: ${{ secrets.TP_COOKIE }}
+          SUPABASE_READER_PASSWORD: ${{ secrets.SUPABASE_READER_PASSWORD }}
         run: python generate.py
 
-      - name: Commitar e publicar index.html
+      - name: Commitar e publicar
         run: |
           git config user.name  "npc-bot"
           git config user.email "bot@npcendurance.com"
-          git add index.html
+          git add index.html files/
           if git diff --staged --quiet; then
             echo "Nenhuma alteração detectada."
             exit 0
