@@ -221,7 +221,7 @@ function render(){
   ({geral: vGeral, cal: vCal, macro: vMacro, lactato: vLactato, limiares: vLimiares, comp: vComp})[state.tab]();
 }
 
-const SRC_PT = {estimated_pct_ftp:'estimado por % do FTP', estimated_from_run:'estimado a partir da corrida', measured_bike_v1:'copiada da ergo de corrida (não medida na bike)', estimated_css_plus_9s:'estimado (CSS + 9 s/100m)', css_test_2026_03:'teste de CSS (mar/2026)'};
+const SRC_PT = {none:'estimado por % do FTP', estimated_pct_ftp:'estimado por % do FTP', estimated_from_run:'estimado a partir da corrida', measured_bike_v1:'copiada da ergo de corrida (não medida na bike)', estimated_css_plus_9s:'estimado (CSS + 9 s/100m)', css_test_2026_03:'teste de CSS (mar/2026)'};
 const SWIM_LT1_OFFSET = 9; // s/100m acima do CSS — estimativa (não há regra validada CSS→LT1)
 function srcHuman(s){ if (!s) return ''; return s.split('|').map(p => { const [k,v] = p.split('=').map(x => (x||'').trim()); const val = /^measured_lactate/.test(v) ? (k === 'hr' ? 'medida no teste de lactato (' : 'medido por lactato (') + v.replace('measured_lactate_','').replace(/_/g,' ') + ')' : (SRC_PT[v] || v); return (k === 'watts' ? 'potência: ' : k === 'hr' ? 'FC: ' : k === 'css' ? 'CSS: ' : k === 'lt1' ? 'LT1: ' : k + ': ') + val; }).join(' · '); }
 // ── dados derivados ──────────────────────────────────────────────────
