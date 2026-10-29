@@ -1,83 +1,69 @@
 # NPC Endurance — Dashboard de Treinos
 
-Dashboard interativo de análise de treinos para os atletas Bruno e Jean.
-Atualizado automaticamente a cada 2 dias via GitHub Actions + TrainingPeaks.
+Dashboard de Bruno e Jean: uma "cópia" do TrainingPeaks com mais dados — plano macro até as
+provas, limiares e zonas, e os testes de lactato com curva, métodos e arquivos.
 
----
+Site: https://npc-dashboard-seven.vercel.app (também `/bruno` e `/jean`).
+Atualizado automaticamente a cada 2 dias pela GitHub Action **Atualizar Dashboard NPC**.
 
-## Configuração inicial (feita uma única vez)
+## De onde vem cada dado
 
-### 1. Clonar e estruturar o repositório
+| Área | Fonte |
+|------|-------|
+| PMC (CTL/ATL/TSB), TSS diário, treinos planejados e realizados, wellness | TrainingPeaks (API) |
+| Plano macro (fases, semanas, alvos), provas | Supabase (`macro_plans`, `macro_phases`, `macro_weeks`, `athlete_events`) |
+| Limiares e zonas | Supabase (`physiological_passports`) |
+| Testes de lactato | Supabase (`lactate_samples`) + arquivo .fit do treino no TP |
+
+O PMC é o do **próprio TP** (endpoint de performance), que inclui atividades que não aparecem
+na lista de treinos (ex.: força estruturada sincronizada pelo Garmin). O dia de hoje conta só o
+que já foi feito; daí para frente a projeção usa o planejado no TP e, depois, os alvos do macro.
+
+## Secrets (Settings → Secrets and variables → Actions)
+
+| Nome | Valor |
+|------|-------|
+| `TP_COOKIE` | valor do cookie `Production_tpAuth` do TrainingPeaks |
+| `SUPABASE_READER_PASSWORD` | senha do usuário só-leitura `dashboard_reader` do Supabase |
+
+**TP_COOKIE**: em app.trainingpeaks.com (logado na conta do treinador), F12 → Application →
+Cookies → `Production_tpAuth` → copiar o *Value*. O gerador troca esse cookie por um token novo
+(válido ~1h) a cada execução. O cookie dura algumas semanas; quando expirar, a Action fica
+vermelha, o GitHub manda e-mail e o site continua com a última versão boa.
+
+**SUPABASE_READER_PASSWORD**: o usuário `dashboard_reader` só consegue LER as tabelas acima
+(colunas mínimas de `athletes`; nada de e-mail, nascimento ou lesões) e não escreve em nada.
+Para definir ou trocar a senha, no SQL Editor do Supabase:
+
+```sql
+alter role dashboard_reader with password 'SUA-SENHA-LONGA-AQUI';
+```
+
+e cole a mesma senha no secret. Se a conexão falhar por host, crie também o secret
+`SUPABASE_POOLER_HOST` com o host do *Session pooler* (Supabase → Connect).
+
+## Testes de lactato
+
+Cada teste incremental gravado em `lactate_samples` aparece sozinho na aba **Lactato**, com
+curva, degraus, LT1/LT2 por método (basal+0,5 e +1,0 mmol, log-log, Dmax Modificado, Dmax,
+OBLA 4 mmol) e o valor oficial do passaporte. Os arquivos ficam em
+`files/lactato/<atleta>/<data>-<esporte>-<rodada>/`:
+
+- `amostras.csv` — regenerado a cada execução a partir do Supabase;
+- o `.fit` do treino — baixado do TP uma vez (pelo `tp_workout_id` das amostras);
+- `folheto.html` — opcional; se existir na pasta, vira o botão "Folheto do teste".
+
+## Forçar atualização
+
+GitHub → **Actions → Atualizar Dashboard NPC → Run workflow**.
+
+## Estrutura
 
 ```
-npc-dashboard/
-├── index.html                        ← gerado automaticamente
-├── generate.py                       ← script de geração
-├── .github/
-│   └── workflows/
-│       └── update.yml                ← agendamento automático
-└── README.md
+generate.py          orquestra: lê TP + Supabase e gera index.html
+npc/tp.py            cliente da API do TrainingPeaks (cookie → token)
+npc/supa.py          leitura do Supabase com o usuário só-leitura
+npc/lactate.py       cálculo dos limiares de lactato (Python puro)
+template.html        página (Chart.js); recebe os dados em __NPC_DATA__
+files/lactato/...    arquivos dos testes de lactato
 ```
-
-### 2. Extrair o cookie do TrainingPeaks
-
-1. Acesse [app.trainingpeaks.com](https://app.trainingpeaks.com) e faça login
-2. Abra o DevTools (F12) → aba **Application** → **Cookies**
-3. Copie o valor do cookie chamado **`Production_tpAuth`**
-
-> O `generate.py` troca esse cookie por um token de acesso novo (válido ~1h) a cada
-> execução, então só o cookie precisa ficar no secret. O cookie em si dura algumas
-> semanas. Quando expirar, o workflow **falha (fica vermelho)** e o GitHub manda
-> e-mail — o site continua com a última versão boa. Aí é só repetir este passo e
-> atualizar o secret `TP_COOKIE`.
->
-> Não use mais o secret `TP_BEARER`: um Bearer fixo expira em ~1h.
-
-### 3. Adicionar os secrets no GitHub
-
-No repositório, vá em **Settings → Secrets and variables → Actions → New repository secret**:
-
-| Nome               | Valor                          |
-|--------------------|--------------------------------|
-| `TP_COOKIE`        | valor do cookie `Production_tpAuth` |
-
-### 4. Ativar o workflow
-
-- Vá em **Actions → Atualizar Dashboard NPC → Enable workflow**
-- Para testar imediatamente: clique em **Run workflow**
-
----
-
-## Manutenção recorrente
-
-### Cookie expirou (workflow vermelho com erro de autenticação)
-
-1. Repita o passo 2 acima para extrair o novo cookie
-2. Atualize o secret `TP_COOKIE` no GitHub (**Settings → Secrets**)
-3. Rode o workflow manualmente para confirmar que voltou a funcionar
-
-### Forçar atualização manual
-
-No GitHub: **Actions → Atualizar Dashboard NPC → Run workflow**
-
----
-
-## Agendamento
-
-O dashboard é atualizado automaticamente às **04h (horário de Curitiba)**
-nos dias ímpares do mês (1, 3, 5, 7...).
-
-Para alterar a frequência, edite a linha `cron` em `.github/workflows/update.yml`.
-Exemplos:
-- A cada 3 dias: `"0 7 */3 * *"`
-- Toda segunda-feira: `"0 7 * * 1"`
-- Todo dia: `"0 7 * * *"`
-
----
-
-## Atletas
-
-| Nome    | ID TrainingPeaks | Categoria |
-|---------|-----------------|-----------|
-| Bruno   | 6285028         | M40-44    |
-| Jean    | 6286348         | M40-44    |
