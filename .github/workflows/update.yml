@@ -5,9 +5,15 @@ on:
     - cron: "0 7 */2 * *"   # a cada 2 dias às 07h UTC (04h Curitiba)
   workflow_dispatch:          # permite rodar manualmente pelo GitHub
 
+# Evita duas execuções ao mesmo tempo disputando o push
+concurrency:
+  group: atualizar-dashboard
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
 
@@ -23,9 +29,11 @@ jobs:
       - name: Instalar dependências
         run: pip install requests
 
+      # Se a autenticação ou a busca falhar, o generate.py sai com código 1:
+      # o job fica vermelho, o GitHub avisa por e-mail e o passo de publicação
+      # abaixo NÃO roda (o site mantém a última versão boa).
       - name: Gerar dashboard com dados do TrainingPeaks
         env:
-          TP_BEARER: ${{ secrets.TP_BEARER }}
           TP_COOKIE: ${{ secrets.TP_COOKIE }}
         run: python generate.py
 
@@ -34,6 +42,10 @@ jobs:
           git config user.name  "npc-bot"
           git config user.email "bot@npcendurance.com"
           git add index.html
-          git diff --staged --quiet \
-            && echo "Nenhuma alteração detectada." \
-            || (git commit -m "Dashboard atualizado — $(date +'%d/%m/%Y %H:%M') UTC" && git push)
+          if git diff --staged --quiet; then
+            echo "Nenhuma alteração detectada."
+            exit 0
+          fi
+          git commit -m "Dashboard atualizado — $(date -u +'%d/%m/%Y %H:%M') UTC"
+          git pull --rebase origin main
+          git push origin HEAD:main
