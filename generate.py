@@ -1,677 +1,421 @@
 """
-NPC Endurance — Dashboard Generator v5
-Busca dados do TrainingPeaks e injeta no template HTML.
+NPC Endurance — Dashboard Generator v6
+Monta o dashboard a partir de DUAS fontes oficiais:
 
-Autenticação (v5):
-  TP_COOKIE — valor do cookie Production_tpAuth do TrainingPeaks (secret do GitHub).
-  A cada execução o cookie é trocado em /users/v3/token por um access token
-  novo (válido ~1h), do mesmo jeito que o conector MCP faz. Não use mais um
-  Bearer fixo: ele expira em ~1h e fazia o dashboard publicar dados falsos.
+  TrainingPeaks (cookie → token, secret TP_COOKIE)
+    · PMC do próprio TP (CTL/ATL/TSB e TSS diário — inclui a força que não sai na lista)
+    · treinos planejados e realizados, com as métricas de cada um
+    · wellness (HRV, FC de repouso, sono, body battery)
+    · arquivo .fit dos testes de lactato
 
-Política de erro (v5):
-  Se qualquer atleta falhar (auth, rede, API), o script termina com código 1
-  e NÃO reescreve o index.html. A Action fica vermelha e o GitHub avisa por
-  e-mail; o site continua com a última versão boa. Nunca publica protótipo.
+  Supabase (usuário SÓ-LEITURA dashboard_reader, secret SUPABASE_READER_PASSWORD)
+    · plano macro ativo (fases e semanas com alvos)
+    · provas (athlete_events)
+    · passaportes fisiológicos (limiares por esporte, com histórico de versões)
+    · amostras de lactato (testes incrementais e calibração de repouso)
+
+Política de erro: se o TP ou o Supabase falhar, sai com código 1 e NÃO reescreve
+o index.html (o site mantém a última versão boa; a Action fica vermelha e avisa
+por e-mail). Falha ao baixar um .fit de teste só gera aviso.
 """
 
-import os, sys, json, time
-from datetime import datetime, timedelta
-import requests
+import csv, io, json, math, os, re, sys
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
-# ── Atletas ───────────────────────────────────────────────────────────
+from npc import tp
+from npc.lactate import analyze
+
+TZ = ZoneInfo("America/Sao_Paulo")
+TODAY = datetime.now(TZ).date()
+FILES_DIR = "files"
+
+# Atletas exibidos (chave da URL → id no TrainingPeaks)
 ATHLETES = {
-    "bruno": {"id": 6285028, "name": "Bruno Trevisan"},
-    "jean":  {"id": 6286348, "name": "Jean Romano"},
+    "bruno": {"tp_id": 6285028, "name": "Bruno Trevisan Romero", "short": "Bruno"},
+    "jean":  {"tp_id": 6286348, "name": "Jean Romano",           "short": "Jean"},
 }
-TP_BASE = "https://tpapi.trainingpeaks.com"
 
-# ── Mapeamento de esportes ────────────────────────────────────────────
-SPORT_ID = {1:"swim",2:"bike",3:"run",4:"run",5:"strength",
-            6:"strength",7:"strength",10:"bike",20:"swim"}
-SPORT_LABEL = {"swim":"Natação","bike":"Bike","run":"Corrida","strength":"Força"}
-SPORT_COLOR = {"swim":"#4a9eff","bike":"#f5a623","run":"#4db87a","strength":"#9b8fff"}
-DAYS_PT = ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"]
+# IDs de tipo de treino do TP (tp_get_workout_types)
+SPORT = {1: "swim", 2: "bike", 8: "bike", 3: "run", 4: "brick", 6: "race",
+         9: "strength", 29: "strength", 7: "dayoff", 13: "other", 5: "other",
+         10: "other", 11: "other", 12: "other", 100: "other"}
 
-# ── Autenticação ──────────────────────────────────────────────────────
-class TPAuthError(RuntimeError):
-    """Credencial do TrainingPeaks ausente, expirada ou recusada."""
 
-TOKEN_ENDPOINT = "/users/v3/token"
-_token = {"value": None, "exp": 0.0}
+# ── Utilidades ────────────────────────────────────────────────────────
+def d(s):
+    return datetime.strptime(str(s)[:10], "%Y-%m-%d").date()
 
-def _cookie():
-    cookie = os.environ.get("TP_COOKIE", "").strip().strip('"').strip("'")
-    if cookie.startswith("Production_tpAuth="):        # aceita colado com o nome
-        cookie = cookie.split("=", 1)[1]
-    if not cookie:
-        raise TPAuthError("Secret TP_COOKIE ausente. Configure em Settings → "
-                          "Secrets and variables → Actions.")
-    return cookie
 
-def get_access_token(force=False):
-    """Troca o cookie Production_tpAuth por um access token (cache até 60s antes de expirar)."""
-    if not force and _token["value"] and time.time() < _token["exp"] - 60:
-        return _token["value"]
-    r = requests.get(f"{TP_BASE}{TOKEN_ENDPOINT}",
-                     headers={"Cookie": f"Production_tpAuth={_cookie()}",
-                              "Accept": "application/json"},
-                     timeout=20)
-    if r.status_code in (401, 403):
-        raise TPAuthError(f"Cookie Production_tpAuth expirado ou inválido (HTTP {r.status_code}). "
-                          "Atualize o secret TP_COOKIE.")
-    r.raise_for_status()
-    data  = r.json()
-    tok   = data.get("token") or {}
-    value = tok.get("access_token")
-    if data.get("success") is False or not value:
-        raise TPAuthError("Resposta inesperada de /users/v3/token — sem access_token.")
-    _token["value"] = value
-    _token["exp"]   = time.time() + float(tok.get("expires_in") or 3600)
-    print(f"  token TP renovado (expira em {int(float(tok.get('expires_in') or 3600))//60} min)")
-    return value
+def num(v, nd=None):
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    if math.isnan(f):
+        return None
+    if nd == 0:
+        return int(round(f))
+    return round(f, nd) if nd is not None else f
 
-def hdrs(force=False):
+
+def monday(x):
+    return x - timedelta(days=x.weekday())
+
+
+def jsonable(o):
+    if isinstance(o, (date, datetime)):
+        return o.isoformat()
+    if hasattr(o, "__float__"):
+        return float(o)
+    return str(o)
+
+
+# ── Treinos ───────────────────────────────────────────────────────────
+def norm_workout(w):
+    tid = int(w.get("workoutTypeValueId") or 0)
+    dur_a = num(w.get("totalTime"))
+    tss_a = num(w.get("tssActual"))
+    done = bool((dur_a or 0) > 0 or (tss_a or 0) > 0)
+    vel = num(w.get("velocityAverage"))
+    sport = SPORT.get(tid, "other")
+    pace = None
+    if done and vel and vel > 0:
+        pace = round(1000 / vel) if sport == "run" else (round(100 / vel) if sport == "swim" else None)
+    comments = []
+    for c in (w.get("workoutComments") or []):
+        if isinstance(c, dict) and (c.get("comment") or "").strip():
+            comments.append({"who": c.get("commenterName") or "", "text": c["comment"].strip()[:800]})
+    desc = (w.get("description") or "").strip()
     return {
-        "Authorization": f"Bearer {get_access_token(force)}",
-        "Accept":        "application/json",
-        "Content-Type":  "application/json",
+        "id": w.get("workoutId"),
+        "date": str(w.get("workoutDay", ""))[:10],
+        "sport": sport,
+        "title": (w.get("title") or "").strip() or sport,
+        "desc": desc[:2500],
+        "done": done,
+        "plan": {"h": num(w.get("totalTimePlanned"), 3), "tss": num(w.get("tssPlanned"), 1),
+                 "km": num((w.get("distancePlanned") or 0) / 1000, 2) if w.get("distancePlanned") else None,
+                 "if": num(w.get("ifPlanned"), 2)},
+        "act": {"h": num(dur_a, 3), "tss": num(tss_a, 1),
+                "km": num((w.get("distance") or 0) / 1000, 2) if w.get("distance") else None,
+                "if": num(w.get("if"), 2), "np": num(w.get("normalizedPowerActual"), 0),
+                "pw": num(w.get("powerAverage"), 0), "hr": num(w.get("heartRateAverage"), 0),
+                "hrmax": num(w.get("heartRateMaximum"), 0), "cad": num(w.get("cadenceAverage"), 0),
+                "pace": pace, "elev": num(w.get("elevationGain"), 0),
+                "rpe": num(w.get("rpe"), 0), "feel": num(w.get("feeling"), 0)} if done else None,
+        "comments": comments,
     }
 
-def tp_get(path):
-    r = requests.get(f"{TP_BASE}{path}", headers=hdrs(), timeout=20)
-    if r.status_code == 401:                       # token pode ter vencido: renova 1x
-        r = requests.get(f"{TP_BASE}{path}", headers=hdrs(force=True), timeout=20)
-        if r.status_code == 401:
-            raise TPAuthError(f"401 mesmo com token novo em {path}")
-    r.raise_for_status()
-    return r.json()
 
-def to_list(data):
-    if isinstance(data, list): return data
-    if isinstance(data, dict):
-        return data.get("Items") or data.get("items") or data.get("workouts") or []
-    return []
-
-# ── Busca workouts (com filtro de data no cliente) ────────────────────
-def fetch_workouts(athlete_id, days=180):
-    """Busca workouts dos últimos N dias. 180 dias = histórico suficiente para CTL convergir."""
-    end, start = datetime.utcnow(), datetime.utcnow() - timedelta(days=days)
-    raw = to_list(tp_get(
-        f"/fitness/v6/athletes/{athlete_id}/workouts"
-        f"/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
-    ))
-    cutoff = start.strftime("%Y-%m-%d")
-    filtered = [w for w in raw if str(w.get("workoutDay",""))[:10] >= cutoff]
-    print(f"    workouts: {len(filtered)} nos últimos {days} dias")
-    return filtered
-
-# ── Busca fitness/PMC ─────────────────────────────────────────────────
-def fetch_fitness(athlete_id, weeks=8):
-    end, start = datetime.utcnow(), datetime.utcnow() - timedelta(weeks=weeks)
-    s, e = start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
-    for path in [
-        f"/fitness/v6/athletes/{athlete_id}/fitness/{s}/{e}",
-        f"/fitness/v6/athletes/{athlete_id}/fitnesssummaries/{s}/{e}",
-        f"/coaching/v6/athletes/{athlete_id}/fitness/{s}/{e}",
-    ]:
-        try:
-            data = to_list(tp_get(path))
-            if data:
-                print(f"    fitness: {len(data)} registros")
-                return data
-        except TPAuthError:
-            raise
-        except Exception:
+# ── Wellness ──────────────────────────────────────────────────────────
+def norm_wellness(raw):
+    out = {}
+    for r in raw:
+        day = str(r.get("timeStamp") or r.get("date") or "")[:10]
+        if not day:
             continue
-    print(f"    fitness: nenhum endpoint funcionou — PMC calculado dos workouts")
-    return []
+        e = out.setdefault(day, {"d": day})
+        for det in (r.get("details") or []):
+            t, v = det.get("type"), det.get("value")
+            if v is None:
+                continue
+            if t == 60:   e["hrv"] = num(v, 0)
+            elif t == 5:  e["rhr"] = num(v, 0)
+            elif t == 6:  e["sleep"] = num(v, 2)
+            elif t == 64 and isinstance(v, list) and len(v) >= 3 and v[2] is not None:
+                e["bb"] = num(v[2], 0)
+    return [out[k] for k in sorted(out)]
 
-# ── Busca wellness/HRV ────────────────────────────────────────────────
-def fetch_wellness(athlete_id, days=14):
-    """Busca métricas diárias (HRV, sono, FC repouso) via endpoint consolidatedtimedmetrics."""
-    end   = datetime.utcnow()
-    start = end - timedelta(days=days)
-    s, e  = start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
-    try:
-        data = tp_get(f"/metrics/v3/athletes/{athlete_id}/consolidatedtimedmetrics/{s}/{e}")
-        if data:
-            if isinstance(data, dict):
-                data = data.get("Items") or data.get("items") or []
-            print(f"    metrics: {len(data)} registros")
-            return data
-    except TPAuthError:
-        raise
-    except Exception as ex:
-        print(f"    metrics: erro — {ex}")
-    return []
 
-# ── Busca notas semanais do calendário ───────────────────────────────
-def fetch_calendar_notes(athlete_id):
-    """Busca as notas de planejamento semanal do coach (aparecem nas segundas no TP)."""
-    # Busca do início do plano (março 2026) até a prova (outubro 2026)
-    s = "2026-03-01"
-    e = "2026-10-05"
-    try:
-        data = tp_get(f"/fitness/v1/athletes/{athlete_id}/calendarNote/{s}/{e}")
-        notes = data if isinstance(data, list) else []
-        print(f"    calendar notes: {len(notes)} notas")
-        return notes
-    except TPAuthError:
-        raise
-    except Exception as ex:
-        print(f"    calendar notes: erro — {ex}")
+# ── PMC + projeção ────────────────────────────────────────────────────
+def norm_pmc(raw, workouts):
+    """PMC do TP até ONTEM. O endpoint soma o TSS PLANEJADO do dia corrente (e futuros), então
+    hoje é recalculado só com o que já foi feito, a partir do CTL/ATL de ontem."""
+    rows = []
+    for r in raw:
+        day = str(r.get("workoutDay", ""))[:10]
+        if day and day < TODAY.isoformat():
+            rows.append({"d": day, "tss": num(r.get("tssActual"), 1) or 0,
+                         "ctl": num(r.get("ctl"), 1), "atl": num(r.get("atl"), 1), "tsb": num(r.get("tsb"), 1)})
+    rows.sort(key=lambda x: x["d"])
+    if rows:
+        y = rows[-1]
+        tss = sum((w["act"]["tss"] or 0) for w in workouts if w["done"] and w["date"] == TODAY.isoformat())
+        kc, ka = 1 - math.exp(-1 / 42), 1 - math.exp(-1 / 7)
+        ctl = y["ctl"] + (tss - y["ctl"]) * kc
+        atl = y["atl"] + (tss - y["atl"]) * ka
+        rows.append({"d": TODAY.isoformat(), "tss": round(tss, 1), "ctl": round(ctl, 1), "atl": round(atl, 1),
+                     "tsb": round(y["ctl"] - y["atl"], 1), "partial": True})
+    return rows
+
+
+def projection(pmc, workouts, plan):
+    """CTL/ATL projetados até o fim do macro: TSS planejado no TP onde existe, senão alvo semanal ÷ 7."""
+    if not pmc or not plan:
         return []
-
-def process_calendar_notes(raw_notes):
-    """Converte notas do TP em dict {week_num: {title, body, date}}."""
-    if not raw_notes:
-        return {}
-
-    # Debug: mostra campos da primeira nota para diagnóstico
-    first = raw_notes[0] if raw_notes else {}
-    debug_keys = {k: str(v)[:60] for k, v in first.items()
-                  if v and k not in ('athleteId','id')}
-    print(f"    DEBUG note fields: {debug_keys}")
-
-    result = {}
-    for note in raw_notes:
-        # Data da nota — tenta vários campos
-        date_str = str(
-            note.get("date") or note.get("startDate") or
-            note.get("noteDate") or note.get("timeStamp") or ""
-        )[:10]
-        if not date_str or date_str < "2026-01-01":
-            continue
-
-        # Título e corpo separados no TP
-        title_raw = (note.get("title") or note.get("subject") or
-                     note.get("name") or "").strip()
-        body_raw  = (note.get("description") or note.get("text") or
-                     note.get("coachNote") or note.get("body") or
-                     note.get("note") or "").strip()
-
-        # Combina tudo: título + corpo
-        if title_raw and body_raw:
-            full_text = f"{title_raw}\n\n{body_raw}"
+    last = pmc[-1]
+    ctl, atl = last["ctl"] or 0, last["atl"] or 0
+    planned = {}
+    for w in workouts:
+        if w["date"] > last["d"] and w["plan"]["tss"]:
+            planned[w["date"]] = planned.get(w["date"], 0) + w["plan"]["tss"]
+    last_planned = max(planned) if planned else last["d"]
+    weeks = {wk["mon"]: wk for wk in plan["weeks"]}
+    kc, ka = 1 - math.exp(-1 / 42), 1 - math.exp(-1 / 7)
+    out, day, end = [], d(last["d"]) + timedelta(days=1), d(plan["end"])
+    while day <= end:
+        ds = day.isoformat()
+        if ds <= last_planned:
+            tss, src = planned.get(ds, 0), "tp"
         else:
-            full_text = title_raw or body_raw
-        if not full_text:
-            continue
-
-        # Número da semana no plano (semana 1 = 16/mar/2026)
-        try:
-            dt         = datetime.strptime(date_str, "%Y-%m-%d")
-            week1_start = datetime(2026, 3, 16)
-            week_num   = int((dt - week1_start).days / 7) + 1
-            if 1 <= week_num <= 29:
-                result[week_num] = {
-                    "date":  date_str,
-                    "title": title_raw or full_text[:60],
-                    "body":  full_text,
-                }
-        except Exception:
-            continue
-
-    print(f"    notas processadas: {len(result)} semanas com conteúdo")
-    return result
+            wk = weeks.get(monday(day).isoformat())
+            tss, src = ((wk["tss"] or 0) / 7 if wk else 0), "macro"
+        tsb = ctl - atl                       # forma do dia = CTL − ATL de ontem (convenção do TP)
+        ctl += (tss - ctl) * kc
+        atl += (tss - atl) * ka
+        out.append({"d": ds, "tss": round(tss, 1), "ctl": round(ctl, 1), "atl": round(atl, 1), "tsb": round(tsb, 1), "src": src})
+        day += timedelta(days=1)
+    return out
 
 
-METRIC_TYPES = {
-    60: "hrv",          # HRV
-    6:  "sleep_h",      # Sleep Hours
-    46: "deep_sleep",   # Deep Sleep
-    47: "rem_sleep",    # REM Sleep
-    48: "light_sleep",  # Light Sleep
-    5:  "resting_hr",   # Pulse/FC repouso
-    64: "body_battery", # Body Battery [min, max, avg]
-    62: "stress",       # Stress Level [?, max, avg]
-}
-
-# ── Processamento de workouts ─────────────────────────────────────────
-def process_workouts(raw, display_days=7):
-    """Processa workouts. raw pode ter até 75 dias (para PMC);
-    O volume e sessões exibidos são da semana calendário atual (seg a hoje)."""
-    sessions, vol, zones_acc = [], {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}, {}
-
-    # Semana calendário atual: de segunda-feira até hoje
-    today    = datetime.utcnow()
-    monday   = today - timedelta(days=today.weekday())
-    cutoff_display = monday.strftime("%Y-%m-%d")
-    print(f"    janela de exibição: {cutoff_display} → {today.strftime('%Y-%m-%d')}")
-
-    for w in raw:
-        # Sport pelo ID numérico
-        sport = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
-        if not sport:
-            name = (w.get("athleteWorkoutTypeName") or w.get("title") or "").lower()
-            for k, kws in [
-                ("swim",     ["swim","pool","natação","natacao","open water"]),
-                ("bike",     ["bike","cycl","ride","ciclismo","bicicleta","pedal","zwift"]),
-                ("run",      ["run","corr","trail","treadmill","atletismo"]),
-                ("strength", ["strength","weight","gym","força","forca","musculação",
-                              "musculacao","muscula","funcional","mobilidade","core",
-                              "unilateral","bilateral","hipertrofia","alfredson"]),
-            ]:
-                if any(kw in name for kw in kws):
-                    sport = k; break
-        if not sport:
-            continue
-
-        # Duração — testa se totalTime está em horas ou dias
-        # Se valor > 1.0, provavelmente está em horas (ex: 1.5h)
-        # Se valor < 1.0 pequeno (ex: 0.083), pode ser horas (5min) ou dias (2h)
-        # Heurística: se * 24 > 8h, usa como horas direto; senão multiplica por 24
-        raw_time = float(w.get("totalTime") or 0)
-        if raw_time == 0:
-            continue
-        dur_h_as_hours = raw_time                  # assume horas
-        dur_h_as_days  = raw_time * 24             # assume dias
-        # Usa "dias" só se o resultado em horas seria < 5 minutos E em dias seria razoável
-        if dur_h_as_hours < 0.05 and 0.05 <= dur_h_as_days <= 8.0:
-            dur_h = dur_h_as_days
-        else:
-            dur_h = min(dur_h_as_hours, 8.0)
-
-        if dur_h < 0.05:
-            continue
-
-        # ── Filtra apenas treinos REALIZADOS ──────────────────────────
-        tss_actual = float(w.get("tssActual") or 0)
-        hr_tss     = float(w.get("hrTss")     or w.get("hrTSS") or 0)
-        s_tss      = float(w.get("sTss")      or w.get("sTSS")  or 0)
-
-        # TSS real: usa tssActual, senão hrTSS, senão sTSS
-        tss = round(tss_actual or hr_tss or s_tss)
-
-        # Todos os esportes: exige pelo menos um TSS > 0 (sinal de execução real)
-        # tssActual → bike/corrida via potenciômetro ou pace
-        # hrTSS     → força e cardio via FC
-        # sTSS      → natação
-        if tss_actual <= 0 and hr_tss <= 0 and s_tss <= 0:
-            continue  # planejado sem execução
-
-        # Data
-        workout_day = str(w.get("workoutDay",""))[:10]
-        try:
-            dt  = datetime.strptime(workout_day, "%Y-%m-%d")
-            day = DAYS_PT[dt.weekday()]
-        except Exception:
-            day = "?"
-
-        # Duração formatada
-        hh, mm  = int(dur_h), int((dur_h % 1) * 60)
-        dur_str = f"{hh}h{mm:02d}" if hh > 0 else f"{mm}min"
-
-        # Zonas estimadas pelo TSS/h
-        tss_h = tss / dur_h if dur_h > 0 else 0
-        if tss_h > 80:   pz = (40, 35, 25)
-        elif tss_h > 55: pz = (55, 35, 10)
-        else:            pz = (75, 20,  5)
-
-        # Título
-        title = w.get("title") or SPORT_LABEL.get(sport, "Treino")
-        if title.lower() in ("other", ""):
-            title = SPORT_LABEL.get(sport, "Treino")
-
-        # Volume acumulado (todos os 56 dias — para PMC)
-        vol[sport] = round(vol[sport] + dur_h, 2)
-        if sport not in zones_acc:
-            zones_acc[sport] = [0.0, 0.0, 0.0]
-        zones_acc[sport][0] += dur_h * pz[0] / 100
-        zones_acc[sport][1] += dur_h * pz[1] / 100
-        zones_acc[sport][2] += dur_h * pz[2] / 100
-
-        # Sessões visíveis: apenas últimos 7 dias (display_days)
-        if workout_day >= cutoff_display:
-            sessions.append({"day":day,"sport":sport,"desc":title,
-                             "dur":dur_str,"tss":tss,"zones":f"{pz[0]}/{pz[1]}/{pz[2]}",
-                             "date":workout_day})
-
-    # Treinos planejados (próximas 4 semanas) para o calendário
-    today_str  = datetime.utcnow().strftime("%Y-%m-%d")
-    future_cut = (datetime.utcnow() + timedelta(days=28)).strftime("%Y-%m-%d")
-    planned = []
-    for w in raw:
-        wd = str(w.get("workoutDay",""))[:10]
-        if wd < today_str or wd > future_cut:
-            continue
-        tss_a = float(w.get("tssActual") or 0)
-        if tss_a > 0:
-            continue  # já foi executado
-        sport_p = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
-        if not sport_p:
-            continue
-        tss_p = round(float(w.get("tssPlanned") or 0))
-        try:
-            dt_p  = datetime.strptime(wd, "%Y-%m-%d")
-            day_p = DAYS_PT[dt_p.weekday()]
-        except Exception:
-            day_p = "?"
-        title_p = w.get("title") or SPORT_LABEL.get(sport_p, "Treino")
-        planned.append({"day":day_p,"sport":sport_p,"desc":title_p,"tss":tss_p,"date":wd})
-
-    # Volume exibido: apenas últimos 14 dias, apenas treinos realizados
-    vol_display = {"swim":0.0,"bike":0.0,"run":0.0,"strength":0.0}
-    for w in raw:
-        workout_day_w = str(w.get("workoutDay",""))[:10]
-        if workout_day_w < cutoff_display:
-            continue
-
-        sport_w = SPORT_ID.get(int(w.get("workoutTypeValueId") or 0))
-        if not sport_w:
-            name_w = (w.get("athleteWorkoutTypeName") or w.get("title") or "").lower()
-            for k, kws in [
-                ("swim",     ["swim","pool","natação","natacao"]),
-                ("bike",     ["bike","cycl","ride","ciclismo","pedal"]),
-                ("run",      ["run","corr","trail"]),
-                ("strength", ["strength","weight","gym","força","forca","musculação",
-                              "musculacao","muscula","funcional","mobilidade","core",
-                              "unilateral","bilateral","alfredson"]),
-            ]:
-                if any(kw in name_w for kw in kws):
-                    sport_w = k; break
-        if not sport_w:
-            continue
-
-        tss_a      = float(w.get("tssActual") or 0)
-        hr_tss_w   = float(w.get("hrTss") or w.get("hrTSS") or 0)
-        s_tss_w    = float(w.get("sTss")  or w.get("sTSS")  or 0)
-
-        # Qualquer TSS > 0 = treino executado (mesmo critério para todos os esportes)
-        if tss_a <= 0 and hr_tss_w <= 0 and s_tss_w <= 0:
-            continue
-
-        raw_time_w = float(w.get("totalTime") or 0)
-
-        dur_h_w = raw_time_w
-        if dur_h_w < 0.05 and raw_time_w * 24 <= 8.0:
-            dur_h_w = raw_time_w * 24
-        dur_h_w = min(dur_h_w, 8.0)
-
-        if dur_h_w >= 0.05 and sport_w in vol_display:
-            vol_display[sport_w] = round(vol_display[sport_w] + dur_h_w, 2)
-
-    # Gráfico de zonas
-    zl, z1l, z2l, z3l = [], [], [], []
-    for sport in ["swim","bike","run"]:
-        if sport in zones_acc:
-            z1, z2, z3 = zones_acc[sport]; t = z1+z2+z3
-            if t > 0:
-                zl.append(SPORT_LABEL[sport])
-                z1l.append(round(z1/t*100)); z2l.append(round(z2/t*100)); z3l.append(round(z3/t*100))
-
-    return sessions, planned, {k:round(v,1) for k,v in vol_display.items()}, {"labels":zl,"z1":z1l,"z2":z2l,"z3":z3l}
-
-# ── PMC ───────────────────────────────────────────────────────────────
-def calc_pmc_from_workouts(raw_w):
-    """
-    Fórmula exata do TrainingPeaks (Bannister):
-    CTL_t = CTL_{t-1} + (TSS_t - CTL_{t-1}) * (1 - e^(-1/42))
-    ATL_t = ATL_{t-1} + (TSS_t - ATL_{t-1}) * (1 - e^(-1/7))
-    """
-    import math
-    kc = 1 - math.exp(-1 / 42)   # ≈ 0.02353 — igual ao TP
-    ka = 1 - math.exp(-1 / 7)    # ≈ 0.13212 — igual ao TP
-
-    daily = {}
-    for w in raw_w:
-        day     = str(w.get("workoutDay",""))[:10]
-        tss_val = (float(w.get("tssActual") or 0) or
-                   float(w.get("hrTss") or w.get("hrTSS") or 0) or
-                   float(w.get("sTss")  or w.get("sTSS")  or 0))
-        has_time = float(w.get("totalTime") or 0) > 0
-        if tss_val > 0 and has_time:
-            daily[day] = daily.get(day, 0) + min(tss_val, 300)
-    for d in daily:
-        daily[d] = min(daily[d], 500)  # cap diário
-
-    end   = datetime.utcnow()
-    dates = [(end - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(74, -1, -1)]
-    ctl, atl = 0.0, 0.0
-    history  = []
-    for d in dates:
-        tss = daily.get(d, 0)
-        ctl = ctl + (tss - ctl) * kc
-        atl = atl + (tss - atl) * ka
-        history.append({"date": d, "ctl": ctl, "atl": atl, "tsb": ctl - atl, "tss": tss})
-    return history
+# ── Semanas (alvo do macro × planejado no TP × realizado) ─────────────
+def week_rows(pmc, workouts, plan, first_monday, last_monday):
+    tss_by_day = {r["d"]: r["tss"] for r in pmc}
+    weeks = {wk["mon"]: wk for wk in (plan["weeks"] if plan else [])}
+    out, m = [], first_monday
+    while m <= last_monday:
+        days = [(m + timedelta(days=i)).isoformat() for i in range(7)]
+        ws = [w for w in workouts if w["date"] in days]
+        sport_h = {}
+        for w in ws:
+            if w["done"] and w["act"]["h"]:
+                sport_h[w["sport"]] = round(sport_h.get(w["sport"], 0) + w["act"]["h"], 2)
+        wk = weeks.get(m.isoformat())
+        out.append({
+            "mon": m.isoformat(),
+            "week": wk["w"] if wk else None, "type": wk["type"] if wk else None,
+            "target_tss": wk["tss"] if wk else None, "target_h": wk["h"] if wk else None,
+            "planned_tss": round(sum(w["plan"]["tss"] or 0 for w in ws), 0),
+            "planned_h": round(sum(w["plan"]["h"] or 0 for w in ws), 2),
+            "tss": round(sum(tss_by_day.get(x, 0) for x in days if x <= TODAY.isoformat()), 0) if days[0] <= TODAY.isoformat() else None,
+            "h": round(sum(sport_h.values()), 2) if days[0] <= TODAY.isoformat() else None,
+            "sport_h": sport_h,
+            "n_done": sum(1 for w in ws if w["done"]),
+            "n_planned": sum(1 for w in ws if w["plan"]["tss"] or w["plan"]["h"]),
+        })
+        m += timedelta(days=7)
+    return out
 
 
-def _past_workouts_with_ctl(raw_w):
-    """Retorna workouts passados com CTL calculado pelo TP (campo ctl > 0)."""
-    today = datetime.utcnow().strftime("%Y-%m-%d")
-    return sorted(
-        [w for w in raw_w
-         if float(w.get("ctl") or 0) > 0
-         and str(w.get("workoutDay",""))[:10] <= today],
-        key=lambda x: str(x.get("workoutDay",""))
-    )
-
-def build_pmc(raw_f, raw_w):
-    records = _past_workouts_with_ctl(raw_w)
-    if not records:
-        records = sorted(calc_pmc_from_workouts(raw_w), key=lambda x: x.get("date",""))
-    sample = records[::max(1, len(records)//8)][-8:]
-    labels, ctl_l, atl_l, tsb_l = [], [], [], []
-    for r in sample:
-        day_key = r.get("workoutDay") or r.get("date","")
-        try: labels.append(datetime.strptime(str(day_key)[:10],"%Y-%m-%d").strftime("%d/%m"))
-        except: labels.append("?")
-        ctl_l.append(round(float(r.get("ctl") or 0)))
-        atl_l.append(round(float(r.get("atl") or 0)))
-        tsb_l.append(round(float(r.get("tsb") or 0)))
-    return {"labels":labels,"ctl":ctl_l,"atl":atl_l,"tsb":tsb_l}
-
-def build_kpis(raw_f, raw_w):
-    today    = datetime.utcnow().strftime("%Y-%m-%d")
-    with_ctl = _past_workouts_with_ctl(raw_w)
-
-    if with_ctl:
-        # CTL/ATL/TSB direto do TP
-        latest = with_ctl[-1]
-        ctl    = round(float(latest.get("ctl") or 0))
-        atl    = round(float(latest.get("atl") or 0))
-        tsb    = round(float(latest.get("tsb") or 0))
-        print(f"    PMC via campo TP: CTL={ctl} ATL={atl} TSB={tsb}")
-    else:
-        # Campo ctl não disponível via cookie — calcula por EMA
-        pmc_records = sorted(calc_pmc_from_workouts(raw_w),
-                             key=lambda x: x.get("date",""))
-        # Filtra apenas dias passados
-        past = [r for r in pmc_records if r.get("date","") <= today]
-        if past:
-            latest = past[-1]
-            ctl    = round(float(latest.get("ctl") or 0))
-            atl    = round(float(latest.get("atl") or 0))
-            tsb    = round(float(latest.get("tsb") or 0))
-            print(f"    PMC via EMA: CTL={ctl} ATL={atl} TSB={tsb}")
-        else:
-            ctl, atl, tsb = 0, 0, 0
-
-    # TSS semanal: semana calendário atual (segunda a hoje)
-    today_dt = datetime.utcnow()
-    monday   = (today_dt - timedelta(days=today_dt.weekday())).strftime("%Y-%m-%d")
-    tss_week = round(sum(
-        float(w.get("tssActual") or 0) +
-        float(w.get("hrTss") or w.get("hrTSS") or 0) +
-        float(w.get("sTss")  or w.get("sTSS")  or 0)
-        for w in raw_w
-        if today >= str(w.get("workoutDay",""))[:10] >= monday
-        and (float(w.get("tssActual") or 0) > 0 or
-             float(w.get("hrTss") or w.get("hrTSS") or 0) > 0 or
-             float(w.get("sTss")  or w.get("sTSS")  or 0) > 0)
-    ))
-
-    # Cap realista: CTL triatleta de base raramente passa de 150
-    ctl = min(ctl, 150)
-    atl = min(atl, 200)
-
-    print(f"    KPIs: CTL={ctl} ATL={atl} TSB={tsb} TSS7d={tss_week}")
-    return {"ctl": ctl, "atl": atl, "tsb": tsb, "tss_week": tss_week}
-
-def build_deltas(raw_f, raw_w):
-    today     = datetime.utcnow().strftime("%Y-%m-%d")
-    completed = _past_workouts_with_ctl(raw_w)
-    if not completed:
-        completed = [r for r in calc_pmc_from_workouts(raw_w)
-                     if r.get("date","") <= today]
-    if len(completed) < 8:
-        return {"ctl":"—","atl":"—","tsb":"—","tss_week":"—"}
-    c, p = completed[-1], completed[-8]
-    def fmt(a, b):
-        d = round(float(a or 0) - float(b or 0))
-        return f"+{d}" if d >= 0 else str(d)
-    return {"ctl": fmt(c.get("ctl"), p.get("ctl")),
-            "atl": fmt(c.get("atl"), p.get("atl")),
-            "tsb": fmt(c.get("tsb"), p.get("tsb")),
-            "tss_week": "—"}
-
-# ── HRV ───────────────────────────────────────────────────────────────
-def build_hrv(raw_we):
-    """Extrai HRV, sono e FC repouso dos dados de métricas consolidadas do TP."""
-    if not raw_we:
-        return {
-            "labels": [], "vals": [], "baseline": 0,
-            "sleep": [], "resting_hr": [], "body_battery": []
-        }
-
-    records = sorted(raw_we, key=lambda x: str(x.get("timeStamp", x.get("date", ""))))
-
-    labels, hrv_vals, sleep_vals, hr_vals, battery_vals = [], [], [], [], []
-
-    for r in records:
-        # Data
-        ts = str(r.get("timeStamp") or r.get("date",""))[:10]
-        try:
-            labels.append(datetime.strptime(ts, "%Y-%m-%d").strftime("%d/%m"))
-        except Exception:
-            labels.append("?")
-
-        # Extrai métricas dos details
-        hrv = sleep = hr = battery = None
-        for detail in (r.get("details") or []):
-            t = detail.get("type")
-            v = detail.get("value")
-            if t == 60 and v is not None:    hrv     = round(float(v))
-            elif t == 6 and v is not None:   sleep   = round(float(v), 1)
-            elif t == 5 and v is not None:   hr      = round(float(v))
-            elif t == 64 and isinstance(v, list) and len(v) >= 3:
-                battery = round(float(v[2])) if v[2] is not None else None
-
-        hrv_vals.append(hrv or 0)
-        sleep_vals.append(sleep or 0)
-        hr_vals.append(hr or 0)
-        battery_vals.append(battery or 0)
-
-    valid_hrv = [v for v in hrv_vals if v > 0]
-    baseline  = round(sum(valid_hrv) / len(valid_hrv)) if valid_hrv else 0
-
+# ── Supabase → estruturas do dashboard ────────────────────────────────
+def build_plan(sb, athlete_uuid):
+    plans = [p for p in sb["plans"] if p["athlete_id"] == athlete_uuid]
+    if not plans:
+        return None
+    p = plans[0]
+    phases = [ph for ph in sb["phases"] if ph["macro_plan_id"] == p["id"]]
+    weeks = [w for w in sb["weeks"] if w["macro_plan_id"] == p["id"]]
     return {
-        "labels":       labels,
-        "vals":         hrv_vals,
-        "baseline":     baseline,
-        "sleep":        sleep_vals,
-        "resting_hr":   hr_vals,
-        "body_battery": battery_vals,
+        "name": p["name"], "start": str(p["start_date"]), "end": str(p["end_date"]),
+        "total_weeks": p["total_weeks"], "ctl_peak": num(p["target_ctl_peak"], 0),
+        "phases": [{"n": ph["phase_number"], "type": ph["phase_type"], "name": ph["name"],
+                    "s": ph["start_week"], "e": ph["end_week"],
+                    "focus": list(ph["focus"] or []) if not isinstance(ph["focus"], str) else [ph["focus"]],
+                    "desc": ph["description"]} for ph in phases],
+        "weeks": [{"w": w["week_number"], "mon": str(w["monday_date"]), "type": w["week_type"],
+                   "tss": num(w["target_tss"], 0), "h": num(w["target_hours"], 2),
+                   "z": [num(w["target_z1_pct"], 0), num(w["target_z2_pct"], 0), num(w["target_z3_pct"], 0)],
+                   "sessions": w["target_sessions"], "notes": w["notes"]} for w in weeks],
     }
 
-# ── Alertas ───────────────────────────────────────────────────────────
-def build_alerts(kpis, hrv):
-    alerts = []
-    tsb, atl, ctl = kpis["tsb"], kpis["atl"], max(kpis["ctl"], 1)
-    if tsb < -15:
-        alerts.append({"type":"danger","msg":f"Risco de overtraining — TSB {tsb}, ATL {round((atl/ctl-1)*100)}% acima da CTL"})
-    elif tsb < -5:
-        alerts.append({"type":"warn","msg":f"Fadiga acumulada — TSB {tsb}, monitorar recuperação"})
-    elif tsb > 10:
-        alerts.append({"type":"ok","msg":f"Forma positiva — TSB +{tsb}, bom momento para qualidade"})
-    else:
-        alerts.append({"type":"ok","msg":f"Carga equilibrada — TSB {tsb}"})
-    vals = [v for v in hrv.get("vals",[]) if v > 0]
-    if len(vals) >= 14 and sum(vals[-7:])/7 < sum(vals[-14:-7])/7 * 0.93:
-        alerts.append({"type":"warn","msg":"HRV em queda nos últimos 7 dias — priorizar recuperação"})
-    return alerts
 
-def build_adherence(vol):
-    result = []
-    for k, color in [("swim","#4a9eff"),("bike","#f5a623"),("run","#4db87a"),("strength","#9b8fff")]:
-        done = vol.get(k, 0)
-        # Força sempre aparece — target estimado em 1.5h se não foi feito nada
-        if k == "strength":
-            target = max(round(done * 1.1, 1), 1.5) if done > 0 else 1.5
-            result.append({"label": SPORT_LABEL[k], "done": done, "target": target, "color": color})
-        elif done > 0:
-            result.append({"label": SPORT_LABEL[k], "done": done, "target": round(done * 1.1, 1), "color": color})
-    return result
+def build_passports(sb, athlete_uuid):
+    by_sport = {}
+    for p in sb["passports"]:
+        if p["athlete_id"] != athlete_uuid:
+            continue
+        sp = sb["sports"].get(p["sport_id"], {})
+        slug = (sp.get("slug") or sp.get("name") or "").lower()
+        key = "bike" if "bik" in slug or "cicl" in slug else "run" if "run" in slug or "corr" in slug else "swim" if "swim" in slug or "nat" in slug else slug
+        proto = p["test_protocol"] or ""
+        m = re.search(r"\[LT_SOURCE:\s*([^\]]+)\]", proto)
+        by_sport.setdefault(key, []).append({
+            "v": p["version"], "from": str(p["effective_from"]) if p["effective_from"] else None,
+            "ftp": num(p["ftp_watts"], 0), "lt1_w": num(p["lt1_watts"], 0), "lt2_w": num(p["lt2_watts"], 0),
+            "lt1_hr": num(p["lt1_hr"], 0), "lt2_hr": num(p["lt2_hr"], 0), "max_hr": num(p["max_hr"], 0),
+            "lt1_pace": round(float(p["lt1_pace_min_km"]) * 60) if p["lt1_pace_min_km"] else None,
+            "lt2_pace": round(float(p["lt2_pace_min_km"]) * 60) if p["lt2_pace_min_km"] else None,
+            "css": num(p["css_per100m"], 0), "vo2max": num(p["vo2max"], 1),
+            "source": m.group(1).strip() if m else None,
+            "protocol": re.sub(r"\[LT_SOURCE:[^\]]+\]\s*", "", proto).strip(),
+            "notes": (p["notes"] or "").strip(),
+        })
+    for k in by_sport:
+        by_sport[k].sort(key=lambda x: x["v"])
+    return by_sport
 
-# ── Build DB ──────────────────────────────────────────────────────────
-def build_db():
-    """Retorna (db, falhas). Nunca preenche com dados de protótipo."""
-    db, failures = {}, []
-    for key, cfg in ATHLETES.items():
-        print(f"\n  [{key.upper()}] id={cfg['id']}")
-        try:
-            raw_w  = fetch_workouts(cfg["id"], days=75)
-            raw_f  = fetch_fitness(cfg["id"],  weeks=8)
-            raw_we = fetch_wellness(cfg["id"],  days=14)
-            raw_cn = fetch_calendar_notes(cfg["id"])
 
-            sessions, planned, vol, zones = process_workouts(raw_w, display_days=7)
-            total_vol = sum(vol.values())
-            week_notes = process_calendar_notes(raw_cn)
-            print(f"    processado: {len(sessions)} sessões, vol={total_vol:.1f}h, {len(week_notes)} notas semanais")
+def thr(p, n, is_run):
+    """Limiar do passaporte na unidade do teste: W na bike, km/h na corrida (convertido do pace)."""
+    if not p:
+        return None
+    if is_run:
+        pace = p.get(f"lt{n}_pace")
+        return round(3600 / pace, 2) if pace else None
+    return p.get(f"lt{n}_w")
 
-            kpis      = build_kpis(raw_f, raw_w)
-            kpi_delta = build_deltas(raw_f, raw_w)
-            pmc       = build_pmc(raw_f, raw_w)
-            hrv       = build_hrv(raw_we)
-            alerts    = build_alerts(kpis, hrv)
-            adherence = build_adherence(vol)
-            if not sessions:
-                alerts.insert(0, {"type":"info","msg":"Nenhum treino realizado nesta semana até agora"})
 
-            print(f"    CTL={kpis['ctl']} ATL={kpis['atl']} TSB={kpis['tsb']} TSS={kpis['tss_week']}")
-            db[key] = {"kpis":kpis,"kpi_delta":kpi_delta,"pmc":pmc,"zones":zones,
-                       "vol":vol,"hrv":hrv,"adherence":adherence,"alerts":alerts,
-                       "sessions":sessions,"planned":planned,"week_notes":week_notes}
+def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
+    rows = [r for r in sb["lactate"] if r["athlete_id"] == athlete_uuid]
+    tests, rest = {}, []
+    for r in rows:
+        if r["purpose"] == "incremental_test":
+            day = r["sampled_at"].astimezone(TZ).date().isoformat()
+            k = (day, r["sport"] or "?", r["test_round"] or "")
+            tests.setdefault(k, []).append(r)
+        else:
+            rest.append({"t": r["sampled_at"].astimezone(TZ).strftime("%Y-%m-%d %H:%M"), "purpose": r["purpose"],
+                         "mmol": num(r["lactate_mmol"], 1), "site": r["sample_site"], "err": r["error_code"],
+                         "notes": r["notes"]})
+    out = []
+    for (day, sport, rnd), samples in sorted(tests.items()):
+        samples.sort(key=lambda s: (s["step_index"] if s["step_index"] is not None else -1))
+        is_run = sport == "run"
+        steps, base = [], None
+        for s in samples:
+            load = num(s["speed_kmh"], 2) if is_run else num(s["power_w"], 0)
+            row = {"i": s["step_index"], "label": s["interval_label"], "mmol": num(s["lactate_mmol"], 1),
+                   "load": load, "pace": s["pace_s_per_km"], "hr": num(s["hr_bpm"], 0), "cad": num(s["cadence"], 0),
+                   "rpe": num(s["rpe"], 0), "err": s["error_code"], "notes": s["notes"]}
+            steps.append(row)
+            if (s["step_index"] == 0 or load is None) and row["mmol"] is not None and base is None:
+                base = row["mmol"]
+        valid = [s for s in steps if s["load"] is not None and s["mmol"] is not None and not s["err"] and (s["i"] or 0) > 0]
+        res = analyze(base, [s["load"] for s in valid], [s["mmol"] for s in valid]) if len(valid) >= 4 else None
+        slug = f"{day}-{sport}-{rnd or 'teste'}"
+        folder = os.path.join(FILES_DIR, "lactato", athlete_key, slug)
+        os.makedirs(folder, exist_ok=True)
+        # CSV com as amostras (sempre regenerado)
+        buf = io.StringIO()
+        wcsv = csv.writer(buf)
+        wcsv.writerow(["degrau", "rotulo", "lactato_mmol", "km_h" if is_run else "potencia_w", "fc_bpm", "cadencia", "rpe", "erro", "observacoes"])
+        for s in steps:
+            wcsv.writerow([s["i"], s["label"], s["mmol"], s["load"], s["hr"], s["cad"], s["rpe"], s["err"] or "", s["notes"] or ""])
+        with open(os.path.join(folder, "amostras.csv"), "w", encoding="utf-8-sig", newline="") as f:
+            f.write(buf.getvalue())
+        # .fit do treino (baixa uma vez; fica versionado no repositório)
+        wid = next((s["tp_workout_id"] for s in samples if s["tp_workout_id"]), None)
+        if wid and not any(n.lower().endswith((".fit", ".fit.gz", ".gz", ".zip", ".tcx")) for n in os.listdir(folder)):
+            try:
+                files = tp.workout_files(tp_id, wid)
+                if files:
+                    name, content = tp.download_file(tp_id, wid, files[0]["fileId"])
+                    name = re.sub(r"[^A-Za-z0-9._-]", "_", name or f"treino_{wid}.fit.gz")
+                    with open(os.path.join(folder, name), "wb") as f:
+                        f.write(content)
+                    print(f"    lactato {slug}: arquivo {name} salvo ({len(content)//1024} KB)")
+                else:
+                    warnings.append(f"{athlete_key} {slug}: treino {wid} sem arquivo de dispositivo no TP")
+            except tp.TPAuthError:
+                raise
+            except Exception as e:
+                warnings.append(f"{athlete_key} {slug}: não baixou o .fit ({e})")
+        files = sorted(os.listdir(folder))
+        pp = passports.get(sport, [])
+        after = next((p for p in pp if p["from"] == day), None) or next((p for p in reversed(pp) if p["from"] and p["from"] <= day and "lactate" in (p["source"] or "")), None)
+        before = None
+        if after:
+            prev = [p for p in pp if p["v"] < after["v"]]
+            before = prev[-1] if prev else None
+        out.append({
+            "slug": slug, "date": day, "sport": sport, "round": rnd, "tp_workout_id": wid,
+            "baseline": base, "steps": steps, "analysis": res,
+            "official": {"lt1": thr(after, 1, is_run), "lt2": thr(after, 2, is_run),
+                         "v": after["v"], "protocol": after["protocol"], "notes": after["notes"]} if after else None,
+            "before": {"lt1": thr(before, 1, is_run), "lt2": thr(before, 2, is_run), "v": before["v"], "source": before["source"]} if before else None,
+            "files": [{"name": n, "path": f"/{folder}/{n}".replace(os.sep, "/")} for n in files],
+        })
+    return {"tests": out, "rest": rest}
 
-        except TPAuthError:
-            raise                                   # credencial ruim: não adianta seguir
-        except Exception as e:
-            print(f"    ERRO: {e}")
-            failures.append(f"{key}: {e}")
-    return db, failures
 
-# ── Injeta no template ────────────────────────────────────────────────
+# ── Montagem por atleta ───────────────────────────────────────────────
+def build_athlete(key, cfg, sb, warnings):
+    tp_id = cfg["tp_id"]
+    a_uuid = next((a["id"] for a in sb["athletes"] if str(a["tp_athlete_id"]) == str(tp_id)), None)
+    plan = build_plan(sb, a_uuid) if a_uuid else None
+    start = min(TODAY - timedelta(days=63), d(plan["start"]) if plan else TODAY)
+    end = TODAY + timedelta(days=35)
+    print(f"    treinos {start} → {end}")
+    workouts = sorted((norm_workout(w) for w in tp.workouts(tp_id, start, end)), key=lambda w: (w["date"], w["id"] or 0))
+    pmc = norm_pmc(tp.performance(tp_id, TODAY - timedelta(days=400), TODAY), workouts)
+    if not pmc:
+        raise RuntimeError("PMC vazio no TP")
+    wellness = norm_wellness(tp.metrics(tp_id, TODAY - timedelta(days=60), TODAY))
+    print(f"    {len(workouts)} treinos · PMC {len(pmc)} dias (CTL {pmc[-1]['ctl']}) · wellness {len(wellness)} dias")
+    passports = build_passports(sb, a_uuid) if a_uuid else {}
+    events = [{"date": str(e["event_date"]), "name": e["name"], "type": e["event_type"], "priority": e["priority"],
+               "ctl_target": num(e["ctl_target"], 0), "desc": e["description"],
+               "bike_course": e["bike_course_type"], "run_course": e["run_course_type"],
+               "bike_elev": num(e["bike_elevation_m"], 0), "run_elev": num(e["run_elevation_m"], 0)}
+              for e in sb["events"] if e["athlete_id"] == a_uuid]
+    first_m = monday(min(d(plan["start"]) if plan else TODAY, TODAY - timedelta(days=56)))
+    last_m = monday(max(d(plan["end"]) if plan else TODAY, end))
+    weeks = week_rows(pmc, workouts, plan, first_m, last_m)
+    lactate = build_lactate(sb, a_uuid, key, tp_id, passports, warnings) if a_uuid else {"tests": [], "rest": []}
+    return {
+        "name": cfg["name"], "short": cfg["short"], "tp_id": tp_id,
+        "pmc": pmc[-400:], "projection": projection(pmc, workouts, plan),
+        "workouts": workouts, "wellness": wellness, "weeks": weeks,
+        "plan": plan, "events": events, "passports": passports, "lactate": lactate,
+    }
+
+
 def inject(db):
     with open("template.html", encoding="utf-8") as f:
         html = f.read()
-    html = html.replace("__NPC_DATA__",  json.dumps(db, ensure_ascii=False, indent=2))
-    html = html.replace("__GENERATED__", datetime.utcnow().strftime("%d/%m/%Y %H:%M") + " UTC")
+    data = json.dumps(db, ensure_ascii=False, default=jsonable, separators=(",", ":")).replace("</", "<\\/")
+    html = html.replace("__NPC_DATA__", data).replace("__GENERATED__", datetime.now(TZ).strftime("%d/%m/%Y %H:%M") + " (Brasília)")
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
     print(f"\n  index.html gerado ({len(html)//1024} KB)")
 
-# ── Main ──────────────────────────────────────────────────────────────
+
 def main():
-    print("=== NPC Dashboard Generator v5 ===")
-    print(f"Data: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC")
-    print("\n[1/3] Buscando dados do TrainingPeaks...")
+    from npc import supa
+    print("=== NPC Dashboard Generator v6 ===")
+    print(f"Hoje (Brasília): {TODAY}")
+    warnings = []
     try:
-        get_access_token()
-        db, failures = build_db()
-    except TPAuthError as e:
+        tp.access_token()
+        print("\n[1/3] Supabase (só-leitura)...")
+        with supa.connect() as conn:
+            sb = supa.fetch(conn, [c["tp_id"] for c in ATHLETES.values()])
+        print(f"  {len(sb['plans'])} planos · {len(sb['weeks'])} semanas · {len(sb['events'])} provas · "
+              f"{len(sb['passports'])} passaportes · {len(sb['lactate'])} amostras de lactato")
+        print("\n[2/3] TrainingPeaks...")
+        db = {"today": TODAY.isoformat(), "athletes": {}}
+        for key, cfg in ATHLETES.items():
+            print(f"\n  [{key.upper()}] TP {cfg['tp_id']}")
+            db["athletes"][key] = build_athlete(key, cfg, sb, warnings)
+    except tp.TPAuthError as e:
         print(f"\n::error title=TrainingPeaks — autenticação::{e}")
         print("index.html NÃO foi alterado.")
         sys.exit(1)
-    if failures:
-        for f in failures:
-            print(f"::error title=TrainingPeaks — falha ao buscar dados::{f}")
+    except supa.SupaError as e:
+        print(f"\n::error title=Supabase::{e}")
         print("index.html NÃO foi alterado.")
         sys.exit(1)
-    print("\n[2/3] Injetando no template...")
+    except Exception as e:
+        print(f"\n::error title=Falha ao montar o dashboard::{type(e).__name__}: {e}")
+        print("index.html NÃO foi alterado.")
+        raise
+    for w in warnings:
+        print(f"::warning title=Arquivos de lactato::{w}")
+    db["warnings"] = warnings
+    print("\n[3/3] Gerando página...")
     inject(db)
-    print("[3/3] Concluído.")
+
 
 if __name__ == "__main__":
     main()
