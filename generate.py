@@ -13,6 +13,8 @@ Monta o dashboard a partir de DUAS fontes oficiais:
     · provas (athlete_events)
     · passaportes fisiológicos (limiares por esporte, com histórico de versões)
     · amostras de lactato (testes incrementais e calibração de repouso)
+    · análises diárias e semanais (daily_recommendations / weekly_analyses)
+    · ciclos encerrados → files/historico/<atleta>/<ciclo>.json (treinos + análises)
 
 Política de erro: se o TP ou o Supabase falhar, sai com código 1 e NÃO reescreve
 o index.html (o site mantém a última versão boa; a Action fica vermelha e avisa
@@ -343,6 +345,84 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
     return {"tests": out, "rest": rest}
 
 
+# ── Análises (Supabase) e histórico de ciclos ─────────────────────────
+def _first(dct, *keys):
+    for k in keys:
+        v = dct.get(k)
+        if v not in (None, "", []):
+            return v
+    return None
+
+
+def norm_daily(r):
+    items = []
+    wa = r["workout_analysis"]
+    if isinstance(wa, dict):
+        wa = [wa]
+    for it in (wa or []):
+        if not isinstance(it, dict):
+            continue
+        flags = it.get("flags") or it.get("flag") or []
+        if isinstance(flags, str):
+            flags = [flags]
+        wid = _first(it, "tp_workout_id", "executed_workout_id", "workout_id")
+        items.append({
+            "sport": (_first(it, "sport", "esporte") or "").lower(),
+            "title": _first(it, "title", "titulo", "workout"),
+            "summary": _first(it, "summary", "technical_detail", "obs"),
+            "status": _first(it, "execution_status", "status", "executado"),
+            "flags": [str(f) for f in flags if f][:12],
+            "tss": num(_first(it, "tss_executed", "tss", "tss_real"), 0),
+            "wid": int(wid) if isinstance(wid, (int, float)) or (isinstance(wid, str) and wid.isdigit()) else None,
+        })
+    return {"d": str(r["log_date"]), "short": r["summary_short"], "tech": r["summary_technical"],
+            "hrv": r["hrv_status"], "flag": r["training_flag"], "items": items}
+
+
+def norm_weekly(r):
+    return {"mon": str(r["week_start"]), "w": r["week_number"], "at": str(r["analyzed_at"])[:10] if r["analyzed_at"] else None,
+            "ctl": num(r["ctl_snapshot"], 1), "atl": num(r["atl_snapshot"], 1), "tsb": num(r["tsb_snapshot"], 1),
+            "hrv": num(r["hrv_last"], 1), "hrv_base": num(r["hrv_baseline"], 1), "sleep": num(r["sleep_avg"], 1),
+            "tss_plan": r["tss_planned"], "tss": r["tss_actual"], "adh": r["adherence_pct"],
+            "status": r["status_geral"], "resumo": r["resumo"], "destaques": list(r["destaques"] or []),
+            "alertas": list(r["alertas"] or []), "descarga": r["semana_descarga"], "taper": r["antecipar_taper"],
+            "rev_zonas": r["revisar_zonas"], "red_vol": r["reduzir_volume_pct"], "prescricao": r["observacoes_prescricao"],
+            "bike_flags": list(r["bike_key_session_flags"] or []), "run_flags": list(r["run_key_session_flags"] or []),
+            "sessoes": r["session_analysis_summary"]}
+
+
+def slug(s):
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s.split(" — ")[0]).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-") or "ciclo"
+
+
+def build_history(key, tp_id, a_uuid, sb):
+    """Ciclos encerrados: grava um JSON por ciclo (treinos do TP + análises) e devolve só o índice."""
+    out = []
+    for c in [c for c in sb["cycles"] if c["athlete_id"] == a_uuid]:
+        s, e = c["start_date"], c["end_date"]
+        ws = sorted((norm_workout(w) for w in tp.workouts(tp_id, s, e)), key=lambda w: (w["date"], w["id"] or 0))
+        ws = [w for w in ws if w["sport"] != "dayoff"]
+        daily = [norm_daily(r) for r in sb["daily"] if r["athlete_id"] == a_uuid and s <= r["log_date"] <= e]
+        weekly = [norm_weekly(r) for r in sb["weekly"] if r["athlete_id"] == a_uuid and s - timedelta(days=6) <= r["week_start"] <= e]
+        targets = [{"w": w["week_number"], "mon": str(w["monday_date"]), "type": w["week_type"],
+                    "tss": num(w["target_tss"], 0), "h": num(w["target_hours"], 2)}
+                   for w in sb["cycle_weeks"] if w["macro_plan_id"] == c["id"]]
+        name = c["name"].split(" — ")[0].strip()
+        rel = f"{FILES_DIR}/historico/{key}/{slug(c['name'])}.json"
+        os.makedirs(os.path.dirname(rel), exist_ok=True)
+        payload = {"name": name, "start": str(s), "end": str(e), "workouts": ws, "daily": daily,
+                   "weekly": weekly, "targets": targets}
+        with open(rel, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, default=jsonable, separators=(",", ":"))
+        n_done = sum(1 for w in ws if w["done"])
+        print(f"    histórico {name}: {n_done} treinos feitos · {len(daily)} análises diárias · {len(weekly)} semanais")
+        out.append({"name": name, "start": str(s), "end": str(e), "file": "/" + rel,
+                    "n_done": n_done, "n_daily": len(daily), "n_weekly": len(weekly)})
+    return sorted(out, key=lambda x: x["start"], reverse=True)
+
+
 # ── Montagem por atleta ───────────────────────────────────────────────
 def build_athlete(key, cfg, sb, warnings):
     tp_id = cfg["tp_id"]
@@ -367,11 +447,17 @@ def build_athlete(key, cfg, sb, warnings):
     last_m = monday(max(d(plan["end"]) if plan else TODAY, end))
     weeks = week_rows(pmc, workouts, plan, first_m, last_m)
     lactate = build_lactate(sb, a_uuid, key, tp_id, passports, warnings) if a_uuid else {"tests": [], "rest": []}
+    history = build_history(key, tp_id, a_uuid, sb) if a_uuid else []
+    daily = {r["log_date"].isoformat(): norm_daily(r) for r in sb["daily"]
+             if r["athlete_id"] == a_uuid and r["log_date"] >= start}
+    weekly = {str(r["week_start"]): norm_weekly(r) for r in sb["weekly"]
+              if r["athlete_id"] == a_uuid and r["week_start"] >= start - timedelta(days=6)}
     return {
         "name": cfg["name"], "short": cfg["short"], "tp_id": tp_id,
         "pmc": pmc[-400:], "projection": projection(pmc, workouts, plan),
         "workouts": workouts, "wellness": wellness, "weeks": weeks,
         "plan": plan, "events": events, "passports": passports, "lactate": lactate,
+        "daily": daily, "weekly_an": weekly, "history": history,
     }
 
 
@@ -396,7 +482,8 @@ def main():
         with supa.connect() as conn:
             sb = supa.fetch(conn, [c["tp_id"] for c in ATHLETES.values()])
         print(f"  {len(sb['plans'])} planos · {len(sb['weeks'])} semanas · {len(sb['events'])} provas · "
-              f"{len(sb['passports'])} passaportes · {len(sb['lactate'])} amostras de lactato")
+              f"{len(sb['passports'])} passaportes · {len(sb['lactate'])} amostras de lactato · "
+              f"{len(sb['daily'])} análises diárias · {len(sb['weekly'])} semanais · {len(sb['cycles'])} ciclos encerrados")
         print("\n[2/3] TrainingPeaks...")
         db = {"today": TODAY.isoformat(), "athletes": {}}
         for key, cfg in ATHLETES.items():
