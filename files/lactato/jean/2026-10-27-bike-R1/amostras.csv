@@ -1,0 +1,5 @@
+﻿degrau,rotulo,lactato_mmol,potencia_w,fc_bpm,cadencia,rpe,erro,observacoes
+1,,3.0,200,128,,3,,FC méd 128 / final 136 · horário aproximado (início ~12h) · SUSPEITA DE CONTAMINAÇÃO POR SUOR — não usar para zonas
+2,,5.0,225,137,,4,,FC méd 137 / final 148 · horário aproximado · SUSPEITA DE CONTAMINAÇÃO POR SUOR — não usar para zonas
+4,,7.0,275,142,,7,,FC méd 142 / final 154 · degrau 3 (250W) pulado por erro de lap · horário aproximado · SUSPEITA DE CONTAMINAÇÃO POR SUOR — não usar para zonas
+5,,11.7,300,151,,8,,FC méd 151 / final 161 · horário aproximado · SUSPEITA DE CONTAMINAÇÃO POR SUOR — não usar para zonas; R1 de bike do Jean a refazer
