@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Teste de lactato R1 — bike</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1D63C9}a:hover{color:#123F80}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+html{background:#e9ecef}
+.folheto-wrap{width:1240px;margin:0 auto;transform-origin:top left}
+@media (max-width:1240px){.folheto-wrap{margin:0}}
+@media print{html{background:none}.folheto-wrap{transform:none!important}}
+</style>
+<script>
+function fit(){var w=document.querySelector('.folheto-wrap');if(!w)return;var s=Math.min(1,window.innerWidth/1240);w.style.transform=s<1?'scale('+s+')':'';document.body.style.height=s<1?(w.scrollHeight*s)+'px':'';}
+addEventListener('resize',fit);addEventListener('load',fit);
+</script>
+</head>
+<body>
+<div class="folheto-wrap">
+<div style="width: 1240px; height: 1754px; box-sizing: border-box; background: #FFFFFF; color: #12161C; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+
+<header style="background: #12161C; color: #FFFFFF; padding: 44px 56px 40px; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 15px; letter-spacing: 0.08em; color: #B7BFCA">
+<span>NPC ENDURANCE · TESTE R1 · CICLISMO</span>
+<span>28/10/2026 · VELÓDROMO · 15–17 °C</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 640px">
+<h1 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 74px; line-height: 0.95; letter-spacing: -0.01em">Teste incremental de lactato na bike</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.45; color: #D5DAE1">Bruno Romero · FTP 281 W · Como medimos os limiares LT1 e LT2 com 7 gotas de sangue, um potenciômetro e uma conta.</p>
+</div>
+<div style="display: flex; gap: 16px">
+<div style="background: #1B2A44; border-radius: 10px; padding: 18px 22px; width: 190px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #9CC3FF; letter-spacing: 0.06em">LT1 · LIMIAR AERÓBIO</span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; color: #FFFFFF">218 W</span>
+<span style="font-size: 14px; color: #C9D3E0">faixa 204–225 W · 78% FTP</span>
+</div>
+<div style="background: #3D2214; border-radius: 10px; padding: 18px 22px; width: 190px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #FFAE85; letter-spacing: 0.06em">LT2 · LIMIAR ANAERÓBIO</span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; color: #FFFFFF">250 W</span>
+<span style="font-size: 14px; color: #E5D2C7">faixa 245–254 W · 89% FTP</span>
+</div>
+</div>
+</div>
+</header>
+
+<main style="padding: 30px 56px 0; display: flex; flex-direction: column; gap: 26px; flex-grow: 1">
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: 0.01em">1 · O protocolo</h2>
+<ol style="margin: 0; padding-left: 22px; font-size: 16px; line-height: 1.5; display: flex; flex-direction: column; gap: 6px">
+<li><strong>Padronização:</strong> café da manhã às 6h (2 crepiocas, 2,5 xícaras de café), 1h47 antes do 1º degrau. Durante o teste, só água.</li>
+<li><strong>Aquecimento:</strong> 20 min em Z1 até o velódromo + 15 min parado.</li>
+<li><strong>Pré-teste:</strong> 1 coleta parado — 1,5 mmol, igual ao repouso validado (1,4–1,5). Confirma que a técnica de coleta está limpa.</li>
+<li><strong>Degraus de 5 min</strong> com +25 W (175 → 300 W), potência cravada, ~90 rpm.</li>
+<li><strong>Coleta</strong> 1 min após cada degrau: mão seca, dedo médio, 1ª gota descartada, fita só na gota.</li>
+<li><strong>Parada:</strong> passou de 4 mmol, mais um degrau e encerra (exigência do Dmax).</li>
+</ol>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: 0.01em">2 · Os dados</h2>
+<table style="width: 100%; border-collapse: collapse; font-size: 16px">
+<thead>
+<tr style="text-align: left; color: #5A6370; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.05em">
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C">DEGRAU</th>
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C; text-align: right">WATTS</th>
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C; text-align: right">FC MÉD</th>
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C; text-align: right">PSE</th>
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C; text-align: right">LACTATO</th>
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C; text-align: right">Δ</th>
+</tr>
+</thead>
+<tbody style="font-family: 'IBM Plex Mono', monospace; font-size: 16px">
+<tr><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; color: #5A6370">Pré-teste</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">—</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">—</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">—</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">1,5</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">—</td></tr>
+<tr><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">D1</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">175</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">130</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">2</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">1,8</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">+0,3</td></tr>
+<tr><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">D2</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">201</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">138</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">3</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">2,0</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">+0,2</td></tr>
+<tr style="background: #E8F0FB"><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">D3</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">225</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">147</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">5</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">2,7</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #1D63C9; font-weight: 600">+0,7</td></tr>
+<tr style="background: #FDEDE4"><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">D4</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">250</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">153</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">7</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">4,3</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #C2410C; font-weight: 600">+1,6</td></tr>
+<tr><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">D5</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">275</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">164</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">9</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">7,9</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">+3,6</td></tr>
+<tr><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">D6</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">301</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">171</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right">10</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">12,8</td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">+4,9</td></tr>
+</tbody>
+</table>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">Lactato em mmol/L. Potência, FC e cadência vêm do arquivo do Garmin; lactato e PSE (0–10) foram anotados na hora.</p>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: 0.01em">3 · A curva e onde ela “quebra”</h2>
+<div style="display: flex; gap: 22px; font-size: 14px; color: #5A6370">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 6px; background: #12161C"></span>coleta</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 22px; height: 2px; background: #12161C"></span>curva ajustada (polinômio 3º grau)</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 22px; height: 0; border-top: 2px dashed #8A93A0"></span>reta do Dmax</span>
+</div>
+</div>
+<div style="display: flex; gap: 28px; align-items: stretch">
+<svg viewBox="0 0 700 400" style="width: 760px; height: 434px; flex-shrink: 0" role="img" aria-label="Gráfico do lactato em função da potência: a curva fica quase plana até 200 W, começa a subir em 218 W (LT1) e acelera a partir de 250 W (LT2).">
+<rect x="297.3" y="16" width="29.1" height="340" fill="#E8F0FB"></rect>
+<rect x="239.0" y="16" width="58.3" height="340" fill="#F2F6FD"></rect>
+<rect x="409.6" y="16" width="37.4" height="340" fill="#FDEDE4"></rect>
+<g stroke="#E3E6EA" stroke-width="1">
+<line x1="56" y1="307.4" x2="680" y2="307.4"></line>
+<line x1="56" y1="258.9" x2="680" y2="258.9"></line>
+<line x1="56" y1="210.3" x2="680" y2="210.3"></line>
+<line x1="56" y1="161.7" x2="680" y2="161.7"></line>
+<line x1="56" y1="113.1" x2="680" y2="113.1"></line>
+<line x1="56" y1="64.6" x2="680" y2="64.6"></line>
+<line x1="56" y1="16" x2="680" y2="16"></line>
+</g>
+<line x1="56" y1="356" x2="680" y2="356" stroke="#12161C" stroke-width="1.5"></line>
+<line x1="56" y1="16" x2="56" y2="356" stroke="#12161C" stroke-width="1.5"></line>
+<g font-family="IBM Plex Mono, monospace" font-size="12" fill="#5A6370" text-anchor="end">
+<text x="48" y="360">0</text><text x="48" y="311">2</text><text x="48" y="263">4</text><text x="48" y="214">6</text><text x="48" y="166">8</text><text x="48" y="117">10</text><text x="48" y="69">12</text><text x="48" y="20">14</text>
+</g>
+<g font-family="IBM Plex Mono, monospace" font-size="12" fill="#5A6370" text-anchor="middle">
+<text x="118.4" y="374">175</text><text x="222.4" y="374">200</text><text x="326.4" y="374">225</text><text x="430.4" y="374">250</text><text x="534.4" y="374">275</text><text x="638.4" y="374">300</text>
+</g>
+<text x="368" y="394" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5A6370" text-anchor="middle">Potência (W)</text>
+<text x="16" y="186" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5A6370" text-anchor="middle" transform="rotate(-90 16 186)">Lactato (mmol/L)</text>
+<line x1="56" y1="319.6" x2="680" y2="319.6" stroke="#8A93A0" stroke-width="1" stroke-dasharray="3 4"></line>
+<text x="676" y="333" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5A6370" text-anchor="end">pré-teste 1,5</text>
+<line x1="56" y1="258.9" x2="680" y2="258.9" stroke="#C2410C" stroke-width="1" stroke-dasharray="3 4"></line>
+<text x="676" y="252" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C2410C" text-anchor="end">4 mmol (OBLA)</text>
+<line x1="222.4" y1="309.1" x2="638.4" y2="43.9" stroke="#8A93A0" stroke-width="1.5" stroke-dasharray="6 5"></line>
+<line x1="447.0" y1="237.2" x2="414.7" y2="186.5" stroke="#C2410C" stroke-width="2"></line>
+<text x="400" y="178" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#C2410C" text-anchor="end">maior distância → 254 W</text>
+<path d="M105.9,311.3 L115.2,311.5 L124.4,311.7 L133.6,311.8 L142.9,311.9 L152.1,311.9 L161.3,311.8 L170.6,311.7 L179.8,311.4 L189.0,311.1 L198.3,310.7 L207.5,310.2 L216.8,309.5 L226.0,308.8 L235.2,307.9 L244.5,306.9 L253.7,305.7 L262.9,304.4 L272.2,303.0 L281.4,301.3 L290.7,299.6 L299.9,297.6 L309.1,295.4 L318.4,293.1 L327.6,290.6 L336.8,287.9 L346.1,284.9 L355.3,281.8 L364.5,278.4 L373.8,274.8 L383.0,270.9 L392.3,266.9 L401.5,262.5 L410.7,257.9 L420.0,253.1 L429.2,247.9 L438.4,242.5 L447.7,236.8 L456.9,230.9 L466.1,224.6 L475.4,218.0 L484.6,211.1 L493.9,203.9 L503.1,196.3 L512.3,188.4 L521.6,180.2 L530.8,171.6 L540.0,162.7 L549.3,153.4 L558.5,143.8 L567.8,133.8 L577.0,123.4 L586.2,112.6 L595.5,101.4 L604.7,89.8 L613.9,77.8 L623.2,65.4 L632.4,52.5 L641.6,39.2 L650.9,25.5" fill="none" stroke="#12161C" stroke-width="2.5"></path>
+<line x1="297.3" y1="16" x2="297.3" y2="356" stroke="#1D63C9" stroke-width="2.5"></line>
+<line x1="430.4" y1="16" x2="430.4" y2="356" stroke="#C2410C" stroke-width="2.5"></line>
+<rect x="240" y="22" width="114" height="24" rx="4" fill="#1D63C9"></rect>
+<text x="297" y="39" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">LT1 218 W</text>
+<rect x="436" y="22" width="114" height="24" rx="4" fill="#C2410C"></rect>
+<text x="493" y="39" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">LT2 250 W</text>
+<g fill="#12161C" stroke="#FFFFFF" stroke-width="2">
+<circle cx="118.4" cy="312.3" r="6"></circle><circle cx="222.4" cy="307.4" r="6"></circle><circle cx="326.4" cy="290.4" r="6"></circle><circle cx="430.4" cy="251.6" r="6"></circle><circle cx="534.4" cy="164.1" r="6"></circle><circle cx="638.4" cy="45.1" r="6"></circle>
+</g>
+</svg>
+<div style="display: flex; flex-direction: column; gap: 16px; font-size: 16px; line-height: 1.5; padding-top: 6px">
+<p style="margin: 0"><strong>Até ~200 W</strong> a curva é quase plana: o corpo remove o lactato no mesmo ritmo em que produz.</p>
+<p style="margin: 0"><strong style="color: #1D63C9">LT1</strong> é o primeiro ponto em que o lactato sai do patamar de repouso. Abaixo dele fica o treino de base (Z1).</p>
+<p style="margin: 0"><strong style="color: #C2410C">LT2</strong> é onde a curva “dobra”: acima dele o lactato acumula sem parar. É a melhor estimativa do máximo estado estável (MLSS).</p>
+<p style="margin: 0; color: #5A6370; font-size: 14px">Faixas sombreadas = intervalo entre os métodos. Linha tracejada cinza = reta do Dmax Modificado; o traço laranja marca o ponto da curva mais distante dela.</p>
+</div>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: 0.01em">4 · Como calculamos</h2>
+<table style="width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.35">
+<tbody>
+<tr><td style="padding: 7px 8px 7px 0; border-bottom: 1px solid #E3E6EA; width: 52px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #1D63C9; padding: 2px 6px; border-radius: 3px">LT1</span></td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA"><strong>Basal + 0,5 mmol</strong> — potência onde a curva atinge 2,0</td><td style="padding: 7px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-family: 'IBM Plex Mono', monospace">204 W</td></tr>
+<tr><td style="padding: 7px 8px 7px 0; border-bottom: 1px solid #E3E6EA"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #1D63C9; padding: 2px 6px; border-radius: 3px">LT1</span></td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA"><strong>Basal + 1,0 mmol</strong> — potência onde a curva atinge 2,5</td><td style="padding: 7px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-family: 'IBM Plex Mono', monospace">221 W</td></tr>
+<tr><td style="padding: 7px 8px 7px 0; border-bottom: 1px solid #E3E6EA"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #1D63C9; padding: 2px 6px; border-radius: 3px">LT1</span></td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA"><strong>Log-log</strong> — cruzamento de duas retas no gráfico log(W) × log(lactato)</td><td style="padding: 7px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-family: 'IBM Plex Mono', monospace">225 W</td></tr>
+<tr><td style="padding: 7px 8px 7px 0; border-bottom: 1px solid #E3E6EA"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #C2410C; padding: 2px 6px; border-radius: 3px">LT2</span></td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA"><strong>Dmax Modificado</strong> — reta do último ponto antes de subir &gt;0,4 até o fim; o ponto da curva mais distante dela</td><td style="padding: 7px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600">254 W</td></tr>
+<tr><td style="padding: 7px 8px 7px 0; border-bottom: 1px solid #E3E6EA"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #C2410C; padding: 2px 6px; border-radius: 3px">LT2</span></td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA"><strong>OBLA 4 mmol</strong> — potência onde a curva cruza 4,0</td><td style="padding: 7px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-family: 'IBM Plex Mono', monospace">245 W</td></tr>
+<tr><td style="padding: 7px 8px 7px 0; border-bottom: 1px solid #E3E6EA"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #C2410C; padding: 2px 6px; border-radius: 3px">LT2</span></td><td style="padding: 7px 8px; border-bottom: 1px solid #E3E6EA"><strong>Dmax clássico</strong> — mesma ideia, reta desde o 1º degrau</td><td style="padding: 7px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-family: 'IBM Plex Mono', monospace">245 W</td></tr>
+</tbody>
+</table>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">Valor final = consenso entre os métodos. O Dmax Modificado pesa mais: foi o que melhor previu o MLSS em ciclistas treinados (erro médio de ~1 W).</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: 0.01em">5 · Zonas: antes × agora</h2>
+<div style="display: grid; grid-template-columns: 120px minmax(0, 1fr); row-gap: 10px; column-gap: 14px; align-items: center; font-size: 15px">
+<span style="color: #5A6370; line-height: 1.25">Antes<br><span style="font-size: 13px">estimado (% FTP)</span></span>
+<div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600">
+<div style="width: 60%; background: #DDE3EA; display: flex; align-items: center; padding-left: 10px; color: #12161C">Z1 &lt;211</div>
+<div style="width: 14%; background: #BFD3F2; display: flex; align-items: center; justify-content: center; color: #12161C">Z2</div>
+<div style="width: 14%; background: #F8C9AF; display: flex; align-items: center; justify-content: center; color: #12161C">Z3</div>
+<div style="width: 12%; background: #12161C; display: flex; align-items: center; justify-content: center; color: #FFFFFF">Z4</div>
+</div>
+<span style="font-weight: 600; line-height: 1.25">Agora<br><span style="font-size: 13px; color: #5A6370; font-weight: 400">medido (lactato)</span></span>
+<div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600">
+<div style="width: 62%; background: #DDE3EA; display: flex; align-items: center; padding-left: 10px; color: #12161C">Z1 &lt;218</div>
+<div style="width: 11%; background: #1D63C9; display: flex; align-items: center; justify-content: center; color: #FFFFFF">Z2</div>
+<div style="width: 15%; background: #C2410C; display: flex; align-items: center; justify-content: center; color: #FFFFFF">Z3</div>
+<div style="width: 12%; background: #12161C; display: flex; align-items: center; justify-content: center; color: #FFFFFF">Z4</div>
+</div>
+</div>
+<table style="width: 100%; border-collapse: collapse; font-size: 15px">
+<thead>
+<tr style="text-align: left; color: #5A6370; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.05em">
+<th style="padding: 5px 0; border-bottom: 2px solid #12161C">ZONA</th>
+<th style="padding: 5px 8px; border-bottom: 2px solid #12161C; text-align: right">ANTES</th>
+<th style="padding: 5px 0; border-bottom: 2px solid #12161C; text-align: right">AGORA</th>
+</tr>
+</thead>
+<tbody style="font-family: 'IBM Plex Mono', monospace">
+<tr><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">Z1 · base</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">&lt; 211 W</td><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">&lt; 218 W</td></tr>
+<tr><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">Z2 · LT1 → LT2</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">211–253 W</td><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">218–250 W</td></tr>
+<tr><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">Z3 · LT2 → 105% FTP</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">253–295 W</td><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">250–295 W</td></tr>
+<tr><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">Z4 · VO2</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">&gt; 295 W</td><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">&gt; 295 W</td></tr>
+</tbody>
+</table>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">A estimativa por % do FTP errou por poucos watts — mas agora o número é medido, não presumido.</p>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px">
+<div style="background: #F3F5F7; border-radius: 10px; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px">Por que confiamos neste teste</h3>
+<ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.5">
+<li>Pré-teste igual ao repouso validado → coleta sem contaminação por suor.</li>
+<li>Curva lisa: o ajuste passa a &lt;0,2 mmol de todos os pontos.</li>
+<li>Lactato, FC e PSE sobem juntos, sem ponto destoante.</li>
+<li>Potência cravada (±1 W) e cadência de 85–92 rpm em todos os degraus.</li>
+</ul>
+</div>
+<div style="background: #F3F5F7; border-radius: 10px; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px">O que este teste NÃO diz</h3>
+<ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.5">
+<li><strong>FC dos limiares:</strong> em 5 min a FC não estabiliza acima do LT1. As zonas de FC (LT1 138 / LT2 176) seguem as do teste anterior.</li>
+<li><strong>Prova definitiva do LT2:</strong> só 30 min contínuos a 250 W com lactato subindo ≤1 mmol entre o 10º e o 30º min (MLSS).</li>
+<li>Os valores valem para <strong>este protocolo</strong>; o reteste (jan/27) repete tudo igual.</li>
+</ul>
+</div>
+</section>
+</main>
+
+<footer style="padding: 18px 56px 26px; margin-top: 22px; border-top: 1px solid #E3E6EA; display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; color: #5A6370">REFERÊNCIAS</h3>
+<ol style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.5; color: #3A424D; column-count: 2; column-gap: 40px">
+<li>Jamnick NA et al. Manipulating graded exercise test variables affects the validity of the lactate threshold and VO2peak. <em>PLoS ONE</em> 2018;13(7):e0199794.</li>
+<li>Bishop D, Jenkins DG, Mackinnon LT. The relationship between plasma lactate parameters, Wpeak and 1-h cycling performance in women. <em>Med Sci Sports Exerc</em> 1998;30(8):1270–5. (Dmax Modificado)</li>
+<li>Cheng B et al. A new approach for the determination of ventilatory and lactate thresholds. <em>Int J Sports Med</em> 1992;13(7):518–22. (Dmax)</li>
+<li>Beaver WL, Wasserman K, Whipp BJ. Improved detection of lactate threshold during exercise using a log-log transformation. <em>J Appl Physiol</em> 1985;59(6):1936–40.</li>
+<li>Sjödin B, Jacobs I. Onset of blood lactate accumulation and marathon running performance. <em>Int J Sports Med</em> 1981;2(1):23–6. (OBLA)</li>
+<li>Faude O, Kindermann W, Meyer T. Lactate threshold concepts: how valid are they? <em>Sports Med</em> 2009;39(6):469–90.</li>
+<li>Bentley DJ, Newell J, Bishop D. Incremental exercise test design and analysis. <em>Sports Med</em> 2007;37(7):575–86.</li>
+<li>Beneke R. Methodological aspects of maximal lactate steady state. <em>Eur J Appl Physiol</em> 2003;89(1):95–9.</li>
+</ol>
+<p style="margin: 4px 0 0; font-size: 12px; color: #5A6370">Material didático feito por atletas amadores com apoio de IA. Não substitui avaliação com profissional de educação física ou medicina do esporte.</p>
+</footer>
+</div>
+</div>
+</body>
+</html>
