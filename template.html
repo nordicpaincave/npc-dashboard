@@ -131,7 +131,7 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
   </nav>
   <div id="warn"></div>
   <main id="view"></main>
-  <footer>Gerado em __GENERATED__ · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática a cada 2 dias (GitHub Actions).</footer>
+  <footer>Gerado em __GENERATED__ · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
 </div>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box" id="modal-box"></div></div>
 
@@ -221,8 +221,9 @@ function render(){
   ({geral: vGeral, cal: vCal, macro: vMacro, lactato: vLactato, limiares: vLimiares, comp: vComp})[state.tab]();
 }
 
-const SRC_PT = {estimated_pct_ftp:'estimado por % do FTP', estimated_from_run:'estimado a partir da corrida', measured_bike_v1:'medido na bike'};
-function srcHuman(s){ if (!s) return ''; return s.split('|').map(p => { const [k,v] = p.split('=').map(x => (x||'').trim()); const val = /^measured_lactate/.test(v) ? 'medido por lactato (' + v.replace('measured_lactate_','').replace(/_/g,' ') + ')' : (SRC_PT[v] || v); return (k === 'watts' ? 'potência: ' : k === 'hr' ? 'FC: ' : k + ': ') + val; }).join(' · '); }
+const SRC_PT = {estimated_pct_ftp:'estimado por % do FTP', estimated_from_run:'estimado a partir da corrida', measured_bike_v1:'copiada da ergo de corrida (não medida na bike)', estimated_css_plus_9s:'estimado (CSS + 9 s/100m)', css_test_2026_03:'teste de CSS (mar/2026)'};
+const SWIM_LT1_OFFSET = 9; // s/100m acima do CSS — estimativa (não há regra validada CSS→LT1)
+function srcHuman(s){ if (!s) return ''; return s.split('|').map(p => { const [k,v] = p.split('=').map(x => (x||'').trim()); const val = /^measured_lactate/.test(v) ? (k === 'hr' ? 'medida no teste de lactato (' : 'medido por lactato (') + v.replace('measured_lactate_','').replace(/_/g,' ') + ')' : (SRC_PT[v] || v); return (k === 'watts' ? 'potência: ' : k === 'hr' ? 'FC: ' : k === 'css' ? 'CSS: ' : k === 'lt1' ? 'LT1: ' : k + ': ') + val; }).join(' · '); }
 // ── dados derivados ──────────────────────────────────────────────────
 function pmcAt(a, s){ let r = null; for (const p of a.pmc) { if (p.d <= s) r = p; else break; } return r; }
 function nextRaces(a){ return (a.events||[]).filter(e => e.date >= TODAY).sort((x,y) => x.date.localeCompare(y.date)); }
@@ -539,7 +540,9 @@ function vLimiares(){
     const cur = P[k][P[k].length-1];
     const z = [];
     if (k === 'bike' && cur.lt1_w && cur.lt2_w) z.push(['Potência', `< ${cur.lt1_w} W`, `${cur.lt1_w}–${cur.lt2_w} W`, `> ${cur.lt2_w} W${cur.ftp ? ` (até ~${Math.round(cur.ftp*1.05)})` : ''}`]);
-    if (cur.lt1_hr && cur.lt2_hr) z.push(['FC', `< ${cur.lt1_hr}`, `${cur.lt1_hr}–${cur.lt2_hr}`, `> ${cur.lt2_hr}`]);
+    const swimLt1 = k === 'swim' && cur.css ? (cur.lt1_pace || cur.css + SWIM_LT1_OFFSET) : null;
+    if (swimLt1) z.push(['Ritmo', `> ${fmtPace(swimLt1)}/100m`, `${fmtPace(swimLt1)}–${fmtPace(cur.css)}/100m`, `< ${fmtPace(cur.css)}/100m`]);
+    if (k !== 'swim' && cur.lt1_hr && cur.lt2_hr) z.push(['FC', `< ${cur.lt1_hr}`, `${cur.lt1_hr}–${cur.lt2_hr}`, `> ${cur.lt2_hr}`]);
     if (k === 'run' && cur.lt1_pace && cur.lt2_pace) z.push(['Pace', `> ${fmtPace(cur.lt1_pace)}/km`, `${fmtPace(cur.lt1_pace)}–${fmtPace(cur.lt2_pace)}/km`, `< ${fmtPace(cur.lt2_pace)}/km`]);
     return `<div class="card"><h3>${SPORT_LABEL[k]||k} <span class="sub">passaporte v${cur.v}${cur.from ? ' · desde ' + ddmmyy(cur.from) : ''}</span></h3>
       <div>${srcTag(cur.source)}${cur.source ? `<div class="small muted" style="margin-top:4px">${esc(srcHuman(cur.source))}</div>` : ''}</div>
@@ -549,10 +552,11 @@ function vLimiares(){
         ${cur.lt2_w ? `<div><span>LT2</span><b>${cur.lt2_w} W</b></div>` : ''}
         ${cur.lt1_pace ? `<div><span>LT1 pace</span><b>${fmtPace(cur.lt1_pace)}/km</b></div>` : ''}
         ${cur.lt2_pace ? `<div><span>LT2 pace</span><b>${fmtPace(cur.lt2_pace)}/km</b></div>` : ''}
-        ${cur.lt1_hr ? `<div><span>FC LT1</span><b>${cur.lt1_hr} bpm</b></div>` : ''}
-        ${cur.lt2_hr ? `<div><span>FC LT2</span><b>${cur.lt2_hr} bpm</b></div>` : ''}
-        ${cur.max_hr ? `<div><span>FC máx</span><b>${cur.max_hr} bpm</b></div>` : ''}
+        ${k !== 'swim' && cur.lt1_hr ? `<div><span>FC LT1</span><b>${cur.lt1_hr} bpm</b></div>` : ''}
+        ${k !== 'swim' && cur.lt2_hr ? `<div><span>FC LT2</span><b>${cur.lt2_hr} bpm</b></div>` : ''}
+        ${k !== 'swim' && cur.max_hr ? `<div><span>FC máx</span><b>${cur.max_hr} bpm</b></div>` : ''}
         ${cur.css ? `<div><span>CSS</span><b>${fmtPace(cur.css)}/100m</b></div>` : ''}
+        ${swimLt1 ? `<div><span>LT1 ritmo${cur.lt1_pace ? '' : ' (estimado)'}</span><b>${fmtPace(swimLt1)}/100m</b></div><div><span>LT2 ritmo ≈ CSS</span><b>${fmtPace(cur.css)}/100m</b></div>` : ''}
       </div>
       ${z.length ? `<div class="tbl-wrap"><table><thead><tr><th></th><th>Z1</th><th>Z2</th><th>Z3</th></tr></thead><tbody>${z.map(r => `<tr><td class="muted">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table></div>` : ''}
       ${cur.protocol ? `<div class="note section">${esc(cur.protocol)}</div>` : ''}
