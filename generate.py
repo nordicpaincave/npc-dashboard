@@ -323,16 +323,20 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
                 warnings.append(f"{athlete_key} {slug}: não baixou o .fit ({e})")
         files = sorted(os.listdir(folder))
         pp = passports.get(sport, [])
-        after = next((p for p in pp if p["from"] == day), None) or next((p for p in reversed(pp) if p["from"] and p["from"] <= day and "lactate" in (p["source"] or "")), None)
+        # passaporte oficial deste teste = a versão MAIS RECENTE cuja origem cita este teste (ex.: v5 só watts, v6 também FC);
+        # sem isso, a versão criada no dia do teste; "antes" = última versão anterior ao dia do teste
+        cites = [p for p in pp if "lactate" in (p["source"] or "") and day in (p["source"] or "")]
+        after = cites[-1] if cites else (next((p for p in pp if p["from"] == day), None) or next((p for p in reversed(pp) if p["from"] and p["from"] <= day and "lactate" in (p["source"] or "")), None))
         before = None
         if after:
-            prev = [p for p in pp if p["v"] < after["v"]]
+            prev = [p for p in pp if p["v"] < after["v"] and (p["from"] or "") < day]
             before = prev[-1] if prev else None
         out.append({
             "slug": slug, "date": day, "sport": sport, "round": rnd, "tp_workout_id": wid,
             "baseline": base, "steps": steps, "analysis": res,
             "official": {"lt1": thr(after, 1, is_run), "lt2": thr(after, 2, is_run),
-                         "v": after["v"], "protocol": after["protocol"], "notes": after["notes"]} if after else None,
+                         "v": after["v"], "protocol": after["protocol"], "notes": after["notes"],
+                         **({"hr1": after["lt1_hr"], "hr2": after["lt2_hr"]} if "hr=measured_lactate" in (after["source"] or "") else {})} if after else None,
             "before": {"lt1": thr(before, 1, is_run), "lt2": thr(before, 2, is_run), "v": before["v"], "source": before["source"]} if before else None,
             "files": [{"name": n, "path": f"/{folder}/{n}".replace(os.sep, "/")} for n in files],
         })
