@@ -105,6 +105,23 @@ pre.desc{white-space:pre-wrap;font-family:inherit;font-size:13px;color:var(--tex
 .phasebar{display:flex;width:100%;border-radius:8px;overflow:hidden;min-height:34px}
 .phasebar div{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0f1117;padding:4px;text-align:center;line-height:1.15;overflow:hidden}
 .notes-cell{max-width:440px;color:var(--text2);font-size:12px}
+tr.wkrow{cursor:pointer}tr.wkrow:hover td{background:rgba(255,255,255,.03)}tr.wkrow.cur:hover td{background:rgba(255,124,58,.12)}tr.wkrow.open td{border-bottom:0}
+.wk-sum{min-width:240px;max-width:380px;font-size:12px;color:var(--text2)}
+.wk-sum .head{color:var(--text);font-size:13px;margin:3px 0}
+.vchips{display:flex;gap:4px;flex-wrap:wrap}
+.vchip{font-size:11px;padding:1px 6px;border-radius:5px;background:var(--bg4);color:var(--text2);white-space:nowrap}
+.vchip i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:0}
+.ntag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin:2px 4px 0 0;text-transform:uppercase;letter-spacing:.03em}
+.ntag.lac{background:#7c2d12;color:#ffedd5}.ntag.nut{background:#14532d;color:#bbf7d0}
+.wk-more{color:#7ab8ff;white-space:nowrap;margin-left:2px}.wk-more::after{content:' ▾'}tr.wkrow.open .wk-more::after{content:' ▴'}
+tr.wk-detail td{background:var(--bg2);padding:14px 16px 16px;white-space:normal}
+tr.wk-detail[hidden]{display:none}
+.nsecs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 22px;margin-top:10px}
+.nsec{border-left:3px solid var(--lt1);padding:2px 0 2px 12px}
+.nsec.lac{border-color:var(--lt2)}.nsec.nut{border-color:var(--ok)}
+.nsec h4{margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text)}
+.nsec ul{margin:0;padding-left:16px;font-size:13px;line-height:1.5;color:var(--text2)}.nsec li+li{margin-top:4px}
+.nsec li b{color:var(--text);font-weight:600}
 /* Lactate */
 .files a{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;text-decoration:none;color:var(--text);font-weight:600;font-size:13px;min-height:40px}
 .files{display:flex;flex-wrap:wrap;gap:8px}
@@ -227,7 +244,33 @@ function srcHuman(s){ if (!s) return ''; return s.split('|').map(p => { const [k
 // ── dados derivados ──────────────────────────────────────────────────
 function pmcAt(a, s){ let r = null; for (const p of a.pmc) { if (p.d <= s) r = p; else break; } return r; }
 function nextRaces(a){ return (a.events||[]).filter(e => e.date >= TODAY).sort((x,y) => x.date.localeCompare(y.date)); }
-function noteCell(t){ t = t || ''; if (t.length <= 150) return esc(t); return `<details><summary style="cursor:pointer">${esc(t.slice(0,140))}… <span style="color:#7ab8ff">ver tudo</span></summary>${esc(t)}</details>`; }
+function parseNote(t){
+  t = (t || '').trim(); const vol = [];
+  const m = t.match(/^\[([^\]]*)\]\s*/);
+  if (m) { t = t.slice(m[0].length); m[1].split('·').forEach(x => { const mm = x.trim().match(/^(\S+)\s+([\d.,]+)h$/); if (mm && parseFloat(mm[2].replace(',','.')) > 0) vol.push([mm[1], parseFloat(mm[2].replace(',','.'))]); }); }
+  const secs = t.split(/\s+\|\s+/).map((chunk, i) => {
+    let title = i === 0 ? 'A semana' : '', body = chunk.trim();
+    const hm = i > 0 && body.match(/^([A-ZÁÉÍÓÚÂÊÔÃÕÇ][^:]{0,70}?):\s+/);
+    if (hm) { title = hm[1]; body = body.slice(hm[0].length); } else if (i > 0) title = 'Observação';
+    const kind = /^LACTATO/i.test(title) ? 'lac' : /^NUTRI/i.test(title) ? 'nut' : '';
+    const items = body.split(/(?<=[.;])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ])/).map(x => x.replace(/;$/,'').trim()).filter(Boolean);
+    return {title, kind, items};
+  }).filter(x => x.items.length);
+  return {vol, secs};
+}
+const VOL_COLOR = {bike:'var(--bike)', corrida:'var(--run)', 'natação':'var(--swim)', 'força':'var(--strength)'};
+function fmtHd(h){ const H = Math.floor(h), M = Math.round((h - H) * 60); return M ? `${H}h${String(M).padStart(2,'0')}` : `${H}h`; }
+function emph(x){ return esc(x).replace(/\b([A-ZÁÉÍÓÚÂÊÔÃÕÇ]{4,}(?:[ -][A-ZÁÉÍÓÚÂÊÔÃÕÇ0-9.]{2,})*)\b/g, '<b>$1</b>'); }
+function volChips(n){ return n.vol.length ? `<div class="vchips">${n.vol.map(([k,h]) => `<span class="vchip"><i style="background:${VOL_COLOR[k]||'var(--other)'}"></i>${esc(k)} ${fmtHd(h)}</span>`).join('')}</div>` : ''; }
+function noteSummary(n){
+  const g = n.secs.find(x => !x.title || x.title === 'A semana') || n.secs[0];
+  const head = g ? g.items[0] : '';
+  const tags = n.secs.filter(x => x.kind).map(x => `<span class="ntag ${x.kind}">${x.kind === 'lac' ? 'Lactato' : 'Nutrição'}</span>`).join('');
+  return `<div class="wk-sum">${volChips(n)}<div class="head">${emph(head.length > 110 ? head.slice(0,105) + '…' : head)}</div>${tags}${n.secs.length > 1 || (g && g.items.length > 1) ? `<span class="wk-more small">detalhes</span>` : ''}</div>`;
+}
+function noteDetail(n){
+  return `<div class="nsecs">${n.secs.map(x => `<div class="nsec ${x.kind}"><h4>${esc(x.title)}</h4><ul>${x.items.map(i => `<li>${emph(i)}</li>`).join('')}</ul></div>`).join('')}</div>`;
+}
 function projPeak(a){ const pr = a.projection || []; return pr.length ? pr.reduce((m,x) => x.ctl > m.ctl ? x : m, pr[0]) : null; }
 function curWeek(a){ const m = mondayOf(TODAY); return a.weeks.find(w => w.mon === m); }
 function compliance(w){
@@ -426,9 +469,11 @@ function vMacro(){
   <div class="card section"><h3>TSS semanal — alvo × realizado <span class="sub">realizado = TSS do PMC do TP</span></h3><div class="chart-box"><canvas id="macro-chart"></canvas></div>
     <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.25)"></i>Alvo do macro</span><span><i class="dot" style="background:var(--ok)"></i>Realizado (≥90% do alvo)</span><span><i class="dot" style="background:var(--warn)"></i>Realizado (abaixo de 90% ou acima de 115%)</span><span><i class="dot" style="background:#9aa0b2"></i>Semana em andamento</span><span><i class="dot" style="background:var(--ctl)"></i>CTL no fim da semana (real e projetado)</span></div></div>
   <div class="card section"><h3>Semanas do plano</h3><div class="tbl-wrap"><table>
-    <thead><tr><th>Sem.</th><th>Segunda</th><th>Tipo</th><th>Fase</th><th class="n">Alvo TSS</th><th class="n">Alvo h</th><th class="n">Plan. TP</th><th class="n">Feito TSS</th><th class="n">%</th><th class="n">Feito h</th><th class="n">Z1/Z2/Z3 alvo</th><th>Notas</th></tr></thead>
+    <thead><tr><th>Sem.</th><th>Segunda</th><th>Tipo</th><th>Fase</th><th class="n">Alvo TSS</th><th class="n">Alvo h</th><th class="n">Plan. TP</th><th class="n">Feito TSS</th><th class="n">%</th><th class="n">Feito h</th><th class="n">Z1/Z2/Z3 alvo</th><th>Resumo da semana</th></tr></thead>
     <tbody>${p.weeks.map(w => { const r = byMon[w.mon] || {}; const pct = r.tss != null && w.tss ? r.tss/w.tss*100 : null; const ph = phaseOf(w.w) || {};
-      return `<tr class="${w.mon===curM?'cur':w.mon<curM?'past':''}"><td><b>${w.w}</b></td><td>${ddmm(w.mon)}</td><td>${WEEK_TYPE[w.type]||w.type}</td><td><span class="dot" style="background:${PHASE_COLOR[ph.type]||'#888'}"></span> ${esc(ph.name||'')}</td><td class="n">${fmtN(w.tss)}</td><td class="n">${fmtH(w.h)}</td><td class="n">${r.n_planned ? fmtN(r.planned_tss) : '—'}</td><td class="n">${fmtN(r.tss)}</td><td class="n" style="color:${pct==null||w.mon===curM?'':pct>=90&&pct<=115?'var(--ok)':'var(--warn)'}">${pct==null?'—':fmtN(pct)+'%'}${w.mon===curM?' <span class="muted small">em andamento</span>':''}</td><td class="n">${fmtH(r.h)}</td><td class="n">${w.z.join('/')}</td><td class="notes-cell">${noteCell(w.notes)}</td></tr>`; }).join('')}</tbody></table></div></div>`;
+      const n = parseNote(w.notes);
+      return `<tr class="wkrow ${w.mon===curM?'cur open':w.mon<curM?'past':''}" data-wk="${w.w}"><td><b>${w.w}</b></td><td>${ddmm(w.mon)}</td><td>${WEEK_TYPE[w.type]||w.type}</td><td><span class="dot" style="background:${PHASE_COLOR[ph.type]||'#888'}"></span> ${esc(ph.name||'')}</td><td class="n">${fmtN(w.tss)}</td><td class="n">${fmtH(w.h)}</td><td class="n">${r.n_planned ? fmtN(r.planned_tss) : '—'}</td><td class="n">${fmtN(r.tss)}</td><td class="n" style="color:${pct==null||w.mon===curM?'':pct>=90&&pct<=115?'var(--ok)':'var(--warn)'}">${pct==null?'—':fmtN(pct)+'%'}${w.mon===curM?' <span class="muted small">em andamento</span>':''}</td><td class="n">${fmtH(r.h)}</td><td class="n">${w.z.join('/')}</td><td>${noteSummary(n)}</td></tr><tr class="wk-detail" data-wkd="${w.w}" ${w.mon===curM ? '' : 'hidden'}><td colspan="12">${noteDetail(n)}</td></tr>`; }).join('')}</tbody></table></div><div class="small muted section">Clique numa semana para abrir ou fechar os detalhes.</div></div>`;
+  document.querySelectorAll('tr.wkrow').forEach(tr => tr.onclick = () => { const d = document.querySelector(`tr.wk-detail[data-wkd="${tr.dataset.wk}"]`); if (!d) return; d.hidden = !d.hidden; tr.classList.toggle('open', !d.hidden); });
   const labels = p.weeks.map(w => `S${w.w}`);
   const endCtl = p.weeks.map(w => { const sun = addDays(w.mon, 6); if (sun <= TODAY) { const x = pmcAt(a, sun); return x ? x.ctl : null; } if (w.mon <= TODAY) { const x = pmcAt(a, TODAY); return x ? x.ctl : null; } const pr = (a.projection||[]).find(q => q.d === sun); return pr ? pr.ctl : null; });
   const actual = p.weeks.map(w => (byMon[w.mon]||{}).tss ?? null);
