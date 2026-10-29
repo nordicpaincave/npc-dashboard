@@ -97,6 +97,14 @@ tr.past td{color:var(--text2)}
 .modal .x{float:right;border:0;background:var(--bg4);border-radius:8px;width:36px;height:36px;font-size:18px}
 .mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
 @media(max-width:600px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.perc{background:var(--bg3);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin:0 0 12px}
+@media(max-width:600px){.perc{grid-template-columns:1fr}}
+.perc .lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.perc .val{font-size:15px;font-weight:700;margin:2px 0 6px}.perc .val small{font-weight:500;color:var(--text2);font-size:12px}
+.rpebar{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
+.rpebar{max-width:260px}.rpebar i{height:10px;border-radius:2px;opacity:.18}.rpebar i.on{opacity:1}
+.faces{display:flex;gap:8px;font-size:22px;line-height:1;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}.faces span{opacity:.28;filter:grayscale(1)}.faces span.on{opacity:1;filter:none}
+.perc .foot{grid-column:1/-1;font-size:11px;color:var(--text2);border-top:1px solid var(--border);padding-top:7px}
 .mgrid div{background:var(--bg3);border-radius:8px;padding:8px}
 .mgrid b{display:block;font-size:16px}
 .mgrid span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
@@ -375,7 +383,7 @@ function drawWellness(a){
 function workoutTable(list){
   if (!list.length) return '<div class="empty">Nenhum treino no período.</div>';
   return `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Treino</th><th class="n">Duração</th><th class="n">TSS</th><th class="n">IF</th><th class="n">NP / pace</th><th class="n">FC méd</th><th class="n">RPE</th></tr></thead><tbody>${
-    list.map(w => `<tr data-wid="${w.id}" style="cursor:pointer"><td>${ddmm(w.date)}</td><td><span class="dot" style="background:${SPORT_COLOR[w.sport]}"></span> ${esc(w.title)}</td><td class="n">${fmtH(w.act.h)}</td><td class="n">${fmtN(w.act.tss)}</td><td class="n">${fmtN(w.act.if,2)}</td><td class="n">${w.act.np ? w.act.np+' W' : w.act.pace ? fmtPace(w.act.pace) + (w.sport==='swim'?'/100m':'/km') : '—'}</td><td class="n">${fmtN(w.act.hr)}</td><td class="n">${fmtN(w.act.rpe)}</td></tr>`).join('')
+    list.map(w => `<tr data-wid="${w.id}" style="cursor:pointer"><td>${ddmm(w.date)}</td><td><span class="dot" style="background:${SPORT_COLOR[w.sport]}"></span> ${esc(w.title)}</td><td class="n">${fmtH(w.act.h)}</td><td class="n">${fmtN(w.act.tss)}</td><td class="n">${fmtN(w.act.if,2)}</td><td class="n">${w.act.np ? w.act.np+' W' : w.act.pace ? fmtPace(w.act.pace) + (w.sport==='swim'?'/100m':'/km') : '—'}</td><td class="n">${fmtN(w.act.hr)}</td><td class="n" title="${w.act.rpe != null ? RPE_LABEL[Math.round(w.act.rpe)] || '' : ''}">${fmtN(w.act.rpe)}${feelIdx(w.act.feel) != null ? ' ' + FEEL[feelIdx(w.act.feel)][0] : ''}</td></tr>`).join('')
   }</tbody></table></div>`;
 }
 function bindWorkoutRows(){ document.querySelectorAll('[data-wid]').forEach(el => el.onclick = () => openWorkout(el.dataset.wid)); }
@@ -434,12 +442,29 @@ function openWorkout(id){
       ${w.done ? cell('FC média / máx', a.hr ? `${a.hr} / ${fmtN(a.hrmax)}` : '—') : ''}
       ${w.done ? cell('Cadência', fmtN(a.cad)) : ''}
       ${w.done ? cell('Altimetria', a.elev != null ? fmtN(a.elev)+' m' : '—') : ''}
-      ${w.done ? cell('RPE (1–10)', fmtN(a.rpe)) : ''}
-      ${w.done ? cell('Sensação (TP)', fmtN(a.feel)) : ''}
     </div>
+    ${w.done ? percBlock(a) : ''}
     ${w.comments.length ? `<h3 class="small muted" style="margin:10px 0 6px">COMENTÁRIOS</h3>${w.comments.map(c => `<div class="note" style="margin-bottom:6px"><b>${esc(c.who)}</b><br>${esc(c.text)}</div>`).join('')}` : ''}
     ${w.desc ? `<h3 class="small muted" style="margin:10px 0 6px">DESCRIÇÃO DO TREINO</h3><pre class="desc">${esc(w.desc)}</pre>` : ''}`;
   $('#modal').classList.add('on');
+}
+const RPE_LABEL = ['Repouso','Muito, muito leve','Leve','Moderado','Um pouco difícil','Difícil','Difícil +','Muito difícil','Muito difícil +','Quase máximo','Máximo']; // CR-10 (Foster 2001)
+const RPE_COLOR = ['#22c55e','#4ade80','#a3e635','#d9f99d','#facc15','#fbbf24','#f59e0b','#f97316','#ef4444','#dc2626'];
+const FEEL = [['😣','Muito fraca'],['🙁','Fraca'],['🙂','Normal'],['😃','Forte'],['🤩','Muito forte']];
+function feelIdx(v){ return v == null ? null : v <= 2 ? 0 : v <= 4 ? 1 : v <= 6 ? 2 : v <= 8 ? 3 : 4; }
+function percBlock(a){
+  const r = a.rpe != null ? Math.max(0, Math.min(10, Math.round(a.rpe))) : null, f = feelIdx(a.feel);
+  if (r == null && f == null) return '';
+  const min = a.h != null ? Math.round(a.h * 60) : null;
+  return `<div class="perc">
+    <div><div class="lbl">Esforço percebido (RPE)</div>
+      <div class="val">${r != null ? `${r}<small>/10 · ${RPE_LABEL[r]}</small>` : '<small>não registrado</small>'}</div>
+      <div class="rpebar">${RPE_COLOR.map((c,i) => `<i class="${r != null && i < r ? 'on' : ''}" style="background:${c}"></i>`).join('')}</div></div>
+    <div><div class="lbl">Como se sentiu</div>
+      <div class="val">${f != null ? FEEL[f][1] : '<small>não registrado</small>'}</div>
+      <div class="faces">${FEEL.map((x,i) => `<span class="${i === f ? 'on' : ''}" title="${x[1]}">${x[0]}</span>`).join('')}</div></div>
+    ${r != null && min ? `<div class="foot">Carga interna (sRPE, Foster 2001): ${r} × ${min} min = <b>${r*min} UA</b> — mede quanto o treino pesou para você, independente de potência ou FC.</div>` : ''}
+  </div>`;
 }
 function closeModal(){ $('#modal').classList.remove('on'); }
 
