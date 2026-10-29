@@ -226,6 +226,8 @@ function srcHuman(s){ if (!s) return ''; return s.split('|').map(p => { const [k
 // ── dados derivados ──────────────────────────────────────────────────
 function pmcAt(a, s){ let r = null; for (const p of a.pmc) { if (p.d <= s) r = p; else break; } return r; }
 function nextRaces(a){ return (a.events||[]).filter(e => e.date >= TODAY).sort((x,y) => x.date.localeCompare(y.date)); }
+function noteCell(t){ t = t || ''; if (t.length <= 150) return esc(t); return `<details><summary style="cursor:pointer">${esc(t.slice(0,140))}… <span style="color:#7ab8ff">ver tudo</span></summary>${esc(t)}</details>`; }
+function projPeak(a){ const pr = a.projection || []; return pr.length ? pr.reduce((m,x) => x.ctl > m.ctl ? x : m, pr[0]) : null; }
 function curWeek(a){ const m = mondayOf(TODAY); return a.weeks.find(w => w.mon === m); }
 function compliance(w){
   if (!w.done) return w.date < TODAY ? 'miss' : 'fut';
@@ -417,7 +419,7 @@ function vMacro(){
       <div class="kpi"><div class="l">Semana atual</div><div class="v">${cur ? cur.w : '—'}<span class="muted" style="font-size:16px"> / ${total}</span></div><div class="s">${cur ? `${WEEK_TYPE[cur.type]||cur.type} · ${esc((phaseOf(cur.w)||{}).name||'')}` : 'fora do plano'}</div></div>
       <div class="kpi"><div class="l">Alvo da semana</div><div class="v">${cur ? fmtN(cur.tss) : '—'}</div><div class="s">${cur ? `${fmtH(cur.h)} · zonas ${cur.z.join('/')}%` : ''}</div></div>
       <div class="kpi"><div class="l">Feito até agora</div><div class="v">${sumT ? fmtN(sumA/sumT*100) + '%' : '—'}</div><div class="s">${fmtN(sumA)} de ${fmtN(sumT)} TSS nas semanas fechadas</div></div>
-      <div class="kpi"><div class="l">CTL projetado no fim</div><div class="v">${a.projection && a.projection.length ? fmtN(a.projection[a.projection.length-1].ctl,0) : '—'}</div><div class="s">se cumprir o plano${p.ctl_peak ? ` · alvo ${p.ctl_peak}` : ''}</div></div>
+      <div class="kpi"><div class="l">CTL de pico projetado</div><div class="v">${projPeak(a) ? fmtN(projPeak(a).ctl,0) : '—'}</div><div class="s">${projPeak(a) ? `em ${ddmmyy(projPeak(a).d)} · ` : ''}se cumprir o plano${p.ctl_peak ? ` · alvo ${p.ctl_peak}` : ''}${races.filter(e => e.priority === 'A').map(e => { const x = (a.projection||[]).find(q => q.d === e.date); return x ? `<br>${esc(e.name)}: CTL ${fmtN(x.ctl,0)} · TSB ${sign(x.tsb)}` : ''; }).join('')}</div></div>
     </div>
   </div>
   <div class="card section"><h3>TSS semanal — alvo × realizado <span class="sub">realizado = TSS do PMC do TP</span></h3><div class="chart-box"><canvas id="macro-chart"></canvas></div>
@@ -425,7 +427,7 @@ function vMacro(){
   <div class="card section"><h3>Semanas do plano</h3><div class="tbl-wrap"><table>
     <thead><tr><th>Sem.</th><th>Segunda</th><th>Tipo</th><th>Fase</th><th class="n">Alvo TSS</th><th class="n">Alvo h</th><th class="n">Plan. TP</th><th class="n">Feito TSS</th><th class="n">%</th><th class="n">Feito h</th><th class="n">Z1/Z2/Z3 alvo</th><th>Notas</th></tr></thead>
     <tbody>${p.weeks.map(w => { const r = byMon[w.mon] || {}; const pct = r.tss != null && w.tss ? r.tss/w.tss*100 : null; const ph = phaseOf(w.w) || {};
-      return `<tr class="${w.mon===curM?'cur':w.mon<curM?'past':''}"><td><b>${w.w}</b></td><td>${ddmm(w.mon)}</td><td>${WEEK_TYPE[w.type]||w.type}</td><td><span class="dot" style="background:${PHASE_COLOR[ph.type]||'#888'}"></span> ${esc(ph.name||'')}</td><td class="n">${fmtN(w.tss)}</td><td class="n">${fmtH(w.h)}</td><td class="n">${r.n_planned ? fmtN(r.planned_tss) : '—'}</td><td class="n">${fmtN(r.tss)}</td><td class="n" style="color:${pct==null||w.mon===curM?'':pct>=90&&pct<=115?'var(--ok)':'var(--warn)'}">${pct==null?'—':fmtN(pct)+'%'}${w.mon===curM?' <span class="muted small">em andamento</span>':''}</td><td class="n">${fmtH(r.h)}</td><td class="n">${w.z.join('/')}</td><td class="notes-cell">${esc(w.notes||'')}</td></tr>`; }).join('')}</tbody></table></div></div>`;
+      return `<tr class="${w.mon===curM?'cur':w.mon<curM?'past':''}"><td><b>${w.w}</b></td><td>${ddmm(w.mon)}</td><td>${WEEK_TYPE[w.type]||w.type}</td><td><span class="dot" style="background:${PHASE_COLOR[ph.type]||'#888'}"></span> ${esc(ph.name||'')}</td><td class="n">${fmtN(w.tss)}</td><td class="n">${fmtH(w.h)}</td><td class="n">${r.n_planned ? fmtN(r.planned_tss) : '—'}</td><td class="n">${fmtN(r.tss)}</td><td class="n" style="color:${pct==null||w.mon===curM?'':pct>=90&&pct<=115?'var(--ok)':'var(--warn)'}">${pct==null?'—':fmtN(pct)+'%'}${w.mon===curM?' <span class="muted small">em andamento</span>':''}</td><td class="n">${fmtH(r.h)}</td><td class="n">${w.z.join('/')}</td><td class="notes-cell">${noteCell(w.notes)}</td></tr>`; }).join('')}</tbody></table></div></div>`;
   const labels = p.weeks.map(w => `S${w.w}`);
   const endCtl = p.weeks.map(w => { const sun = addDays(w.mon, 6); if (sun <= TODAY) { const x = pmcAt(a, sun); return x ? x.ctl : null; } if (w.mon <= TODAY) { const x = pmcAt(a, TODAY); return x ? x.ctl : null; } const pr = (a.projection||[]).find(q => q.d === sun); return pr ? pr.ctl : null; });
   const actual = p.weeks.map(w => (byMon[w.mon]||{}).tss ?? null);
