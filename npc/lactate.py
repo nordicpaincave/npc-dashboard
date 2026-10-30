@@ -9,9 +9,11 @@ Métodos (os mesmos usados na análise do R1 de bike do Bruno, 28/10/2026):
   LT2  OBLA 4,0 mmol         — Sjödin & Jacobs 1981 (interpolação linear entre degraus)
 
 Curva ajustada: polinômio de 3º grau lactato × carga, só com os degraus (sem o pré-teste).
-Basal = MENOR lactato medido (coleta pré-teste ou degrau), regra NPC de 30/10/2026: na corrida
-o 1º degrau leve costuma ficar abaixo do repouso (remoção > produção), e o LT1 oficial passou a ser
-basal + 0,5 mmol lido na curva ajustada — o critério mais conservador, igual para bike e corrida.
+Basal = MÉDIA DO PATAMAR (regra NPC de 30/10/2026, igual para bike e corrida): coleta de repouso
+pré-teste + degraus iniciais, em ordem, enquanto cada valor fica ≤ média acumulada + 0,3 mmol
+(0,3 = critério de repetibilidade da técnica validado em 24/10). É o "basal = valores antes da
+subida" de Coyle/Pallarés, sem depender de uma leitura isolada. LT1 oficial = basal + 0,5 mmol
+na curva ajustada (o critério mais conservador).
 Carga = potência (W) na bike, velocidade (km/h) na corrida.
 Sem numpy: tudo em Python puro para rodar no GitHub Actions sem dependências.
 """
@@ -105,9 +107,16 @@ def analyze(baseline, loads, lactates):
         return None
     c = _polyfit3(xs, ys)
     lo, hi = xs[0], xs[-1]
-    # basal = menor lactato medido (pré-teste ou degrau) — regra NPC 30/10/2026
-    baseline = min(ys) if baseline is None else min(baseline, min(ys))
-    out = {"lt1": [], "lt2": [], "fit": [round(v, 6) for v in c]}
+    # basal = média do patamar (repouso pré-teste + degraus iniciais até a 1ª leitura > média + 0,3)
+    plateau = [baseline] if baseline is not None else []
+    for y in ys:
+        if not plateau or y <= sum(plateau) / len(plateau) + 0.3 + 1e-9:
+            plateau.append(y)
+        else:
+            break
+    baseline = sum(plateau) / len(plateau)
+    out = {"lt1": [], "lt2": [], "fit": [round(v, 6) for v in c],
+           "baseline": round(baseline, 2), "plateau_n": len(plateau)}
     if baseline is not None:
         for add in (0.5, 1.0):
             v = _solve_on_curve(c, baseline + add, lo, hi)

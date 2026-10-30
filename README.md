@@ -46,7 +46,11 @@ e cole a mesma senha no secret. Se a conexão falhar por host, crie também o se
 
 Cada teste incremental gravado em `lactate_samples` aparece sozinho na aba **Lactato**, com
 curva, degraus, LT1/LT2 por método (basal+0,5 e +1,0 mmol, log-log, Dmax Modificado, Dmax,
-OBLA 4 mmol) e o valor oficial do passaporte. Os arquivos ficam em
+OBLA 4 mmol) e o valor oficial do passaporte.
+
+**Regra NPC de LT1 (30/10/2026, bike e corrida):** LT1 = basal + 0,5 mmol na curva ajustada, com
+basal = média do patamar (coleta de repouso pré-teste + degraus iniciais enquanto cada valor fica
+≤ média acumulada + 0,3 mmol, que é a repetibilidade validada da técnica). Os arquivos ficam em
 `files/lactato/<atleta>/<data>-<esporte>-<rodada>/`:
 
 - `amostras.csv` — regenerado a cada execução a partir do Supabase;
