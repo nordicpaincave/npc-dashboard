@@ -1,0 +1,10 @@
+﻿degrau,rotulo,lactato_mmol,km_h,fc_bpm,cadencia,rpe,erro,observacoes
+,basal repouso,1.4,,,,,,5min parado antes do aquecimento · café 06:40
+,pós-aquecimento,1.7,,124,,1,,15min aquec ~5:40/km
+1,D1,1.2,11.1,130,,2,,alvo 11 km/h · FC méd 128 / final 130 · NADIR da curva
+2,D2,1.3,12.0,143,,3,,alvo 12 · FC méd 132 / final 143
+3,D3,1.7,13.0,155,,5,,alvo 13 · FC méd 143 / final 155
+4,D4,2.0,14.0,165,,7,,alvo 14 · FC méd 152 / final 165
+5,D5,3.9,15.2,175,,8,,alvo 15 · FC méd 162 / final 175
+6,D6,5.5,16.0,182,,10,,alvo 16 · FC méd 170 / final 182
+7,D7,9.0,17.1,181,,10,,alvo 17 · INCOMPLETO 4:20 (exaustão) · FC méd 174 / máx 186 (FCmáx 187) · lactato provavelmente subestimado

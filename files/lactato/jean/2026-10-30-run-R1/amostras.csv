@@ -1,0 +1,10 @@
+﻿degrau,rotulo,lactato_mmol,km_h,fc_bpm,cadencia,rpe,erro,observacoes
+,basal repouso,2.1,,,,,,5min parado antes do aquecimento · café 06:30
+,pós-aquecimento,1.8,,140,,1,,18min aquec ~5:20/km
+1,D1,1.9,11.9,138,,2,,alvo 12 km/h · FC méd 131 / final 138
+2,D2,1.9,12.9,141,,3,,alvo 13 · FC méd 139 / final 141
+3,D3,2.9,14.1,154,,5,,alvo 14 · FC méd 148 / final 154
+4,D4,3.5,14.9,162,,7,,alvo 15 · FC méd 154 / final 162
+5,D5,5.0,15.9,168,,9,,alvo 16 · FC méd 158 / final 168
+6,D6,7.9,17.1,173,,10,,alvo 17 · FC méd 163 / final 173
+7,D7,10.6,17.9,176,,10,,alvo 18 · INCOMPLETO 5min (exaustão) · FC méd 166 / final 176
