@@ -653,7 +653,10 @@ function vLactato(){
 function lactateTest(t, a){
   const run = t.sport === 'run';
   const unit = run ? 'km/h' : 'W';
-  const fmtL = v => v == null ? '—' : run ? `${fmtN(v,1)} km/h (${fmtPace(3600/v)}/km)` : `${fmtN(v)} W`;
+  // corrida: cálculo sempre em km/h (carga linear); exibição em pace (min/km)
+  const fmtL = v => v == null ? '—' : run ? `${fmtPace(3600/v)}/km` : `${fmtN(v)} W`;
+  const fmtR = r => run ? `${fmtPace(3600/r[0])}–${fmtPace(3600/r[1])}/km` : `${fmtN(r[0])}–${fmtN(r[1])} W`;
+  const fmtD = (now, before) => run ? (d => `${d > 0 ? '+' : d < 0 ? '−' : ''}${Math.abs(d)} s/km${d < 0 ? ' (mais rápido)' : d > 0 ? ' (mais lento)' : ''}`)(Math.round(3600/now - 3600/before)) : `${sign(now - before)} W`;
   const an = t.analysis;
   const range = arr => { const v = (arr||[]).map(m => m.value).filter(x => x != null); return v.length ? [Math.min(...v), Math.max(...v)] : null; };
   const r1 = an && range(an.lt1), r2 = an && range(an.lt2);
@@ -666,23 +669,23 @@ function lactateTest(t, a){
     <div class="card">
       <h3>${t.round ? esc(t.round)+' — ' : ''}${run ? 'Corrida' : 'Bike'} · ${ddmmyy(t.date)} <span class="sub">${t.tp_workout_id ? 'treino TP ' + t.tp_workout_id : ''}</span></h3>
       <div class="big-lt">
-        <div class="lt1"><span class="small muted">LT1 · limiar aeróbio</span><b>${off.lt1 != null ? fmtL(off.lt1) : r1 ? fmtL((r1[0]+r1[1])/2) : '—'}</b><span class="small muted">${off.lt1 != null ? 'valor oficial do passaporte v'+off.v : 'estimativa (sem passaporte ligado)'}${r1 ? ` · métodos ${fmtN(r1[0])}–${fmtN(r1[1])} ${unit}` : ''}${off.hr1 ? ` · FC ≈ ${off.hr1} bpm` : ''}</span></div>
-        <div class="lt2"><span class="small muted">LT2 · limiar anaeróbio (≈ MLSS)</span><b>${off.lt2 != null ? fmtL(off.lt2) : r2 ? fmtL((r2[0]+r2[1])/2) : '—'}</b><span class="small muted">${off.lt2 != null ? 'valor oficial do passaporte v'+off.v : 'estimativa (sem passaporte ligado)'}${r2 ? ` · métodos ${fmtN(r2[0])}–${fmtN(r2[1])} ${unit}` : ''}${off.hr2 ? ` · FC ≈ ${off.hr2} bpm` : ''}</span></div>
+        <div class="lt1"><span class="small muted">LT1 · limiar aeróbio</span><b>${off.lt1 != null ? fmtL(off.lt1) : r1 ? fmtL((r1[0]+r1[1])/2) : '—'}</b><span class="small muted">${off.lt1 != null ? 'valor oficial do passaporte v'+off.v : 'estimativa (sem passaporte ligado)'}${r1 ? ` · métodos ${fmtR(r1)}` : ''}${off.hr1 ? ` · FC ≈ ${off.hr1} bpm` : ''}</span></div>
+        <div class="lt2"><span class="small muted">LT2 · limiar anaeróbio (≈ MLSS)</span><b>${off.lt2 != null ? fmtL(off.lt2) : r2 ? fmtL((r2[0]+r2[1])/2) : '—'}</b><span class="small muted">${off.lt2 != null ? 'valor oficial do passaporte v'+off.v : 'estimativa (sem passaporte ligado)'}${r2 ? ` · métodos ${fmtR(r2)}` : ''}${off.hr2 ? ` · FC ≈ ${off.hr2} bpm` : ''}</span></div>
       </div>
-      ${t.before ? `<div class="note section">Antes deste teste (passaporte v${t.before.v}${t.before.source ? ' — ' + esc(srcHuman(t.before.source)) : ''}): LT1 ${fmtL(t.before.lt1)} · LT2 ${fmtL(t.before.lt2)}. Diferença: LT1 ${sign(off.lt1 - t.before.lt1)} ${unit}, LT2 ${sign(off.lt2 - t.before.lt2)} ${unit}.</div>` : ''}
+      ${t.before ? `<div class="note section">Antes deste teste (passaporte v${t.before.v}${t.before.source ? ' — ' + esc(srcHuman(t.before.source)) : ''}): LT1 ${fmtL(t.before.lt1)} · LT2 ${fmtL(t.before.lt2)}. Diferença: LT1 ${fmtD(off.lt1, t.before.lt1)}, LT2 ${fmtD(off.lt2, t.before.lt2)}.</div>` : ''}
       <div class="files section">${files.map(f => `<a href="${esc(f.path)}" ${f.name.endsWith('.html') ? 'target="_blank" rel="noopener"' : 'download'}>${icon(f.name)} ${esc(fname(f.name))}</a>`).join('')}</div>
     </div>
     <div class="card"><h3>Curva de lactato <span class="sub">pontos medidos · curva ajustada (polinômio de 3º grau)</span></h3><div class="chart-box"><canvas id="lac-chart"></canvas></div>
       <div class="legend"><span><i class="dot" style="background:#eef0f5"></i>Coleta</span><span><i class="dot" style="background:#9aa0b2"></i>Curva ajustada</span><span><i class="dot" style="background:var(--lt1)"></i>Faixa dos métodos LT1</span><span><i class="dot" style="background:var(--lt2)"></i>Faixa dos métodos LT2</span><span><i class="dot" style="background:#f87171"></i>FC no degrau</span></div></div>
   </div>
   <div class="grid g2 section">
-    <div class="card"><h3>Degraus</h3><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Degrau</th><th class="n">${run?'km/h':'Watts'}</th><th class="n">Lactato</th><th class="n">FC</th><th class="n">${run?'Cad.':'Cad.'}</th><th class="n">RPE</th></tr></thead><tbody>${t.steps.map(s => `<tr><td>${s.i ?? ''}</td><td>${esc(s.label||'')}${s.err ? ` <span class="tag">${esc(s.err)}</span>` : ''}</td><td class="n">${s.load != null ? (run ? fmtN(s.load,1) : fmtN(s.load)) : '—'}</td><td class="n"><b>${fmtN(s.mmol,1)}</b></td><td class="n">${fmtN(s.hr)}</td><td class="n">${fmtN(s.cad)}</td><td class="n">${fmtN(s.rpe)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="card"><h3>Degraus</h3><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Degrau</th><th class="n">${run?'Pace':'Watts'}</th><th class="n">Lactato</th><th class="n">FC</th><th class="n">${run?'Cad.':'Cad.'}</th><th class="n">RPE</th></tr></thead><tbody>${t.steps.map(s => `<tr><td>${s.i ?? ''}</td><td>${esc(s.label||'')}${s.err ? ` <span class="tag">${esc(s.err)}</span>` : ''}</td><td class="n">${s.load != null ? (run ? fmtPace(3600/s.load) : fmtN(s.load)) : '—'}</td><td class="n"><b>${fmtN(s.mmol,1)}</b></td><td class="n">${fmtN(s.hr)}</td><td class="n">${fmtN(s.cad)}</td><td class="n">${fmtN(s.rpe)}</td></tr>`).join('')}</tbody></table></div>
       <div class="small muted section">Basal usado nos cálculos: <b>${fmtN(t.analysis && t.analysis.baseline != null ? t.analysis.baseline : t.baseline,2)} mmol/L</b>${t.analysis && t.analysis.plateau_n ? ` (média do patamar: ${t.analysis.plateau_n} coletas; repouso pré-teste ${fmtN(t.baseline,1)})` : ''}. Observações de cada coleta estão na planilha .csv.</div></div>
     <div class="card"><h3>Como cada método chegou no limiar</h3>${an ? `<div class="tbl-wrap"><table><thead><tr><th></th><th>Método</th><th class="n">Resultado</th><th>Referência</th></tr></thead><tbody>
       ${an.lt1.map(m => `<tr><td><span class="tag" style="background:#1e3a8a;color:#dbeafe">LT1</span></td><td>${esc(m.method)}<div class="small muted">${esc(m.detail)}</div></td><td class="n"><b>${fmtL(m.value)}</b></td><td class="small muted">${esc(m.ref)}</td></tr>`).join('')}
       ${an.lt2.map(m => `<tr><td><span class="tag" style="background:#7c2d12;color:#ffedd5">LT2</span></td><td>${esc(m.method)}<div class="small muted">${esc(m.detail)}</div></td><td class="n"><b>${fmtL(m.value)}</b></td><td class="small muted">${esc(m.ref)}</td></tr>`).join('')}
       </tbody></table></div>
-      <div class="note section">O dashboard recalcula os métodos com a <b>${run ? 'velocidade' : 'potência'} medida</b> em cada degrau. A análise original do teste pode ter usado a carga nominal do degrau, então diferenças de 1–2 ${unit} em relação ao folheto são esperadas. O valor que vale para as zonas é o do passaporte.</div>` : '<div class="empty">Poucos degraus válidos para calcular (mínimo 4).</div>'}
+      <div class="note section">O dashboard recalcula os métodos com a <b>${run ? 'velocidade' : 'potência'} medida</b> em cada degrau. A análise original do teste pode ter usado a carga nominal do degrau, então diferenças de ${run ? 'poucos s/km' : '1–2 W'} em relação ao folheto são esperadas.${run ? ' Na corrida os cálculos são feitos em velocidade (km/h), que é a escala linear de carga exigida pelos métodos; o pace é só a forma de exibir.' : ''} O valor que vale para as zonas é o do passaporte.</div>` : '<div class="empty">Poucos degraus válidos para calcular (mínimo 4).</div>'}
       ${off.protocol ? `<div class="note section"><b>Decisão registrada no passaporte v${off.v}:</b><br>${esc(off.protocol)}</div>` : ''}
     </div>
   </div>
@@ -703,8 +706,8 @@ function drawLactate(t){
   }
   const off = t.official || {};
   const lines = [];
-  if (off.lt1 != null) lines.push({x: off.lt1, color:'#3b82f6', label:`LT1 ${off.lt1}`, dash:[]});
-  if (off.lt2 != null) lines.push({x: off.lt2, color:'#f97316', label:`LT2 ${off.lt2}`, dash:[], row:1});
+  if (off.lt1 != null) lines.push({x: off.lt1, color:'#3b82f6', label:`LT1 ${run ? fmtPace(3600/off.lt1) : off.lt1}`, dash:[]});
+  if (off.lt2 != null) lines.push({x: off.lt2, color:'#f97316', label:`LT2 ${run ? fmtPace(3600/off.lt2) : off.lt2}`, dash:[], row:1});
   charts.lac = new Chart($('#lac-chart'), {
     type:'scatter',
     data:{datasets:[
@@ -712,8 +715,10 @@ function drawLactate(t){
       {label:'Lactato', data: pts.map(s => ({x:s.load, y:s.mmol})), pointRadius:5, pointBackgroundColor:'#eef0f5', borderColor:'#eef0f5', yAxisID:'y'},
       {label:'FC', data: pts.filter(s=>s.hr).map(s => ({x:s.load, y:s.hr})), showLine:true, pointRadius:3, borderColor:'#f87171', pointBackgroundColor:'#f87171', borderWidth:1, borderDash:[3,3], yAxisID:'y1'},
     ]},
-    options:{plugins:{markers:{bands, lines}, tooltip:{callbacks:{label: c => c.dataset.label === 'FC' ? `FC ${c.raw.y} bpm` : `${c.dataset.label}: ${fmtN(c.raw.y,1)} mmol/L a ${run ? fmtN(c.raw.x,1)+' km/h' : fmtN(c.raw.x)+' W'}`}}},
-      scales:{x:{type:'linear', title:{display:true, text: run ? 'Velocidade (km/h)' : 'Potência (W)'}}, y:{beginAtZero:true, title:{display:true,text:'Lactato (mmol/L)'}}, y1:{position:'right', grid:{display:false}, title:{display:true,text:'FC (bpm)'}}}}
+    options:{plugins:{markers:{bands, lines}, tooltip:{callbacks:{label: c => c.dataset.label === 'FC' ? `FC ${c.raw.y} bpm` : `${c.dataset.label}: ${fmtN(c.raw.y,1)} mmol/L a ${run ? fmtPace(3600/c.raw.x)+'/km' : fmtN(c.raw.x)+' W'}`}}},
+      scales:{x:{type:'linear', title:{display:true, text: run ? 'Pace (min/km) — escala de velocidade' : 'Potência (W)'},
+        ...(run ? {afterBuildTicks: ax => { ax.ticks = [360,345,330,315,300,285,270,255,240,225,210,195,180].map(sec => ({value: 3600/sec})).filter(tk => tk.value >= ax.min && tk.value <= ax.max); },
+                   ticks:{callback: v => fmtPace(3600/v)}} : {})}, y:{beginAtZero:true, title:{display:true,text:'Lactato (mmol/L)'}}, y1:{position:'right', grid:{display:false}, title:{display:true,text:'FC (bpm)'}}}}
   });
 }
 

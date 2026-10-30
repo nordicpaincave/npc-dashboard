@@ -38,12 +38,12 @@ addEventListener('resize',fit);addEventListener('load',fit);
 <div style="background: #1B2A44; border-radius: 10px; padding: 18px 22px; width: 200px; display: flex; flex-direction: column; gap: 4px">
 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #9CC3FF; letter-spacing: 0.06em">LT1 · LIMIAR AERÓBIO</span>
 <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; color: #FFFFFF">4:22<span style="font-size: 26px; color: #C9D3E0">/km</span></span>
-<span style="font-size: 14px; color: #C9D3E0">13,7 km/h · antes 4:19 (cru)</span>
+<span style="font-size: 14px; color: #C9D3E0">antes 4:19/km (cru)</span>
 </div>
 <div style="background: #3D2214; border-radius: 10px; padding: 18px 22px; width: 200px; display: flex; flex-direction: column; gap: 4px">
 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #FFAE85; letter-spacing: 0.06em">LT2 · LIMIAR ANAERÓBIO</span>
 <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; color: #FFFFFF">3:53<span style="font-size: 26px; color: #E5D2C7">/km</span></span>
-<span style="font-size: 14px; color: #E5D2C7">15,4 km/h · antes 3:40 (jul)</span>
+<span style="font-size: 14px; color: #E5D2C7">antes 3:40/km (jul)</span>
 </div>
 </div>
 </div>
@@ -58,7 +58,7 @@ addEventListener('resize',fit);addEventListener('load',fit);
 <li><strong>Padronização:</strong> véspera só em Z1, café da manhã de sempre às 6h30, nada sólido depois. Durante o teste, só água.</li>
 <li><strong>Basal:</strong> 5 min parado e uma coleta antes de aquecer — 2,1 mmol.</li>
 <li><strong>Aquecimento:</strong> 18 min em Z1 (~5:20/km) e nova coleta — 1,8 mmol.</li>
-<li><strong>Degraus de 6 min</strong> com +1 km/h (12 → 18 km/h), pace conferido a cada 400 m.</li>
+<li><strong>Degraus de 6 min</strong> com +1 km/h por degrau (5:00 → 3:20/km), pace conferido a cada 400 m.</li>
 <li><strong>Coleta</strong> no 1º minuto da pausa de 2 min: mão seca, dedo médio, 1ª gota descartada, fita só na gota.</li>
 <li><strong>Parada:</strong> passou de 4 mmol, mais um degrau e encerra. Encerrou no D7 aos 5:00, por exaustão.</li>
 </ol>
@@ -69,8 +69,8 @@ addEventListener('resize',fit);addEventListener('load',fit);
 <thead>
 <tr style="text-align: right; color: #5A6370; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.05em">
 <th style="padding: 6px 8px; border-bottom: 2px solid #12161C; text-align: left">DEGRAU</th>
-<th style="padding: 6px 8px; border-bottom: 2px solid #12161C">KM/H</th>
 <th style="padding: 6px 8px; border-bottom: 2px solid #12161C">PACE</th>
+<th style="padding: 6px 8px; border-bottom: 2px solid #12161C">KM/H</th>
 <th style="padding: 6px 8px; border-bottom: 2px solid #12161C">FC FIM</th>
 <th style="padding: 6px 8px; border-bottom: 2px solid #12161C">PSE</th>
 <th style="padding: 6px 8px; border-bottom: 2px solid #12161C">LACTATO</th>
@@ -78,17 +78,17 @@ addEventListener('resize',fit);addEventListener('load',fit);
 </thead>
 <tbody style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; text-align: right">
 <tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; color: #5A6370; text-align: left">Repouso</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">2,1</td></tr>
-<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; color: #5A6370; text-align: left">Pós-aquec.</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">5:20</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">1,8</td></tr>
-<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">11,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">5:02</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">138</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">2</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">1,9</td></tr>
-<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D2</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">12,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">4:38</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">141</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">1,9</td></tr>
-<tr style="background: #E8F0FB"><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D3</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">14,1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">4:15</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">154</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">5</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600; color: #1D63C9">2,9</td></tr>
-<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D4</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">14,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">4:01</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">162</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">7</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">3,5</td></tr>
-<tr style="background: #FDEDE4"><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D5</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">15,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3:46</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">168</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600; color: #C2410C">5,0</td></tr>
-<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D6</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">17,1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3:30</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">173</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">10</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">7,9</td></tr>
-<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D7 <span style="color: #5A6370; font-size: 13px">5:00</span></td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">17,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3:21</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">176</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">10</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">10,6</td></tr>
+<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; color: #5A6370; text-align: left">Pós-aquec.</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">5:20</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; color: #5A6370">—</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">1,8</td></tr>
+<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">5:02</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">11,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">138</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">2</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">1,9</td></tr>
+<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D2</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">4:38</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">12,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">141</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">1,9</td></tr>
+<tr style="background: #E8F0FB"><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D3</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">4:15</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">14,1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">154</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">5</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600; color: #1D63C9">2,9</td></tr>
+<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D4</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">4:01</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">14,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">162</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">7</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">3,5</td></tr>
+<tr style="background: #FDEDE4"><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D5</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3:46</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">15,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">168</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600; color: #C2410C">5,0</td></tr>
+<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D6</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3:30</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">17,1</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">173</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">10</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">7,9</td></tr>
+<tr><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif; text-align: left">D7 <span style="color: #5A6370; font-size: 13px">5:00</span></td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">3:21</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">17,9</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">176</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA">10</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600">10,6</td></tr>
 </tbody>
 </table>
-<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">Lactato em mmol/L. Velocidade e FC vêm do arquivo do Garmin (FC = trecho final do degrau); lactato e PSE (1–10) foram anotados na hora. Destaques: o LT1 fica entre D2 e D3 (azul) e o LT2 entre D4 e D5 (laranja).</p>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">Lactato em mmol/L. Pace e FC vêm do arquivo do Garmin (FC = trecho final do degrau); lactato e PSE (1–10) foram anotados na hora. Destaques: o LT1 fica entre D2 e D3 (azul) e o LT2 entre D4 e D5 (laranja).</p>
 </div>
 </section>
 
@@ -110,8 +110,9 @@ addEventListener('resize',fit);addEventListener('load',fit);
 <line x1="56" y1="356" x2="680" y2="356" stroke="#12161C" stroke-width="1.5"></line>
 <line x1="56" y1="16" x2="56" y2="356" stroke="#12161C" stroke-width="1.5"></line>
 <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#5A6370" text-anchor="end"><text x="48" y="360">0</text><text x="48" y="303">2</text><text x="48" y="247">4</text><text x="48" y="190">6</text><text x="48" y="133">8</text><text x="48" y="77">10</text><text x="48" y="20">12</text></g>
-<g font-family="IBM Plex Mono, monospace" font-size="12" fill="#5A6370" text-anchor="middle"><text x="56.0" y="374">11</text><text x="145.1" y="374">12</text><text x="234.3" y="374">13</text><text x="323.4" y="374">14</text><text x="412.6" y="374">15</text><text x="501.7" y="374">16</text><text x="590.9" y="374">17</text><text x="680.0" y="374">18</text></g>
-<text x="368" y="394" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5A6370" text-anchor="middle">Velocidade (km/h)</text>
+<g stroke="#E3E6EA" stroke-width="1"><line x1="94.2" y1="356" x2="94.2" y2="361"></line><line x1="145.1" y1="356" x2="145.1" y2="361"></line><line x1="201.4" y1="356" x2="201.4" y2="361"></line><line x1="264.0" y1="356" x2="264.0" y2="361"></line><line x1="333.9" y1="356" x2="333.9" y2="361"></line><line x1="412.6" y1="356" x2="412.6" y2="361"></line><line x1="501.7" y1="356" x2="501.7" y2="361"></line><line x1="603.6" y1="356" x2="603.6" y2="361"></line><line x1="680.0" y1="356" x2="680.0" y2="361"></line></g>
+<g font-family="IBM Plex Mono, monospace" font-size="12" fill="#5A6370" text-anchor="middle"><text x="94.2" y="374">5:15</text><text x="145.1" y="374">5:00</text><text x="201.4" y="374">4:45</text><text x="264.0" y="374">4:30</text><text x="333.9" y="374">4:15</text><text x="412.6" y="374">4:00</text><text x="501.7" y="374">3:45</text><text x="603.6" y="374">3:30</text><text x="680.0" y="374">3:20</text></g>
+<text x="368" y="394" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5A6370" text-anchor="middle">Pace (min/km) — mais rápido para a direita</text>
 <text x="16" y="186" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5A6370" text-anchor="middle" transform="rotate(-90 16 186)">Lactato (mmol/L)</text>
 <line x1="56" y1="300.2" x2="680" y2="300.2" stroke="#8A93A0" stroke-width="1" stroke-dasharray="3 4"></line>
 <text x="676" y="314" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5A6370" text-anchor="end">basal (patamar) 1,97</text>
@@ -131,9 +132,9 @@ addEventListener('resize',fit);addEventListener('load',fit);
 <circle cx="671.1" cy="55.7" r="6" fill="#FFFFFF" stroke="#12161C" stroke-width="2.5"></circle>
 </svg>
 <div style="display: flex; flex-direction: column; gap: 16px; font-size: 16px; line-height: 1.5; padding-top: 6px">
-<p style="margin: 0"><strong>Até 12,9 km/h</strong> o lactato fica parado em 1,9 — o basal normal dele (a validação de 24/10 deu 2,0).</p>
+<p style="margin: 0"><strong>Até 4:38/km</strong> o lactato fica parado em 1,9 — o basal normal dele (a validação de 24/10 deu 2,0).</p>
 <p style="margin: 0"><strong style="color: #1D63C9">LT1</strong> é onde a curva passa 0,5 mmol acima do basal — a média do patamar (repouso 2,1 · D1 1,9 · D2 1,9 = 1,97), ou seja, 2,5. Abaixo dele fica o treino de base (Z1).</p>
-<p style="margin: 0"><strong style="color: #C2410C">LT2</strong> é onde a curva “dobra”: entre 14,9 e 15,9 km/h o lactato passa de 3,5 para 5,0 e não para mais de subir.</p>
+<p style="margin: 0"><strong style="color: #C2410C">LT2</strong> é onde a curva “dobra”: entre 4:01 e 3:46/km o lactato passa de 3,5 para 5,0 e não para mais de subir.</p>
 <p style="margin: 0; color: #5A6370; font-size: 14px">Faixas sombreadas = intervalo entre os métodos. Tracejado cinza = reta do Dmax Modificado; o traço laranja marca o ponto da curva mais distante dela.</p>
 </div>
 </div>
@@ -189,7 +190,7 @@ addEventListener('resize',fit);addEventListener('load',fit);
 <tr><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; font-family: 'IBM Plex Sans', sans-serif">FC LT1 / LT2 / máx</td><td style="padding: 6px 8px; border-bottom: 1px solid #E3E6EA; text-align: right; color: #5A6370">144 / 170 / 176</td><td style="padding: 6px 0; border-bottom: 1px solid #E3E6EA; text-align: right; font-weight: 600">144 / 170 / 179</td></tr>
 </tbody>
 </table>
-<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">FC do LT1 confirmada: o teste dá ~150 no fim do degrau a 13,7 km/h, e a ergo de abril dava 144 — mantido o valor mais baixo. FCmáx sobe para 179 (atingida no D7).</p>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #5A6370">FC do LT1 confirmada: o teste dá ~150 no fim do degrau a 4:22/km, e a ergo de abril dava 144 — mantido o valor mais baixo. FCmáx sobe para 179 (atingida no D7).</p>
 </div>
 </section>
 
