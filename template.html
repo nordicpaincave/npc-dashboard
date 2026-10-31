@@ -732,36 +732,44 @@ const ZONE_ROLE = {
   above_lt2: {c:'#f97316', t:'Acima do LT2: o lactato acumula sem parar. Só em sessão de VO2 prevista no plano — o treino de limiar não entra aqui.'},
   vo2: {c:'#ef4444', t:'VO2/anaeróbio: tiros curtos e máximos, raros no método norueguês.'},
 };
+const ZONE_SWIM = {
+  base: 'Base técnica: volume, educativos e técnica (mais de 80% do volume).',
+  threshold_controlled: 'Limiar controlado: séries mais longas do duplo limiar, firmes e sustentáveis.',
+  threshold_high: 'Limiar alto: séries mais curtas e fortes; o CSS é o teto.',
+  above_lt2: 'Mais rápido que o CSS: só séries curtas planejadas.',
+};
+const OLT = {recovery:'I-1', base:'I-1/I-2', grey:'I-3 baixo', threshold_controlled:'I-3', threshold_high:'I-3', above_lt2:'I-4', vo2:'I-5'};
 const fmtRange = (lo, hi, unit, open) => lo == null && hi == null ? '—' : (!lo || lo === 0) ? `< ${hi}${unit}` : (hi == null || hi >= open) ? `> ${lo}${unit}` : `${lo}–${hi}${unit}`;
 function zoneFaixa(k, z, target){
-  if (k === 'run') {
+  if (k === 'run' || k === 'swim') {
+    const u = k === 'swim' ? '/100m' : '/km';
     const [f, sl] = target ? z.tpace : z.pace;   // f = limite rápido, sl = limite lento (s/km)
     if (f == null && sl == null) return '—';
-    if (sl == null) return `> ${fmtPace(f)}/km`.replace('>', '<');
-    if (f == null || f <= 150) return `> ${fmtPace(sl)}/km`.replace('>', '<').replace('<', '<');
-    return `${fmtPace(sl)}–${fmtPace(f)}/km`;
+    return `${fmtPace(sl)}–${fmtPace(f)}${u}`;
   }
   const [lo, hi] = target ? z.tw : z.w;
   if (lo == null && hi == null) return '—';
   return fmtRange(lo, hi, ' W', 1500);
 }
-function runOpen(z){ // textos para pace aberto: Z1 "mais lento que", Z4 "mais rápido que"
+function runOpen(z, u = '/km'){ // pace aberto: Z1 "mais lento que", Z4 "mais rápido que"
   const [f, sl] = z.pace;
-  if (sl == null) return `mais lento que ${fmtPace(f)}/km`;
-  if (f == null || f <= 150) return `mais rápido que ${fmtPace(sl)}/km`;
-  return `${fmtPace(sl)}–${fmtPace(f)}/km`;
+  if (sl == null) return `mais lento que ${fmtPace(f)}${u}`;
+  if (f == null || f <= (u === '/km' ? 150 : 60)) return `mais rápido que ${fmtPace(sl)}${u}`;
+  return `${fmtPace(sl)}–${fmtPace(f)}${u}`;
 }
 function zonesTable(k, zs){
   const lac = zs.some(z => z.lac[0] != null || z.lac[1] != null);
-  const hasT = zs.some(z => (k === 'run' ? z.tpace[0] : z.tw[0]) != null);
-  const faixa = z => k === 'run' ? runOpen(z) : zoneFaixa(k, z, false);
-  const alvo = z => (k === 'run' ? z.tpace[0] : z.tw[0]) != null ? zoneFaixa(k, z, true) : '';
+  const isP = k === 'run' || k === 'swim';
+  const hasT = zs.some(z => (isP ? z.tpace[0] : z.tw[0]) != null);
+  const hasHr = zs.some(z => z.hr[1] != null);
+  const faixa = z => isP ? runOpen(z, k === 'swim' ? '/100m' : '/km') : zoneFaixa(k, z, false);
+  const alvo = z => (isP ? z.tpace[0] : z.tw[0]) != null ? zoneFaixa(k, z, true) : '';
   const hr = z => z.hr[0] == null && z.hr[1] == null ? '—' : !z.hr[0] ? `≤ ${z.hr[1]}` : `${z.hr[0]}–${z.hr[1]}`;
   const lc = z => z.lac[0] == null && z.lac[1] == null ? '—' : z.lac[0] == null ? `< ${fmtN(z.lac[1],1)}` : z.lac[1] == null ? `> ${fmtN(z.lac[0],1)}` : `${fmtN(z.lac[0],1)}–${fmtN(z.lac[1],1)}`;
-  return `<div class="tbl-wrap"><table><thead><tr><th>Zona</th><th>${k === 'run' ? 'Pace' : 'Potência'}</th>${hasT ? '<th>Alvo do treino</th>' : ''}<th>FC (bpm)</th>${lac ? '<th>Lactato (mmol)</th>' : ''}</tr></thead><tbody>${zs.map(z => {
-    const r = ZONE_ROLE[z.role] || {c:'#9aa0b2', t:''};
-    return `<tr${z.role === 'grey' ? ' style="opacity:.7"' : ''}><td><span class="dot" style="background:${r.c}"></span> <b>${esc(z.name)}</b></td><td>${faixa(z)}</td>${hasT ? `<td>${alvo(z) ? `<b>${alvo(z)}</b>` : '<span class="muted">—</span>'}</td>` : ''}<td>${hr(z)}</td>${lac ? `<td>${lc(z)}</td>` : ''}</tr>
-      <tr><td colspan="${3 + (hasT?1:0) + (lac?1:0)}" class="small muted" style="padding-top:0;border-top:none;white-space:normal">${r.t}${z.notes ? ` <i>${esc(z.notes)}</i>` : ''}</td></tr>`;
+  return `<div class="tbl-wrap"><table><thead><tr><th>Zona</th><th>${k === 'run' ? 'Pace' : k === 'swim' ? 'Ritmo' : 'Potência'}</th>${hasT ? '<th>Alvo do treino</th>' : ''}${hasHr ? '<th>FC (bpm)</th>' : ''}${lac ? '<th>Lactato (mmol)</th>' : ''}</tr></thead><tbody>${zs.map(z => {
+    const r0 = ZONE_ROLE[z.role] || {c:'#9aa0b2', t:''}, r = {c: r0.c, t: (k === 'swim' && ZONE_SWIM[z.role]) || r0.t};
+    return `<tr${z.role === 'grey' ? ' style="opacity:.7"' : ''}><td><span class="dot" style="background:${r.c}"></span> <b>${esc(z.name)}</b>${OLT[z.role] ? ` <span class="tag" title="Escala Olympiatoppen (Noruega)" style="font-size:10px;padding:1px 5px">${OLT[z.role]}</span>` : ''}</td><td>${faixa(z)}</td>${hasT ? `<td>${alvo(z) ? `<b>${alvo(z)}</b>` : '<span class="muted">—</span>'}</td>` : ''} ${hasHr ? `<td>${hr(z)}</td>` : ''}${lac ? `<td>${lc(z)}</td>` : ''}</tr>
+      <tr> <td colspan="${2 + (hasHr?1:0) + (hasT?1:0) + (lac?1:0)}" class="small muted" style="padding-top:0;border-top:none;white-space:normal">${r.t}${z.notes ? ` <i>${esc(z.notes)}</i>` : ''}</td></tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function vLimiares(){
@@ -794,16 +802,17 @@ function vLimiares(){
         ${swimLt1 ? `<div><span>LT1 ritmo${cur.lt1_pace ? '' : ' (estimado)'}</span><b>${fmtPace(swimLt1)}/100m</b></div><div><span>LT2 ritmo ≈ CSS</span><b>${fmtPace(cur.css)}/100m</b></div>` : ''}
       </div>
       </div><div>
-      ${Z[k] && Z[k].length ? `<h4 style="margin:0 0 6px">Zonas de treino <span class="sub">${Z[k][0].source === 'lactate' ? 'medidas por lactato' : 'estimadas'} · as mesmas do TrainingPeaks</span></h4>${zonesTable(k, Z[k])}`
+      ${Z[k] && Z[k].length ? `<h4 style="margin:0 0 6px">Zonas de treino <span class="sub">${({lactate:'medidas por lactato', field_test:'pelo teste de campo (CSS)', ventilatory:'pela ergoespirometria'})[Z[k][0].source] || 'estimadas'} · as mesmas do TrainingPeaks</span></h4>${zonesTable(k, Z[k])}`
         : z.length ? `<h4 style="margin:0 0 6px">Zonas de treino <span class="sub">calculadas do passaporte (estimadas)</span></h4><div class="tbl-wrap"><table><thead><tr><th></th><th>Z1 · base</th><th>Z2 · limiar</th><th>Z3 · acima do LT2</th></tr></thead><tbody>${z.map(r => `<tr><td class="muted">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table></div>
           <div class="small muted section"><b>Z1 · base</b> — volume, técnica e educativos (mais de 80% do volume). <b>Z2 · limiar</b> — séries do duplo limiar, firmes e controladas, sem passar do CSS. <b>Z3</b> — mais rápido que o CSS, só em séries curtas planejadas.</div>` : ''}
       </div></div>
       ${cur.protocol ? `<details class="section"><summary class="small muted" style="cursor:pointer;min-height:32px">Como os limiares foram definidos</summary><div class="note section">${esc(cur.protocol)}</div></details>` : ''}
       ${P[k].length > 1 ? `<details class="section"><summary class="small muted" style="cursor:pointer;min-height:32px">Histórico de versões (${P[k].length})</summary><div class="tbl-wrap section"><table><thead><tr><th>v</th><th>Desde</th><th class="n">LT1</th><th class="n">LT2</th><th class="n">FC</th></tr></thead><tbody>${P[k].slice().reverse().map(v => `<tr><td>${v.v}</td><td>${ddmmyy(v.from)}</td><td class="n">${v.lt1_w ? v.lt1_w+' W' : v.lt1_pace ? fmtPace(v.lt1_pace) : '—'}</td><td class="n">${v.lt2_w ? v.lt2_w+' W' : v.lt2_pace ? fmtPace(v.lt2_pace) : '—'}</td><td class="n">${v.lt1_hr||'—'}/${v.lt2_hr||'—'}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
     </div>`; }).join('')}</div>
-    <div class="card section"><h3>Como ler as zonas</h3><div class="grid g3 small">
+    <div class="card section"><h3>Como ler as zonas</h3><div class="grid g2 small">
       <div><b>3 domínios, 2 limiares</b><br><span class="muted">LT1 é onde o lactato começa a subir acima do repouso; LT2 é onde ele passa a acumular sem parar. Z1 fica abaixo do LT1, Z2 entre os dois e Z3 acima do LT2.</span></div>
       <div><b>O limiar norueguês fica ABAIXO do LT2</b><br><span class="muted">A Z2 é dividida: zona cinzenta (não usada), limiar controlado (sessão longa) e limiar alto (sessão curta). Os dois treinos de limiar miram o "Alvo do treino"; o LT2 é o teto, nunca o alvo.</span></div>
+      <div><b>Escala norueguesa (Olympiatoppen)</b><br><span class="muted">A etiqueta ao lado de cada zona mostra a equivalência: Z1 = I-1/I-2 (leve) · Z2a/Z2b/Z2c = I-3 (limiar — onde mora o método norueguês: manhã ~2,5 e tarde ~3,5 mmol) · Z3 = I-4 · Z4 = I-5. As I-1 e I-2 ficam juntas porque a fita não separa com segurança ~1 de ~2 mmol.</span></div>
       <div><b>Mesmos números do TrainingPeaks</b><br><span class="muted">As faixas vêm da mesma tabela que monta os treinos no TP. "Medido" = teste de lactato; "estimado" = % do FTP, CSS ou outro teste. FC é sempre validador — o controle é por pace (corrida), watts (bike) e ritmo (natação).</span></div>
     </div></div>`;
 }
