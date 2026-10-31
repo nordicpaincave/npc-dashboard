@@ -258,6 +258,32 @@ def build_passports(sb, athlete_uuid):
     return by_sport
 
 
+def sport_key(name):
+    slug = (name or "").lower()
+    return "bike" if "bik" in slug or "cicl" in slug else "run" if "run" in slug or "corr" in slug else "swim" if "swim" in slug or "nat" in slug else slug
+
+
+def build_zones(sb, athlete_uuid):
+    """Zonas vigentes por esporte, exatamente como em v_current_training_zones (as mesmas do TP)."""
+    sec = lambda v: round(float(v) * 60) if v is not None and float(v) < 90 else None
+    out = {}
+    for z in sb.get("zones", []):
+        if z["athlete_id"] != athlete_uuid:
+            continue
+        out.setdefault(sport_key(z["sport"]), []).append({
+            "n": z["zone_number"], "role": z["zone_role"], "name": z["zone_name"],
+            "model": z["zone_model"], "source": z["data_source"], "v": z["passport_version"],
+            "hr": [num(z["hr_min"], 0), num(z["hr_max"], 0)],
+            "w": [num(z["watts_min"], 0), num(z["watts_max"], 0)],
+            "pace": [sec(z["pace_min_per_km_min"]), sec(z["pace_min_per_km_max"])],   # [rápido, lento] em s/km
+            "tw": [num(z["target_watts_min"], 0), num(z["target_watts_max"], 0)],
+            "tpace": [sec(z["target_pace_min_per_km_min"]), sec(z["target_pace_min_per_km_max"])],
+            "lac": [num(z["lactate_min"], 1), num(z["lactate_max"], 1)],
+            "notes": z["notes"],
+        })
+    return out
+
+
 def thr(p, n, is_run):
     """Limiar do passaporte na unidade do teste: W na bike, km/h na corrida (convertido do pace)."""
     if not p:
@@ -282,6 +308,9 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
                          "notes": r["notes"]})
     out = []
     for (day, sport, rnd), samples in sorted(tests.items()):
+        if any((s["notes"] or "").upper().startswith("INVALIDADO") for s in samples):
+            print(f"    lactato {day}-{sport}-{rnd}: teste INVALIDADO — fora do dashboard")
+            continue
         samples.sort(key=lambda s: (s["step_index"] if s["step_index"] is not None else -1))
         is_run = sport == "run"
         steps, base = [], None
@@ -457,6 +486,7 @@ def build_athlete(key, cfg, sb, warnings):
         "pmc": pmc[-400:], "projection": projection(pmc, workouts, plan),
         "workouts": workouts, "wellness": wellness, "weeks": weeks,
         "plan": plan, "events": events, "passports": passports, "lactate": lactate,
+        "zones": build_zones(sb, a_uuid) if a_uuid else {},
         "daily": daily, "weekly_an": weekly, "history": history,
     }
 

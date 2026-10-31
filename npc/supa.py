@@ -55,6 +55,12 @@ def fetch(conn, athlete_tp_ids):
                           interval_label, lactate_mmol, power_w, speed_kmh, pace_s_per_km, hr_bpm, cadence, rpe,
                           sample_site, error_code, notes
                    from lactate_samples where athlete_id = any(%s) order by sampled_at, step_index""", ids)
+    # zonas vigentes (mesma view que a prescrição usa para montar os treinos no TP)
+    zones = q("""select athlete_id, sport, passport_version, zone_model, data_source, zone_number, zone_role, zone_name,
+                        hr_min, hr_max, watts_min, watts_max, pace_min_per_km_min, pace_min_per_km_max,
+                        target_watts_min, target_watts_max, target_pace_min_per_km_min, target_pace_min_per_km_max,
+                        lactate_min, lactate_max, notes
+                 from v_current_training_zones where athlete_id = any(%s) order by sport, zone_number""", ids)
     # ciclos encerrados (histórico): planos que já terminaram, com as semanas-alvo
     cycles = q("""select id, athlete_id, name, start_date, end_date
                   from macro_plans where deleted_at is null and end_date < current_date and athlete_id = any(%s)
@@ -70,5 +76,5 @@ def fetch(conn, athlete_tp_ids):
                          observacoes_prescricao, bike_key_session_flags, run_key_session_flags, session_analysis_summary
                   from weekly_analyses where athlete_id = any(%s) order by week_start""", ids)
     return {"athletes": ath, "sports": sports, "plans": plans, "phases": phases, "weeks": weeks,
-            "events": events, "passports": passports, "lactate": lactate,
+            "events": events, "passports": passports, "lactate": lactate, "zones": zones,
             "cycles": cycles, "cycle_weeks": cycle_weeks, "daily": daily, "weekly": weekly}
