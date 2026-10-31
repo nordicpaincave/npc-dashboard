@@ -414,7 +414,7 @@ function dayView(a, d){
   tiles.push(`<div class="dv-tile"><div class="l">Semana · TSS</div><div class="n">${wk.tss != null ? fmtN(wk.tss) : '—'}${wk.target ? `<small> / ${fmtN(wk.target)}</small>` : ''}</div>${wk.tss != null && wk.target ? `<div class="dv-bar"><i style="width:${Math.min(100, wk.tss/wk.target*100)}%"></i></div>` : ''}<div class="s">${esc(wk.label || '')}</div></div>`);
   const legacy = !d.sum;
   return `<div class="dv">
-    <div class="dv-hero ${v[0]}"><div class="dv-badge">${v[1]}</div><div><div class="v">${v[2]}${d.hrv ? ' · ' + (HRV_PT[String(d.hrv).toLowerCase()]||[d.hrv])[0] : ''}</div><div class="h">${esc(S.headline || (d.short || '').split(/(?<=\.)\s/)[0] || '')}</div></div></div>
+    <div class="dv-hero ${v[0]}"><div class="dv-badge">${v[1]}</div><div><div class="v">${v[2]}${d.hrv && (!d.sum || rc.hrv_ms != null) ? ' · ' + (HRV_PT[String(d.hrv).toLowerCase()]||[d.hrv])[0] : ''}</div><div class="h">${esc(S.headline || (d.short || '').split(/(?<=\.)\s/)[0] || '')}</div></div></div>
     ${legacy ? '' : `<div class="dv-tiles">${tiles.join('')}</div>`}
     ${(d.items || []).map(i => sessCard(i, ws.find(x => (i.wid && String(x.id) === String(i.wid)) || x.sport === sportKey(i.sport)))).join('')}
     ${ptsList(S.points)}
