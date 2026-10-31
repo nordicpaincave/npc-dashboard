@@ -68,7 +68,7 @@ def fetch(conn, athlete_tp_ids):
     cycle_weeks = q("""select macro_plan_id, week_number, monday_date, week_type, target_tss, target_hours
                        from macro_weeks where macro_plan_id = any(%s) order by week_number""", [c["id"] for c in cycles])
     # análises geradas pelo Claude (diárias pós-treino e semanais)
-    daily = q("""select athlete_id, log_date, summary_short, summary_technical, hrv_status, training_flag, workout_analysis, generated_at
+    daily = q("""select athlete_id, log_date, summary_short, summary_technical, hrv_status, training_flag, workout_analysis, generated_at, day_summary
                  from daily_recommendations where athlete_id = any(%s) order by log_date""", ids)
     weekly = q("""select athlete_id, week_start, week_number, analyzed_at, ctl_snapshot, atl_snapshot, tsb_snapshot,
                          hrv_last, hrv_baseline, sleep_avg, tss_planned, tss_actual, adherence_pct, status_geral, resumo,

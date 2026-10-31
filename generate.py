@@ -409,10 +409,13 @@ def norm_daily(r):
             "metrics": it.get("metrics") if isinstance(it.get("metrics"), dict) else {},
             "lactate": [l for l in (it.get("lactate") or []) if isinstance(l, dict)][:6],
             "next": _first(it, "recommendation", "next_session"),
+            "kpis": [k for k in (it.get("kpis") or []) if isinstance(k, dict)][:10],
+            "points": [k for k in (it.get("points") or []) if isinstance(k, dict)][:12],
             "detail": _first(it, "technical_detail"),
         })
     return {"d": str(r["log_date"]), "at": r["generated_at"].astimezone(TZ).strftime("%d/%m %H:%M") if r.get("generated_at") else None,
             "short": r["summary_short"], "tech": r["summary_technical"],
+            "sum": r.get("day_summary") if isinstance(r.get("day_summary"), dict) else None,
             "hrv": r["hrv_status"], "flag": r["training_flag"], "items": items}
 
 

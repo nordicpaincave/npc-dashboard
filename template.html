@@ -163,6 +163,40 @@ tr.wk-detail[hidden]{display:none}
 footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid var(--border);padding-top:12px}
 .limz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:20px;align-items:start}.limz>div{min-width:0}@media(max-width:600px){.limz table th,.limz table td{white-space:normal;padding-left:5px;padding-right:5px;font-size:12px}.limz .tbl-wrap table{min-width:0;width:100%}}@media(max-width:900px){.limz{grid-template-columns:minmax(0,1fr)}}
 .ztbar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--border2)}.ztbar i{display:block;height:100%}
+
+/* ── análise diária v2 ── */
+.dv{display:flex;flex-direction:column;gap:14px}
+.dv-hero{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:12px;border:1px solid var(--border2)}
+.dv-hero.g{background:linear-gradient(90deg,rgba(63,191,111,.16),transparent 70%)}.dv-hero.y{background:linear-gradient(90deg,rgba(230,180,34,.16),transparent 70%)}.dv-hero.r{background:linear-gradient(90deg,rgba(239,68,68,.16),transparent 70%)}
+.dv-badge{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:24px;font-weight:800}
+.dv-hero.g .dv-badge{background:rgba(63,191,111,.22);color:var(--ok)}.dv-hero.y .dv-badge{background:rgba(230,180,34,.22);color:var(--warn)}.dv-hero.r .dv-badge{background:rgba(239,68,68,.22);color:var(--miss)}
+.dv-hero .v{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.dv-hero .h{font-size:16px;font-weight:700;line-height:1.35;margin-top:2px}
+.dv-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dv-tile{border:1px solid var(--border2);border-radius:10px;padding:10px 12px;background:var(--bg3,rgba(255,255,255,.02))}
+.dv-tile .l{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+.dv-tile .n{font-size:20px;font-weight:800;margin-top:3px}.dv-tile .n small{font-size:12px;font-weight:600;color:var(--text2)}
+.dv-tile .s{font-size:12px;color:var(--text2);margin-top:2px}
+.dv-bar{height:6px;border-radius:3px;background:var(--border2);margin-top:6px;overflow:hidden}.dv-bar i{display:block;height:100%;background:var(--ok)}
+.dv-sess{border:1px solid var(--border2);border-radius:12px;padding:12px 14px}
+.dv-sess-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}.dv-sess-h b{font-size:14.5px}
+.dv-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.dv-kpi{border-radius:9px;padding:8px 10px;border-left:3px solid var(--border2);background:rgba(255,255,255,.025)}
+.dv-kpi.g{border-left-color:var(--ok)}.dv-kpi.y{border-left-color:var(--warn)}.dv-kpi.r{border-left-color:var(--miss)}
+.dv-kpi .l{font-size:11px;color:var(--text3)}.dv-kpi .v{font-size:16px;font-weight:800;margin-top:1px}.dv-kpi .t{font-size:11.5px;color:var(--text2)}
+.dv-pts{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dv-pts li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.dv-pts .ic{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;margin-top:1px}
+.dv-pts .good .ic{background:rgba(63,191,111,.2);color:var(--ok)}.dv-pts .warn .ic{background:rgba(230,180,34,.2);color:var(--warn)}.dv-pts .bad .ic{background:rgba(239,68,68,.2);color:var(--miss)}.dv-pts .info .ic{background:rgba(74,158,255,.18);color:#7cb2ff}
+.dv-pts .area{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-right:6px}
+.dv-tom{border-radius:12px;padding:12px 14px;border:1px solid rgba(74,158,255,.35);background:linear-gradient(180deg,rgba(74,158,255,.10),transparent)}
+.dv-tom .l{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7cb2ff}
+.dv-tom .t{font-size:16px;font-weight:800;margin:3px 0 8px}
+.dv-tom .chips{display:flex;flex-wrap:wrap;gap:6px}.dv-tom .chips span{border:1px solid var(--border2);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.03)}
+.dv-tom ul{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--text2)}
+.dv-tech h6{margin:12px 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)}
+.dv-tech p{margin:0;font-size:13px;line-height:1.55;color:var(--text2)}
+@media(max-width:700px){.dv-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.dv-hero .h{font-size:14.5px}}
 </style>
 </head>
 <body>
@@ -351,15 +385,48 @@ function vGeral(){
   bindWorkoutRows();
   document.querySelectorAll('.wlink').forEach(l => l.onclick = e => { e.preventDefault(); openWorkout(l.dataset.wid); });
 }
+const VERD = {proceed:['g','✓','Seguir o plano'], reduce:['y','!','Aliviar'], rest:['r','✕','Descanso']};
+const PT_IC = {good:'✓', warn:'!', bad:'✕', info:'i'};
+function techSections(txt){
+  if (!txt) return '';
+  const lines = String(txt).split(/\n+/).map(x => x.trim()).filter(Boolean);
+  return `<div class="dv-tech">${lines.map(l => { const m = l.match(/^([A-ZÀ-Ú][A-Za-zÀ-ú0-9 /·+()-]{1,28}?)\s*[:—–]\s+(.*)$/); return m ? `<h6>${esc(m[1])}</h6><p>${esc(m[2])}</p>` : `<p style="margin-top:6px">${esc(l)}</p>`; }).join('')}</div>`;
+}
+function ptsList(pts){ return pts && pts.length ? `<ul class="dv-pts">${pts.map(p => `<li class="${esc(p.t||'info')}"><span class="ic">${PT_IC[p.t]||'i'}</span><span>${p.area ? `<span class="area">${esc(p.area)}</span>` : ''}${esc(p.text||'')}</span></li>`).join('')}</ul>` : ''; }
+function kpiGrid(k){ return k && k.length ? `<div class="dv-kpis">${k.map(x => `<div class="dv-kpi ${({ok:'g',good:'g',warn:'y',bad:'r'})[x.status]||''}"><div class="l">${esc(x.label||'')}</div><div class="v">${esc(x.value ?? '—')}</div>${x.target ? `<div class="t">alvo ${esc(x.target)}</div>` : ''}</div>`).join('')}</div>` : ''; }
+function sessCard(i, w){
+  const sk = sportKey(i.sport);
+  return `<div class="dv-sess"><div class="dv-sess-h"><span class="dot" style="background:${SPORT_COLOR[sk]||'#888'}"></span><b>${esc(i.title || SPORT_LABEL[sk] || i.sport || '')}</b>${statusPill(i.status)}${w ? `<a href="#" class="wlink small" data-wid="${w.id}" style="margin-left:auto">blocos e gráficos →</a>` : ''}</div>
+    ${i.summary ? `<div style="font-size:13.5px;line-height:1.5;margin-bottom:10px">${esc(i.summary)}</div>` : ''}
+    ${kpiGrid(i.kpis)}${ptsList(i.points && i.points.length ? i.points : (i.flags||[]).map(f => ({t:'info', text:f})))}</div>`;
+}
+function tomorrowCard(t){
+  if (!t) return '';
+  return `<div class="dv-tom"><div class="l">Amanhã</div><div class="t">${esc(t.title||'')}</div>${(t.targets||[]).length ? `<div class="chips">${t.targets.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${(t.rules||[]).length ? `<ul>${t.rules.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>`;
+}
+function dayView(a, d){
+  const S = d.sum || {}, ws = a.workouts.filter(w => w.date === d.d && w.done);
+  const v = VERD[S.verdict || d.flag] || VERD.proceed, rc = S.recovery || {}, wk = S.week || {};
+  const tiles = [];
+  tiles.push(`<div class="dv-tile"><div class="l">Sono</div><div class="n">${rc.sleep_h != null ? fmtN(rc.sleep_h,1) + '<small> h</small>' : '—'}</div><div class="s">${rc.sleep_note ? esc(rc.sleep_note) : ''}</div></div>`);
+  tiles.push(`<div class="dv-tile"><div class="l">VFC · FC repouso</div><div class="n">${rc.hrv_ms != null ? rc.hrv_ms + '<small> ms</small>' : '<small>sem VFC</small>'}${rc.rhr != null ? ` · ${rc.rhr}<small> bpm</small>` : ''}</div><div class="s">${esc(rc.note || '')}</div></div>`);
+  tiles.push(`<div class="dv-tile"><div class="l">Forma · TSB</div><div class="n">${rc.tsb != null ? sign(rc.tsb) : '—'}</div><div class="s">${rc.ctl != null ? `CTL ${fmtN(rc.ctl,1)} · ATL ${fmtN(rc.atl,1)}` : ''}</div></div>`);
+  tiles.push(`<div class="dv-tile"><div class="l">Semana · TSS</div><div class="n">${wk.tss != null ? fmtN(wk.tss) : '—'}${wk.target ? `<small> / ${fmtN(wk.target)}</small>` : ''}</div>${wk.tss != null && wk.target ? `<div class="dv-bar"><i style="width:${Math.min(100, wk.tss/wk.target*100)}%"></i></div>` : ''}<div class="s">${esc(wk.label || '')}</div></div>`);
+  const legacy = !d.sum;
+  return `<div class="dv">
+    <div class="dv-hero ${v[0]}"><div class="dv-badge">${v[1]}</div><div><div class="v">${v[2]}${d.hrv ? ' · ' + (HRV_PT[String(d.hrv).toLowerCase()]||[d.hrv])[0] : ''}</div><div class="h">${esc(S.headline || (d.short || '').split(/(?<=\.)\s/)[0] || '')}</div></div></div>
+    ${legacy ? '' : `<div class="dv-tiles">${tiles.join('')}</div>`}
+    ${(d.items || []).map(i => sessCard(i, ws.find(x => (i.wid && String(x.id) === String(i.wid)) || x.sport === sportKey(i.sport)))).join('')}
+    ${ptsList(S.points)}
+    ${tomorrowCard(S.tomorrow)}
+    ${legacy && d.short ? `<p style="font-size:13.5px;line-height:1.55;margin:0">${esc(d.short)}</p>` : ''}
+    ${d.tech ? `<details><summary class="small">Análise técnica completa</summary>${techSections(d.tech)}</details>` : ''}
+  </div>`;
+}
 function lastDailyCard(a){
   const ds = Object.values(a.daily || {}).sort((x, y) => x.d < y.d ? 1 : -1); const d = ds[0];
   if (!d) return '';
-  const ws = a.workouts.filter(w => w.date === d.d && w.done);
-  return `<div class="card section"><h3>Última análise diária <span class="sub">${ddmmyy(d.d)}${d.at ? ' · gerada ' + esc(d.at) : ''}</span></h3>
-    <div class="an" style="margin:0"><div class="an-h">${pill(FLAG_PT, d.flag)}${pill(HRV_PT, d.hrv)}</div>
-    ${d.short ? `<p class="an-short" style="margin-top:0">${esc(d.short)}</p>` : ''}
-    ${(d.items || []).map(i => { const w = ws.find(x => (i.wid && String(x.id) === String(i.wid)) || x.sport === sportKey(i.sport)); return `<div class="an-it" style="margin-top:6px"><b style="color:${SPORT_COLOR[sportKey(i.sport)]||'inherit'}">${esc(SPORT_LABEL[sportKey(i.sport)] || i.sport || '')}</b> ${statusPill(i.status)} ${i.summary ? esc(i.summary) : ''} ${w ? `<a href="#" class="wlink" data-wid="${w.id}">ver treino e gráficos →</a>` : ''}</div>`; }).join('')}
-    ${d.tech ? `<details style="margin-top:8px"><summary>Análise técnica completa do dia</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(d.tech)}</p></details>` : ''}</div></div>`;
+  return `<div class="card section"><h3>Análise do dia <span class="sub">${ddmmyy(d.d)}${d.at ? ' · gerada ' + esc(d.at) : ''}</span></h3>${dayView(a, d)}</div>`;
 }
 function raceCard(e){
   const n = daysBetween(TODAY, e.date);
@@ -554,12 +621,11 @@ function drawLaps(it, sport){
 }
 function analysisBlock(w, day){
   if (!day) return '';
-  const it = matchItem(w, day), others = (day.items || []).filter(x => x !== it);
+  const it = matchItem(w, day), S = day.sum || {};
   return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}${day.at ? ' · ' + esc(day.at) : ''}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? statusPill(it.status) : ''}</div>
-    ${it ? `<div class="an-it">${it.summary ? esc(it.summary) : ''}${it.flags.length ? `<ul>${it.flags.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}${itemDetail(it, w.sport)}</div>` : ''}
-    ${day.short ? `<p class="an-short">${esc(day.short)}</p>` : ''}
-    ${day.tech ? `<details><summary>Análise técnica completa</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(day.tech)}</p></details>` : ''}
-    ${others.length ? `<div class="other">Outros treinos analisados no dia: ${others.map(o => `${esc(SPORT_LABEL[sportKey(o.sport)] || o.sport || '')}${o.summary ? ' — ' + esc(o.summary) : ''}`).join(' · ')}</div>` : ''}
+    ${it ? `${it.summary ? `<div style="font-size:14px;line-height:1.5;margin-bottom:10px">${esc(it.summary)}</div>` : ''}${kpiGrid(it.kpis)}${ptsList(it.points && it.points.length ? it.points : (it.flags||[]).map(f => ({t:'info', text:f})))}${itemDetail(it, w.sport)}` : ''}
+    ${S.tomorrow ? `<div style="margin-top:12px">${tomorrowCard(S.tomorrow)}</div>` : ''}
+    ${day.tech ? `<details style="margin-top:10px"><summary class="small">Análise técnica completa do dia</summary>${techSections(day.tech)}</details>` : ''}
   </div>`;
 }
 function weeklyCard(x){
