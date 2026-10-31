@@ -162,6 +162,7 @@ tr.wk-detail[hidden]{display:none}
 .big-lt .lt1 b{color:#7cb2ff}.big-lt .lt2 b{color:#ffa45c}
 footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid var(--border);padding-top:12px}
 .limz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:20px;align-items:start}.limz>div{min-width:0}@media(max-width:600px){.limz table th,.limz table td{white-space:normal;padding-left:5px;padding-right:5px;font-size:12px}.limz .tbl-wrap table{min-width:0;width:100%}}@media(max-width:900px){.limz{grid-template-columns:minmax(0,1fr)}}
+.ztbar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--border2)}.ztbar i{display:block;height:100%}
 </style>
 </head>
 <body>
@@ -342,11 +343,23 @@ function vGeral(){
   <div class="grid g4 section">
     ${['hrv','rhr','sleep','bb'].map(k => `<div class="card"><h3>${({hrv:'HRV',rhr:'FC de repouso',sleep:'Sono',bb:'Body Battery'})[k]} <span class="sub" id="wl-${k}-v"></span></h3><div class="chart-box sm"><canvas id="wl-${k}"></canvas></div></div>`).join('')}
   </div>
+  ${lastDailyCard(a)}
   <div class="card section"><h3>Últimos 7 dias <span class="sub">${recent.length} treinos</span></h3>${workoutTable(recent)}</div>`;
   $('#pmc-range').onclick = e => { const b = e.target.closest('button'); if (!b) return; state.pmcRange = b.dataset.n === 'plan' ? 'plan' : +b.dataset.n; vGeral(); };
   drawPMC(a);
   drawWellness(a);
   bindWorkoutRows();
+  document.querySelectorAll('.wlink').forEach(l => l.onclick = e => { e.preventDefault(); openWorkout(l.dataset.wid); });
+}
+function lastDailyCard(a){
+  const ds = Object.values(a.daily || {}).sort((x, y) => x.d < y.d ? 1 : -1); const d = ds[0];
+  if (!d) return '';
+  const ws = a.workouts.filter(w => w.date === d.d && w.done);
+  return `<div class="card section"><h3>Última análise diária <span class="sub">${ddmmyy(d.d)}${d.at ? ' · gerada ' + esc(d.at) : ''}</span></h3>
+    <div class="an" style="margin:0"><div class="an-h">${pill(FLAG_PT, d.flag)}${pill(HRV_PT, d.hrv)}</div>
+    ${d.short ? `<p class="an-short" style="margin-top:0">${esc(d.short)}</p>` : ''}
+    ${(d.items || []).map(i => { const w = ws.find(x => (i.wid && String(x.id) === String(i.wid)) || x.sport === sportKey(i.sport)); return `<div class="an-it" style="margin-top:6px"><b style="color:${SPORT_COLOR[sportKey(i.sport)]||'inherit'}">${esc(SPORT_LABEL[sportKey(i.sport)] || i.sport || '')}</b> ${statusPill(i.status)} ${i.summary ? esc(i.summary) : ''} ${w ? `<a href="#" class="wlink" data-wid="${w.id}">ver treino e gráficos →</a>` : ''}</div>`; }).join('')}
+    ${d.tech ? `<details style="margin-top:8px"><summary>Análise técnica completa do dia</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(d.tech)}</p></details>` : ''}</div></div>`;
 }
 function raceCard(e){
   const n = daysBetween(TODAY, e.date);
@@ -476,6 +489,7 @@ function showWorkout(w, day){
     ${w.comments.length ? `<h3 class="small muted" style="margin:10px 0 6px">COMENTÁRIOS</h3>${w.comments.map(c => `<div class="note" style="margin-bottom:6px"><b>${esc(c.who)}</b><br>${esc(c.text)}</div>`).join('')}` : ''}
     ${w.desc ? `<h3 class="small muted" style="margin:10px 0 6px">DESCRIÇÃO DO TREINO</h3><pre class="desc">${esc(w.desc)}</pre>` : ''}`;
   $('#modal').classList.add('on');
+  const it0 = day ? matchItem(w, day) : null; if (it0) drawLaps(it0, w.sport);
 }
 const RPE_LABEL = ['Repouso','Muito, muito leve','Leve','Moderado','Um pouco difícil','Difícil','Difícil +','Muito difícil','Muito difícil +','Quase máximo','Máximo']; // CR-10 (Foster 2001)
 const RPE_COLOR = ['#22c55e','#4ade80','#a3e635','#d9f99d','#facc15','#fbbf24','#f59e0b','#f97316','#ef4444','#dc2626'];
@@ -506,11 +520,43 @@ function matchItem(w, day){
   const its = (day && day.items) || [];
   return its.find(i => i.wid && String(i.wid) === String(w.id)) || its.find(i => sportKey(i.sport) === w.sport) || (its.length === 1 ? its[0] : null);
 }
+const ZT_COLOR = {Z1:'#3b82f6', Z2a:'#a3a3a3', Z2b:'#22c55e', Z2c:'#eab308', Z3:'#f97316', Z4:'#ef4444'};
+const LAP_ST = {ok:['✓','g'], warn:['!','y'], bad:['✕','r']};
+function lapVal(sport, v){ return v == null ? '—' : sport === 'bike' ? `${Math.round(v)} W` : fmtPace(v) + (sport === 'swim' ? '/100m' : '/km'); }
+function itemDetail(it, sport){
+  const m = it.metrics || {}, laps = it.laps || [], zt = (it.zone_time || []).filter(z => z.min > 0);
+  const tot = zt.reduce((a, z) => a + z.min, 0);
+  const met = [['EF', m.ef != null ? fmtN(m.ef, 2) : null], ['Decoupling', m.decoupling_pct != null ? fmtN(m.decoupling_pct, 1) + '%' : null], ['VI', m.vi != null ? fmtN(m.vi, 2) : null], ['IF', m.if != null ? fmtN(m.if, 2) : null], ['NP', m.np != null ? m.np + ' W' : null]].filter(x => x[1]);
+  return `${met.length ? `<div class="small" style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">${met.map(([l, v]) => `<span>${l} <b>${v}</b></span>`).join('')}</div>` : ''}
+    ${zt.length ? `<div class="small muted" style="margin:10px 0 4px">Tempo em cada zona</div><div class="ztbar">${zt.map(z => `<i style="width:${z.min/tot*100}%;background:${ZT_COLOR[z.zone]||'#64748b'}" title="${esc(z.zone)} · ${fmtN(z.min)} min"></i>`).join('')}</div>
+      <div class="legend" style="margin-top:4px">${zt.map(z => `<span><i class="dot" style="background:${ZT_COLOR[z.zone]||'#64748b'}"></i>${esc(z.zone)} ${fmtN(z.min)} min (${fmtN(z.min/tot*100)}%)</span>`).join('')}</div>` : ''}
+    ${laps.length ? `<div class="chart-box sm" style="margin-top:10px"><canvas id="an-laps"></canvas></div>
+      <div class="tbl-wrap" style="margin-top:6px"><table class="small"><thead><tr><th>#</th><th>Bloco</th><th class="n">Dur.</th><th>Alvo</th><th class="n">${sport === 'bike' ? 'Potência' : 'Pace'}</th><th class="n">FC méd/máx</th><th class="n">Cad.</th><th class="n">Decoup.</th><th></th></tr></thead><tbody>${laps.map(l => `<tr><td>${l.n ?? ''}</td><td>${esc(({warmup:'Aquec.', work:'Trabalho', rest:'Recup.', cooldown:'Desaq.'})[l.role] || l.role || '')}</td><td class="n">${l.dur_s ? fmtN(l.dur_s/60, 1) + "'" : '—'}</td><td>${esc(l.target || '')}</td><td class="n"><b>${lapVal(sport, l.value)}</b></td><td class="n">${l.hr ?? '—'}${l.hr_max ? '/' + l.hr_max : ''}</td><td class="n">${l.cad ?? '—'}</td><td class="n">${l.decoupling_pct != null ? fmtN(l.decoupling_pct, 1) + '%' : '—'}</td><td>${l.status && LAP_ST[l.status] ? `<span class="pill ${LAP_ST[l.status][1]}">${LAP_ST[l.status][0]}</span>` : ''}</td></tr>`).join('')}</tbody></table></div>` : ''}
+    ${(it.lactate || []).length ? `<div class="note" style="margin-top:8px">🩸 Lactato: ${it.lactate.map(x => `<b>${fmtN(x.mmol, 1)} mmol</b>${x.when ? ' (' + esc(x.when) + ')' : ''}`).join(' · ')}</div>` : ''}
+    ${it.next ? `<div class="note" style="margin-top:8px"><b>Próxima sessão:</b> ${esc(it.next)}</div>` : ''}
+    ${it.detail ? `<details style="margin-top:6px"><summary>Detalhe técnico do treino</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(it.detail)}</p></details>` : ''}`;
+}
+function drawLaps(it, sport){
+  const el = $('#an-laps'); if (!el || !(it.laps || []).length) return;
+  const L0 = it.laps.filter(l => l.role === 'work' && l.value != null), L = L0.length ? L0 : it.laps.filter(l => l.value != null), isP = sport !== 'bike';
+  const labels = L.map((l, i) => L0.length ? `Bloco ${i + 1}` : `${l.n ?? i + 1}`);
+  const vals = L.flatMap(l => [l.value, l.target_lo, l.target_hi]).filter(v => v != null), pad = isP ? 6 : 10;
+  if (charts.anLaps) charts.anLaps.destroy();
+  charts.anLaps = new Chart(el, {data:{labels, datasets:[
+      {type:'line', label: isP ? 'Pace' : 'Potência', data: L.map(l => l.value ?? null), showLine:true, borderColor:'#e5e7eb', borderWidth:1, pointRadius:6, pointBackgroundColor: L.map(l => l.status === 'bad' ? '#ef4444' : l.status === 'warn' ? '#eab308' : '#22c55e'), yAxisID:'y'},
+      {type:'line', label:'Alvo (lento)', data: L.map(l => l.target_lo ?? null), borderColor:'rgba(34,197,94,.5)', borderDash:[4,3], pointRadius:0, yAxisID:'y'},
+      {type:'line', label:'Alvo (rápido)', data: L.map(l => l.target_hi ?? null), borderColor:'rgba(34,197,94,.5)', borderDash:[4,3], pointRadius:0, fill:'-1', backgroundColor:'rgba(34,197,94,.10)', yAxisID:'y'},
+      {type:'line', label:'FC', data: L.map(l => l.hr ?? null), borderColor:'#f87171', pointRadius:2, borderWidth:1.5, yAxisID:'y1'}]},
+    options:{plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.dataset.label === 'FC' ? `FC ${c.raw}` : `${c.dataset.label}: ${lapVal(sport, c.raw)}`}}},
+      scales:{x:{grid:{display:false}},
+        y:{reverse: isP, min: Math.min(...vals) - pad, max: Math.max(...vals) + pad, title:{display:true, text: isP ? (sport === 'swim' ? 'Ritmo (/100m)' : 'Pace (min/km)') : 'Potência (W)'}, ticks:{callback: v => isP ? fmtPace(v) : Math.round(v)}},
+        y1:{position:'right', grid:{display:false}, title:{display:true, text:'FC'}}}}});
+}
 function analysisBlock(w, day){
   if (!day) return '';
   const it = matchItem(w, day), others = (day.items || []).filter(x => x !== it);
-  return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? statusPill(it.status) : ''}</div>
-    ${it ? `<div class="an-it">${it.summary ? esc(it.summary) : ''}${it.flags.length ? `<ul>${it.flags.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}</div>` : ''}
+  return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}${day.at ? ' · ' + esc(day.at) : ''}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? statusPill(it.status) : ''}</div>
+    ${it ? `<div class="an-it">${it.summary ? esc(it.summary) : ''}${it.flags.length ? `<ul>${it.flags.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}${itemDetail(it, w.sport)}</div>` : ''}
     ${day.short ? `<p class="an-short">${esc(day.short)}</p>` : ''}
     ${day.tech ? `<details><summary>Análise técnica completa</summary><p style="margin:6px 0 0;white-space:pre-line">${esc(day.tech)}</p></details>` : ''}
     ${others.length ? `<div class="other">Outros treinos analisados no dia: ${others.map(o => `${esc(SPORT_LABEL[sportKey(o.sport)] || o.sport || '')}${o.summary ? ' — ' + esc(o.summary) : ''}`).join(' · ')}</div>` : ''}

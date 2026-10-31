@@ -3,7 +3,8 @@ name: Atualizar Dashboard NPC
 on:
   schedule:
     - cron: "17 9 * * *"    # todo dia 06h17 Curitiba — pega sono/HRV da noite
-    - cron: "17 0 * * *"    # todo dia 21h17 Curitiba — pega os treinos do dia
+    - cron: "17 15 * * *"   # todo dia 12h17 Curitiba — 25 min após a análise diária das 11h52
+    - cron: "17 1 * * *"    # todo dia 22h17 Curitiba — 25 min após a análise diária das 21h52
   workflow_dispatch:          # permite rodar manualmente pelo GitHub
 
 # Evita duas execuções ao mesmo tempo disputando o push

@@ -403,8 +403,16 @@ def norm_daily(r):
             "flags": [str(f) for f in flags if f][:12],
             "tss": num(_first(it, "tss_executed", "tss", "tss_real"), 0),
             "wid": int(wid) if isinstance(wid, (int, float)) or (isinstance(wid, str) and wid.isdigit()) else None,
+            # campos estruturados (formato v2 da análise diária) — opcionais
+            "laps": [l for l in (it.get("laps") or []) if isinstance(l, dict)][:60],
+            "zone_time": [z for z in (it.get("zone_time") or []) if isinstance(z, dict)][:8],
+            "metrics": it.get("metrics") if isinstance(it.get("metrics"), dict) else {},
+            "lactate": [l for l in (it.get("lactate") or []) if isinstance(l, dict)][:6],
+            "next": _first(it, "recommendation", "next_session"),
+            "detail": _first(it, "technical_detail"),
         })
-    return {"d": str(r["log_date"]), "short": r["summary_short"], "tech": r["summary_technical"],
+    return {"d": str(r["log_date"]), "at": r["generated_at"].astimezone(TZ).strftime("%d/%m %H:%M") if r.get("generated_at") else None,
+            "short": r["summary_short"], "tech": r["summary_technical"],
             "hrv": r["hrv_status"], "flag": r["training_flag"], "items": items}
 
 
