@@ -222,7 +222,9 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
 
 <script>
 const DB = __NPC_DATA__;
-const TODAY = DB.today;
+// "Hoje" calculado no navegador, no fuso de Brasília. DB.today é a data em que a
+// Action gerou a página; usar só ela deixava o dashboard "parado" no dia anterior.
+const TODAY = (() => { try { return new Intl.DateTimeFormat('en-CA', {timeZone:'America/Sao_Paulo', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date()); } catch(e) { return DB.today; } })();
 const KEYS = Object.keys(DB.athletes);
 const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força',brick:'Brick',race:'Prova',other:'Outro',dayoff:'Folga'};
 const SPORT_COLOR = {swim:'#4a9eff',bike:'#f5a623',run:'#4db87a',strength:'#9b8fff',brick:'#ff7c3a',race:'#ff5252',other:'#8b90a0',dayoff:'#555'};
@@ -400,9 +402,20 @@ function sessCard(i, w){
     ${i.summary ? `<div style="font-size:13.5px;line-height:1.5;margin-bottom:10px">${esc(i.summary)}</div>` : ''}
     ${kpiGrid(i.kpis)}${ptsList(i.points && i.points.length ? i.points : (i.flags||[]).map(f => ({t:'info', text:f})))}</div>`;
 }
-function tomorrowCard(t){
+function relDayLabel(dd){
+  const n = daysBetween(TODAY, dd);
+  if (n === 0) return 'Hoje';
+  if (n === 1) return 'Amanhã';
+  if (n === -1) return 'Ontem';
+  return `${DOW[(D(dd).getDay()+6)%7]} ${ddmm(dd)}`;
+}
+// Recomendação "para amanhã" de uma análise do dia d: rotula pelo dia real (d+1)
+function tomorrowCard(t, d){
   if (!t) return '';
-  return `<div class="dv-tom"><div class="l">Amanhã</div><div class="t">${esc(t.title||'')}</div>${(t.targets||[]).length ? `<div class="chips">${t.targets.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${(t.rules||[]).length ? `<ul>${t.rules.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>`;
+  const nd = d ? addDays(d, 1) : null;
+  if (nd && nd < TODAY) return '';   // recomendação de um dia que já passou
+  const lbl = nd ? `${relDayLabel(nd)}${nd === TODAY || daysBetween(TODAY, nd) === 1 ? ' · ' + ddmm(nd) : ''}` : 'Amanhã';
+  return `<div class="dv-tom"><div class="l">${lbl}</div><div class="t">${esc(t.title||'')}</div>${(t.targets||[]).length ? `<div class="chips">${t.targets.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${(t.rules||[]).length ? `<ul>${t.rules.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>`;
 }
 function dayView(a, d){
   const S = d.sum || {}, ws = a.workouts.filter(w => w.date === d.d && w.done);
@@ -418,7 +431,7 @@ function dayView(a, d){
     ${legacy ? '' : `<div class="dv-tiles">${tiles.join('')}</div>`}
     ${(d.items || []).map(i => sessCard(i, ws.find(x => (i.wid && String(x.id) === String(i.wid)) || x.sport === sportKey(i.sport)))).join('')}
     ${ptsList(S.points)}
-    ${tomorrowCard(S.tomorrow)}
+    ${tomorrowCard(S.tomorrow, d.d)}
     ${legacy && d.short ? `<p style="font-size:13.5px;line-height:1.55;margin:0">${esc(d.short)}</p>` : ''}
     ${d.tech ? `<details><summary class="small">Análise técnica completa</summary>${techSections(d.tech)}</details>` : ''}
   </div>`;
@@ -426,7 +439,7 @@ function dayView(a, d){
 function lastDailyCard(a){
   const ds = Object.values(a.daily || {}).sort((x, y) => x.d < y.d ? 1 : -1); const d = ds[0];
   if (!d) return '';
-  return `<div class="card section"><h3>Análise do dia <span class="sub">${ddmmyy(d.d)}${d.at ? ' · gerada ' + esc(d.at) : ''}</span></h3>${dayView(a, d)}</div>`;
+  return `<div class="card section"><h3>${d.d === TODAY ? 'Análise de hoje' : d.d === addDays(TODAY, -1) ? 'Análise de ontem' : 'Última análise'} <span class="sub">${ddmmyy(d.d)}${d.at ? ' · gerada ' + esc(d.at) : ''}</span></h3>${dayView(a, d)}</div>`;
 }
 function raceCard(e){
   const n = daysBetween(TODAY, e.date);
@@ -624,7 +637,7 @@ function analysisBlock(w, day){
   const it = matchItem(w, day), S = day.sum || {};
   return `<div class="an"><div class="an-h"><span class="lbl">Análise NPC · ${ddmm(day.d)}${day.at ? ' · ' + esc(day.at) : ''}</span>${pill(FLAG_PT, day.flag)}${pill(HRV_PT, day.hrv)}${it ? statusPill(it.status) : ''}</div>
     ${it ? `${it.summary ? `<div style="font-size:14px;line-height:1.5;margin-bottom:10px">${esc(it.summary)}</div>` : ''}${kpiGrid(it.kpis)}${ptsList(it.points && it.points.length ? it.points : (it.flags||[]).map(f => ({t:'info', text:f})))}${itemDetail(it, w.sport)}` : ''}
-    ${S.tomorrow ? `<div style="margin-top:12px">${tomorrowCard(S.tomorrow)}</div>` : ''}
+    ${S.tomorrow && addDays(day.d, 1) >= TODAY ? `<div style="margin-top:12px">${tomorrowCard(S.tomorrow, day.d)}</div>` : ''}
     ${day.tech ? `<details style="margin-top:10px"><summary class="small">Análise técnica completa do dia</summary>${techSections(day.tech)}</details>` : ''}
   </div>`;
 }
