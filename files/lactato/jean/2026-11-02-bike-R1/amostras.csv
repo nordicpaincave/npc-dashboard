@@ -1,0 +1,10 @@
+﻿degrau,rotulo,lactato_mmol,potencia_w,fc_bpm,cadencia,rpe,erro,observacoes
+,basal repouso,2.3,,,,,,"DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · 5min sentado · café 06:45 (~2h15 antes) · basal habitual do Jean ~2,0"
+,pós-aquecimento 10min,1.6,121,98,58,,,DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · aquec 121 W · FC méd 98 / máx 111 · horário aproximado (offset do .fit)
+1,D1 150W 5min,1.7,150,108,66,1,,"DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · FC méd 108 / máx 118 · cad 66 (alvo 85–95) · após o degrau houve ~7,5 min parado (lap manual) · horário aproximado"
+2,D2 (prescrito 175W) executado a 201W,2.5,201,121,73,2,,"DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · DESVIO: degrau de 175 W foi pedalado a 201 W (provável lap manual que pulou o passo do Garmin, mesma falha de 27/10) · FC méd 121 / máx 130 · cad 73 · horário aproximado"
+3,D3 200W (205W medidos),3.3,205,125,72,3,,"DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · 2ª leitura na mesma intensidade do D2 (201 W → 2,5) · FC méd 125 / máx 137 · cad 72 · horário aproximado"
+4,D4 225W,3.2,227,130,78,4,,DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · FC méd 130 / máx 143 · cad 78 · horário aproximado
+5,D5 250W,4.5,252,139,85,5,,DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · PSE 5–6 · FC méd 139 / máx 147 · cad 85 · horário aproximado
+6,D6 275W,7.7,271,141,83,7,,DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · FC méd 141 / máx 152 · cad 83 · horário aproximado
+7,D7 300W,10.8,296,148,87,9,,DESCARTADO PARA ZONAS — curva incompatível com o desempenho de campo (ver passaporte bike v2) · FC méd 148 / máx 158 · cad 87 · último degrau · horário aproximado
