@@ -371,7 +371,33 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
             "before": {"lt1": thr(before, 1, is_run), "lt2": thr(before, 2, is_run), "v": before["v"], "source": before["source"]} if before else None,
             "files": [{"name": n, "path": f"/{folder}/{n}".replace(os.sep, "/")} for n in files],
         })
-    return {"tests": out, "rest": rest}
+    return {"tests": out, "rest": rest, "docs": load_lactate_docs(athlete_key, warnings)}
+
+
+def load_lactate_docs(athlete_key, warnings):
+    """Documentos avulsos do atleta (PDF de explicação, relatórios) em files/lactato/<atleta>/documentos/.
+    A lista vem de documentos/index.json: [{"file": "...pdf", "title": "...", "date": "YYYY-MM-DD", "summary": "..."}].
+    Arquivo citado que não existe é ignorado com aviso."""
+    folder = os.path.join(FILES_DIR, "lactato", athlete_key, "documentos")
+    idx = os.path.join(folder, "index.json")
+    if not os.path.exists(idx):
+        return []
+    try:
+        with open(idx, encoding="utf-8") as f:
+            items = json.load(f)
+    except Exception as e:
+        warnings.append(f"{athlete_key}: documentos/index.json ilegível ({e})")
+        return []
+    docs = []
+    for it in items if isinstance(items, list) else []:
+        name = (it or {}).get("file")
+        if not name or not os.path.exists(os.path.join(folder, name)):
+            warnings.append(f"{athlete_key}: documento {name!r} citado no index.json não existe")
+            continue
+        docs.append({"title": it.get("title") or name, "date": it.get("date"), "summary": it.get("summary") or "",
+                     "path": f"/{folder}/{name}".replace(os.sep, "/")})
+    docs.sort(key=lambda d: d["date"] or "", reverse=True)
+    return docs
 
 
 # ── Análises (Supabase) e histórico de ciclos ─────────────────────────

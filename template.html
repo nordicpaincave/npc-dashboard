@@ -764,6 +764,10 @@ function vLactato(){
   if (!state.lacTest && tests.length) state.lacTest = tests[0].slug;
   const t = tests.find(x => x.slug === state.lacTest);
   let html = `<div class="toolbar"><div style="display:flex;gap:6px;flex-wrap:wrap">${tests.map(x => `<button class="chip ${x.slug===state.lacTest?'on':''}" data-test="${esc(x.slug)}">${x.round ? esc(x.round)+' · ' : ''}${SPORT_LABEL[x.sport]||x.sport} · ${ddmmyy(x.date)}</button>`).join('')}</div></div>`;
+  const docs = L.docs || [];
+  if (docs.length) {
+    html += `<div class="card section"><h3>Documentos <span class="sub">explicações e decisões sobre o lactato</span></h3>${docs.map(d => `<div class="files section"><a href="${esc(d.path)}" target="_blank" rel="noopener">📄 ${esc(d.title)}${d.date ? ` · ${ddmmyy(d.date)}` : ''}</a>${d.summary ? `<div class="small muted">${esc(d.summary)}</div>` : ''}</div>`).join('')}</div>`;
+  }
   if (!t) {
     html += `<div class="card empty">Nenhum teste incremental de lactato válido registrado para ${esc(a.short)} ainda.<br><span class="small">Quando as coletas forem gravadas no Supabase (tabela <code>lactate_samples</code>), o teste aparece aqui sozinho na próxima atualização.</span></div>`;
   } else {
