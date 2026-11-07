@@ -1,0 +1,28 @@
+[
+  {
+    "date": "2026-11-05", "sport": "bike",
+    "title": "MLSS #1 — 30 min a 265 W (alvo)",
+    "kind": "mlss", "validates": ["lt2"],
+    "target": "265 W constantes",
+    "criterion": "Beneke: subida de no máximo 1,0 mmol/L entre o min 10 e o min 30, na mesma carga",
+    "limit": 1.0, "verdict": "above", "verdict_label": "276 W acima do MLSS · 265 W não testado",
+    "summary": "O lactato subiu 5,6 mmol/L em 20 min (4,7 → 10,3) com PSE 9. Mas a potência foi de 258 para 276 W e a pausa durou 9 min: a carga não foi constante, então o teste mostra só que 276 W está acima do MLSS.",
+    "decision": "LT2 provisório de 270 W mantido, com teto real abaixo de 276 W · reteste a ~260 W.",
+    "issues": ["Potência 258 W e depois 276 W (alvo 265 W)", "Pausa da coleta de ~9 min (prescrito até 45 s)", "Cadência 83–84 rpm (alvo 85–95)"],
+    "segments": [{"from": 0, "to": 10, "load": 258}, {"from": 10, "to": 30, "load": 276}],
+    "doc": "/files/lactato/jean/documentos/2026-11-05-mlss1-bike.pdf"
+  },
+  {
+    "date": "2026-11-07", "sport": "bike",
+    "title": "MLSS #2 — 30 min a ~260 W",
+    "kind": "mlss", "validates": ["lt2"],
+    "target": "~260 W constantes",
+    "criterion": "Beneke: subida de no máximo 1,0 mmol/L entre o min 10 e o min 30, na mesma carga",
+    "limit": 1.0, "verdict": "above", "verdict_label": "263–265 W acima do MLSS · LT2 → 258 W",
+    "summary": "O lactato subiu 1,45 mmol/L (5,05 → 6,5), mesmo com 5,5 min parado. Descontando os +5–8 W entre os trechos, a subida a 258 W constantes ficaria entre ~0,4 e 0,95: dentro do critério, no limite. Duplicatas das fitas bateram (Δ 0,1 e 0,0).",
+    "decision": "LT2 provisório 258 W (era 270) e LT1 218 W (era 228) · passaporte de bike v3 · valor definitivo no R2 de 27/01.",
+    "issues": ["Potência 258 W e depois 263 W (NP 265)", "Pausa da coleta de ~5,5 min (prescrito até 45 s)", "Sem coleta no min 20", "Só ~48 h depois do MLSS #1"],
+    "segments": [{"from": 0, "to": 10, "load": 258}, {"from": 10, "to": 30, "load": 263}],
+    "doc": "/files/lactato/jean/documentos/2026-11-07-mlss2-bike.pdf"
+  }
+]

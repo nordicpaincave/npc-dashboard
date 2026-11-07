@@ -1,0 +1,28 @@
+[
+  {
+    "date": "2026-11-02", "sport": "bike",
+    "title": "Validação do LT1 — 30 min a 215 W",
+    "kind": "lt1", "validates": ["lt1"],
+    "target": "215 W constantes (LT1 do R1: 211 W)",
+    "criterion": "Lactato estável: subida de no máximo 0,5 mmol/L entre o min 10 e o min 30",
+    "limit": 0.5, "verdict": "ok", "verdict_label": "LT1 confirmado",
+    "summary": "O lactato caiu de 2,7 para 2,2 mmol/L entre os minutos 10 e 30 a 215–217 W, com decoupling de +2,2%. É estado estável: 215 W está no LT1 ou logo abaixo dele.",
+    "decision": "LT1 de 211 W mantido pela regra conservadora · FC do LT1 = 141 bpm (média min 10–30) · passaporte de bike v8.",
+    "hr_ref": 141,
+    "issues": ["Pausa da coleta do min 10 de ~2,3 min (prescrito até 45 s)"],
+    "segments": [{"from": 0, "to": 10, "load": 216}, {"from": 10, "to": 30, "load": 217}]
+  },
+  {
+    "date": "2026-11-06", "sport": "run",
+    "title": "Validação do LT1 — 25 min a 4:27/km",
+    "kind": "lt1", "validates": ["lt1"],
+    "target": "4:27/km constantes (LT1 do R1)",
+    "criterion": "Lactato até ~1,8 mmol/L e subida de no máximo 0,5 entre o min 10 e o min 25",
+    "limit": 0.5, "verdict": "ok", "verdict_label": "LT1 confirmado",
+    "summary": "Lactato 1,9 aos 10 e aos 25 min: subida zero. E 1,9 é exatamente o basal do dia (1,4) + 0,5, a própria definição do LT1 da NPC. Pace médio 4:26, sem dor.",
+    "decision": "LT1 de 4:27/km confirmado · FC do LT1 definitiva = 158 bpm (era 155 provisória) · passaporte de corrida v6.",
+    "hr_ref": 158,
+    "issues": ["Café da manhã 1h15 antes (protocolo: ≥1h30)", "Pausa da coleta do min 10 de ~74 s (prescrito até 45 s)"],
+    "segments": [{"from": 0, "to": 10, "load": 13.45}, {"from": 10, "to": 25, "load": 13.57}]
+  }
+]

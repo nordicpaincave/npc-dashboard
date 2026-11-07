@@ -111,6 +111,12 @@ tr.past td{color:var(--text2)}
 .an-short{font-size:13px;line-height:1.55;margin:8px 0 0;color:var(--text)}
 .an details{margin-top:8px;font-size:12.5px;color:var(--text2);line-height:1.55}.an summary,.wa summary{cursor:pointer;color:#7ab8ff;font-size:12px}
 .an .other{margin-top:8px;font-size:12px;color:var(--text2)}
+.lts{display:flex;flex-direction:column;gap:10px}
+.lts-row{display:grid;grid-template-columns:150px 1fr 1fr;gap:14px;align-items:start;padding:10px 0;border-top:1px solid var(--bg4)}
+.lts-row:first-child{border-top:0}
+.lts-v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin:2px 0 4px}
+.lts-cell .pill{margin-right:4px}
+@media (max-width:700px){.lts-row{grid-template-columns:1fr}}
 .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--bg4);color:var(--text2)}
 .pill.g{background:#14532d;color:#bbf7d0}.pill.y{background:#78350f;color:#fde68a}.pill.r{background:#7f1d1d;color:#fecaca}.pill.b{background:#1e3a5f;color:#bfdbfe}
 details.hw{border:1px solid var(--border);border-radius:10px;margin-top:8px;background:var(--bg2)}
@@ -299,7 +305,7 @@ function initNav(){
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   if (DB.warnings && DB.warnings.length) $('#warn').innerHTML = `<div class="warnbox">${DB.warnings.map(esc).join('<br>')}</div>`;
 }
-function setAth(k){ state.ath = k; state.calMonday = null; state.lacTest = null; try { history.pushState({}, '', '/' + k + location.hash); } catch(e){} render(); }
+function setAth(k){ state.ath = k; state.calMonday = null; state.lacSel = null; try { history.pushState({}, '', '/' + k + location.hash); } catch(e){} render(); }
 function setTab(t){ state.tab = t; try { history.replaceState({}, '', location.pathname + '#' + t); } catch(e){} render(); }
 function render(){
   document.querySelectorAll('#ath-seg button').forEach(b => b.classList.toggle('on', b.dataset.ath === state.ath));
@@ -761,24 +767,123 @@ function vMacro(){
 function vLactato(){
   const a = A(), L = a.lactate || {tests:[], rest:[]};
   const tests = L.tests.slice().reverse();
-  if (!state.lacTest && tests.length) state.lacTest = tests[0].slug;
-  const t = tests.find(x => x.slug === state.lacTest);
-  let html = `<div class="toolbar"><div style="display:flex;gap:6px;flex-wrap:wrap">${tests.map(x => `<button class="chip ${x.slug===state.lacTest?'on':''}" data-test="${esc(x.slug)}">${x.round ? esc(x.round)+' · ' : ''}${SPORT_LABEL[x.sport]||x.sport} · ${ddmmyy(x.date)}</button>`).join('')}</div></div>`;
+  const vals = (L.validations || []).slice().reverse();
+  const items = tests.map(t => ({type:'test', id:'t:'+t.slug, date:t.date, obj:t})).concat(vals.map(v => ({type:'val', id:`v:${v.date}-${v.sport}`, date:v.date, obj:v})));
+  items.sort((x, y) => y.date.localeCompare(x.date));
+  if (!state.lacSel || !items.find(i => i.id === state.lacSel)) state.lacSel = items.length ? items[0].id : null;
+  const sel = items.find(i => i.id === state.lacSel);
+  const chip = i => `<button class="chip ${i.id===state.lacSel?'on':''}" data-lsel="${esc(i.id)}">${i.type === 'test' ? `${i.obj.round ? esc(i.obj.round)+' · ' : ''}${SPORT_LABEL[i.obj.sport]||i.obj.sport} · ${ddmmyy(i.date)}` : `${esc(valShort(i.obj))} · ${ddmmyy(i.date)}`}</button>`;
+  let html = lactateStatus(L.status);
+  html += `<div class="toolbar" style="flex-direction:column;align-items:flex-start;gap:8px">
+    ${tests.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted" style="min-width:150px">Testes incrementais</span>${items.filter(i=>i.type==='test').map(chip).join('')}</div>` : ''}
+    ${vals.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted" style="min-width:150px">Validações em carga constante</span>${items.filter(i=>i.type==='val').map(chip).join('')}</div>` : ''}
+  </div>`;
+  if (!sel) {
+    html += `<div class="card empty">Nenhum teste de lactato válido registrado para ${esc(a.short)} ainda.<br><span class="small">Quando as coletas forem gravadas no Supabase (tabela <code>lactate_samples</code>), o teste aparece aqui sozinho na próxima atualização.</span></div>`;
+  } else {
+    html += sel.type === 'test' ? lactateTest(sel.obj, a) : lactateVal(sel.obj);
+  }
   const docs = L.docs || [];
   if (docs.length) {
     html += `<div class="card section"><h3>Documentos <span class="sub">explicações e decisões sobre o lactato</span></h3>${docs.map(d => `<div class="files section"><a href="${esc(d.path)}" target="_blank" rel="noopener">📄 ${esc(d.title)}${d.date ? ` · ${ddmmyy(d.date)}` : ''}</a>${d.summary ? `<div class="small muted">${esc(d.summary)}</div>` : ''}</div>`).join('')}</div>`;
-  }
-  if (!t) {
-    html += `<div class="card empty">Nenhum teste incremental de lactato válido registrado para ${esc(a.short)} ainda.<br><span class="small">Quando as coletas forem gravadas no Supabase (tabela <code>lactate_samples</code>), o teste aparece aqui sozinho na próxima atualização.</span></div>`;
-  } else {
-    html += lactateTest(t, a);
   }
   if (L.rest && L.rest.length) {
     html += `<div class="card section"><h3>Calibração de repouso e repetibilidade <span class="sub">checagem da técnica de coleta</span></h3><div class="tbl-wrap"><table><thead><tr><th>Quando</th><th class="n">mmol/L</th><th>Dedo</th><th>Erro</th><th>Observações</th></tr></thead><tbody>${L.rest.map(r => `<tr><td>${esc(r.t.slice(8,10)+'/'+r.t.slice(5,7)+' '+r.t.slice(11))}</td><td class="n">${fmtN(r.mmol,1)}</td><td>${esc((r.site||'').replace('finger_','').replace('middle','médio').replace('ring','anelar'))}</td><td>${esc(r.err||'')}</td><td class="notes-cell">${esc(r.notes||'')}</td></tr>`).join('')}</tbody></table></div></div>`;
   }
   $('#view').innerHTML = html;
-  document.querySelectorAll('[data-test]').forEach(b => b.onclick = () => { state.lacTest = b.dataset.test; vLactato(); });
-  if (t) drawLactate(t);
+  document.querySelectorAll('[data-lsel]').forEach(b => b.onclick = () => { state.lacSel = b.dataset.lsel; vLactato(); });
+  document.querySelectorAll('[data-lgo]').forEach(b => b.onclick = e => { e.preventDefault(); state.lacSel = b.dataset.lgo; vLactato(); });
+  if (sel && sel.type === 'test') drawLactate(sel.obj);
+  if (sel && sel.type === 'val') drawVal(sel.obj);
+}
+// ── situação dos limiares e validações em carga constante ────────────
+const LT_STATE = {
+  validated: {c:'g', t:'Validado em carga constante'},
+  adjusted:  {c:'y', t:'Ajustado por carga constante · provisório'},
+  measured:  {c:'b', t:'Medido no teste incremental · ainda sem validação'},
+  derived:   {c:'',  t:'Derivado do LT2 por proporção · não medido'},
+  estimated: {c:'r', t:'Estimado · sem medida de lactato'},
+};
+const VERDICT = {ok:{c:'g', t:'Confirmado'}, above:{c:'r', t:'Acima do limiar'}, below:{c:'b', t:'Abaixo do limiar'}, open:{c:'y', t:'Inconclusivo'}};
+function valShort(v){ return v.kind === 'mlss' ? (v.title || 'MLSS').split(' — ')[0] : v.kind === 'lt1' ? `LT1 ${SPORT_LABEL[v.sport]||v.sport}` : (v.title || 'Carga constante'); }
+function lactateStatus(st){
+  if (!st || !Object.keys(st).length) return '';
+  const fmtV = (sp, x) => x.value == null ? '—' : sp === 'run' ? `${fmtPace(x.value)}/km` : `${fmtN(x.value)} W`;
+  const cell = (sp, n) => { const x = st[sp] && st[sp]['lt'+n]; if (!x) return '<div></div>'; const s = LT_STATE[x.state] || {c:'',t:x.state};
+    const go = x.by ? ` · <a href="#" data-lgo="${esc(`v:${x.by.date}-${sp}`)}">${esc(x.by.verdict_label || x.by.title || 'ver validação')} (${ddmmyy(x.by.date)})</a>` : '';
+    return `<div class="lts-cell"><div class="small muted">LT${n} · ${n===1?'limiar aeróbio':'limiar anaeróbio'}</div><div class="lts-v">${fmtV(sp, x)}${x.hr ? ` <span class="small muted">· ${x.hr_est ? 'FC estimada ' : ''}${x.hr} bpm</span>` : ''}</div><div class="small"><span class="pill ${s.c}">${esc(s.t)}</span>${go}</div></div>`; };
+  return `<div class="card section" style="margin-top:0"><h3>Situação dos limiares <span class="sub">passaporte vigente · o que já foi medido e o que já foi validado</span></h3>
+    <div class="lts">${['bike','run'].filter(sp => st[sp]).map(sp => `<div class="lts-row"><div class="lts-sport"><b>${SPORT_LABEL[sp]}</b><div class="small muted">passaporte v${st[sp].v}${st[sp].from ? ' · desde '+ddmmyy(st[sp].from) : ''}</div></div>${cell(sp,1)}${cell(sp,2)}</div>`).join('')}</div>
+    <div class="small muted section">Medido = saiu da curva do teste incremental. Validado = confirmado depois em carga constante (o lactato ficou estável na carga do limiar). Ajustado = a carga constante mostrou que o valor do incremental estava alto e ele foi corrigido.</div></div>`;
+}
+function lactateVal(v){
+  const run = v.sport === 'run';
+  const fmtL = x => x == null ? '—' : run ? `${fmtPace(3600/x)}/km` : `${fmtN(x)} W`;
+  const vd = VERDICT[v.verdict] || null;
+  const lim = v.limit;
+  const dOk = v.delta != null && lim != null ? v.delta <= lim : null;
+  const p0 = v.points[0], pN = v.points[v.points.length-1];
+  const segs = v.segments || [];
+  const loads = segs.length ? segs.map(s => s.load) : v.points.map(p => p.load).filter(x => x != null);
+  const loadTxt = loads.length ? (Math.max(...loads) - Math.min(...loads) < (run ? 0.05 : 1) ? fmtL(loads[0]) : loads.map(fmtL).join(' → ')) : '—';
+  const kpis = [
+    {label:'Alvo', value: v.target || '—'},
+    {label:'Executado', value: loadTxt, status: segs.length > 1 && Math.abs(segs[segs.length-1].load - segs[0].load) > (run ? 0.2 : 4) ? 'warn' : 'ok'},
+    {label: v.delta_span ? `Δ lactato min ${v.delta_span[0]} → ${v.delta_span[1]}` : 'Δ lactato', value: v.delta == null ? '—' : `${v.delta > 0 ? '+' : v.delta < 0 ? '−' : ''}${fmtN(Math.abs(v.delta),2)} mmol/L`, status: dOk == null ? '' : dOk ? 'ok' : 'bad', target: lim != null ? `≤ +${fmtN(lim,1)}` : ''},
+    {label:'Nível final', value: pN ? `${fmtN(pN.mmol,1)} mmol/L` : '—'},
+  ];
+  if (v.hr_ref) kpis.push({label:'FC de referência', value:`${v.hr_ref} bpm`, status:'ok'});
+  kpis.push({label:'Fitas usadas', value: String(v.strips)});
+  return `
+  <div class="card">
+    <h3>${esc(v.title)} · ${SPORT_LABEL[v.sport]||v.sport} · ${ddmmyy(v.date)} ${vd ? `<span class="pill ${vd.c}" style="margin-left:6px">${esc(v.verdict_label || vd.t)}</span>` : ''}<span class="sub">${v.tp_workout_id ? 'treino TP ' + v.tp_workout_id : ''}</span></h3>
+    ${v.summary ? `<div style="font-size:14px;line-height:1.55;margin:4px 0 12px">${esc(v.summary)}</div>` : ''}
+    ${kpiGrid(kpis)}
+    ${v.decision ? `<div class="note section"><b>Decisão:</b> ${esc(v.decision)}</div>` : ''}
+  </div>
+  <div class="grid g2 section">
+    <div class="card"><h3>Lactato ao longo do bloco <span class="sub">minutos desde o início da carga constante</span></h3><div class="chart-box"><canvas id="val-chart"></canvas></div>
+      <div class="legend"><span><i class="dot" style="background:#eef0f5"></i>Lactato (média das fitas)</span><span><i class="dot" style="background:rgba(34,197,94,.45)"></i>Subida permitida pelo critério</span><span><i class="dot" style="background:#7cb2ff"></i>${run ? 'Pace' : 'Potência'} de cada trecho</span><span><i class="dot" style="background:#9aa0b2"></i>Basal</span></div></div>
+    <div class="card"><h3>Como ler este teste</h3>
+      <div class="small" style="line-height:1.55">${v.criterion ? `<b>Critério:</b> ${esc(v.criterion)}.<br><br>` : ''}
+      ${v.kind === 'mlss' ? 'O <b>MLSS</b> (máximo estado estável de lactato) é a maior carga que pode ser mantida sem o lactato subir de forma contínua — é a medida direta do LT2. Ele depende da <b>variação</b> entre as coletas na mesma carga, não do valor absoluto, por isso funciona mesmo com basal alto.' : v.kind === 'lt1' ? 'A validação do <b>LT1</b> confirma em esforço contínuo o valor tirado da curva do teste incremental. Lactato baixo e parado = a carga está no limiar aeróbio ou abaixo dele. A FC média do trecho final vira a FC de referência do LT1.' : 'Checagem pontual de lactato durante um treino para confirmar que a sessão ficou na zona prescrita.'}
+      <br><br><span class="muted">A área verde do gráfico parte da coleta do minuto ${p0 ? p0.min : 10} e mostra até onde o lactato podia subir. Ponto final dentro dela = estável; acima = a carga passou do limiar.</span></div>
+      ${v.issues && v.issues.length ? `<h4 style="margin:14px 0 6px">Desvios de execução</h4><ul class="small" style="margin:0;padding-left:18px;line-height:1.55">${v.issues.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : ''}
+      ${v.doc ? `<div class="files section"><a href="${esc(v.doc)}" target="_blank" rel="noopener">📄 Análise completa (PDF)</a></div>` : ''}
+    </div>
+  </div>
+  <div class="card section"><h3>Coletas</h3><div class="tbl-wrap"><table><thead><tr><th>Hora</th><th>Momento</th><th class="n">Min</th><th class="n">Lactato</th><th class="n">${run?'Pace':'Watts'}</th><th class="n">FC</th><th class="n">PSE</th><th>Local</th><th>Observações</th></tr></thead><tbody>
+    ${v.rows.map(r => `<tr${r.kind==='diag' ? ' class="muted"' : ''}><td>${esc(r.t)}</td><td>${esc(r.label||'')}${r.err ? ` <span class="tag">${esc(r.err)}</span>` : ''}</td><td class="n">${r.min ?? (r.kind==='basal' ? 'basal' : '—')}</td><td class="n"><b>${fmtN(r.mmol,1)}</b></td><td class="n">${r.load != null ? (run ? fmtPace(3600/r.load) : fmtN(r.load)) : '—'}</td><td class="n">${fmtN(r.hr)}</td><td class="n">${fmtN(r.rpe)}</td><td>${esc(({finger:'dedo', earlobe:'orelha'})[r.site] || r.site || '')}</td><td class="notes-cell">${esc(r.notes||'')}</td></tr>`).join('')}
+  </tbody></table></div><div class="small muted section">Linhas em cinza são coletas de diagnóstico (ex.: basal em jejum), fora do critério. Quando há duas fitas no mesmo minuto, o gráfico usa a média.</div></div>`;
+}
+function drawVal(v){
+  const run = v.sport === 'run';
+  const pts = v.points;
+  if (!pts.length) return;
+  const p0 = pts[0], pN = pts[pts.length-1];
+  const xmax = Math.max(pN.min, ...(v.segments||[]).map(s => s.to)) + 2;
+  const ds = [];
+  if (v.limit != null && pts.length >= 2) {
+    ds.push({label:'_base', data:[{x:p0.min, y:p0.mmol},{x:pN.min, y:p0.mmol}], showLine:true, pointRadius:0, borderColor:'rgba(34,197,94,.0)', borderWidth:0, yAxisID:'y'});
+    ds.push({label:'Limite do critério', data:[{x:p0.min, y:p0.mmol + v.limit},{x:pN.min, y:p0.mmol + v.limit}], showLine:true, pointRadius:0, borderColor:'rgba(34,197,94,.8)', borderDash:[5,4], borderWidth:1.2, backgroundColor:'rgba(34,197,94,.16)', fill:'-1', yAxisID:'y'});
+  }
+  const ld = [];
+  (v.segments || []).forEach((s, i) => { if (i) ld.push({x:s.from, y:null}); ld.push({x:s.from, y:s.load}, {x:s.to, y:s.load}); });
+  if (ld.length) ds.push({label: run ? 'Pace' : 'Potência', data: ld, showLine:true, spanGaps:false, pointRadius:0, borderColor:'rgba(124,178,255,.85)', borderDash:[6,3], fill:false, borderWidth:2, yAxisID:'y1'});
+  ds.push({label:'Lactato', data: pts.map(p => ({x:p.min, y:p.mmol, reads:p.reads, hr:p.hr, rpe:p.rpe})), showLine:true, pointRadius:6, pointBackgroundColor:'#eef0f5', borderColor:'#eef0f5', borderWidth:2, yAxisID:'y'});
+  const reads = pts.filter(p => p.n > 1).flatMap(p => p.reads.map(r => ({x:p.min, y:r})));
+  if (reads.length) ds.push({label:'Fita individual', data: reads, pointRadius:3, pointStyle:'crossRot', borderColor:'#9aa0b2', pointBackgroundColor:'#9aa0b2', yAxisID:'y'});
+  if (v.basal != null) ds.push({label:'Basal', data:[{x:-2, y:v.basal}], pointRadius:6, pointStyle:'rectRot', pointBackgroundColor:'#9aa0b2', borderColor:'#9aa0b2', yAxisID:'y'});
+  const ymax = Math.max(...pts.map(p => p.mmol), (v.basal||0), p0.mmol + (v.limit||0)) * 1.25;
+  const lv = (v.segments||[]).map(s => s.load);
+  const lmin = lv.length ? Math.min(...lv) : 0, lmax = lv.length ? Math.max(...lv) : 1;
+  const pad = run ? 1.5 : Math.max(40, (lmax - lmin) * 2);
+  charts.val = new Chart($('#val-chart'), {type:'scatter', data:{datasets: ds},
+    options:{plugins:{legend:{display:false}, markers:{lines: pts.slice(0,-1).map(p => ({x:p.min, color:'#64748b', label:'coleta', dash:[2,3]}))},
+      tooltip:{filter: c => c.dataset.label !== '_base', callbacks:{label: c => { const l = c.dataset.label; if (l === 'Pace' || l === 'Potência') return c.raw.y == null ? null : `${l}: ${run ? fmtPace(3600/c.raw.y)+'/km' : fmtN(c.raw.y)+' W'}`; if (l === 'Basal') return `Basal: ${fmtN(c.raw.y,1)} mmol/L`; if (l === 'Limite do critério') return `Limite: ${fmtN(c.raw.y,2)} mmol/L`; if (l === 'Lactato') return `min ${c.raw.x}: ${fmtN(c.raw.y,2)} mmol/L${c.raw.reads && c.raw.reads.length > 1 ? ' (fitas ' + c.raw.reads.map(r => fmtN(r,1)).join(' / ') + ')' : ''}${c.raw.hr ? ' · FC ' + c.raw.hr : ''}${c.raw.rpe ? ' · PSE ' + c.raw.rpe : ''}`; return `${l}: ${fmtN(c.raw.y,1)}`; }}}},
+      scales:{x:{type:'linear', min:-4, max:xmax, ticks:{stepSize:5, callback: x => x < 0 ? (x === -2 ? 'basal' : '') : `${x}′`}, title:{display:true, text:'minutos de carga constante'}},
+        y:{beginAtZero:true, max: Math.ceil(ymax), title:{display:true, text:'Lactato (mmol/L)'}},
+        y1:{position:'right', grid:{display:false}, min: run ? lmin - pad : Math.max(0, lmin - pad), max: lmax + (run ? pad : pad/2), title:{display:true, text: run ? 'Pace (min/km)' : 'Potência (W)'}, ticks:{callback: y => run ? fmtPace(3600/y) : y}}}}});
 }
 function lactateTest(t, a){
   const run = t.sport === 'run';

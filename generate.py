@@ -296,12 +296,15 @@ def thr(p, n, is_run):
 
 def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
     rows = [r for r in sb["lactate"] if r["athlete_id"] == athlete_uuid]
-    tests, rest = {}, []
+    tests, rest, vals = {}, [], {}
     for r in rows:
         if r["purpose"] == "incremental_test":
             day = r["sampled_at"].astimezone(TZ).date().isoformat()
             k = (day, r["sport"] or "?", r["test_round"] or "")
             tests.setdefault(k, []).append(r)
+        elif r["purpose"] in ("confirmation", "session_check", "trigger"):
+            day = r["sampled_at"].astimezone(TZ).date().isoformat()
+            vals.setdefault((day, r["sport"] or "?"), []).append(r)
         else:
             rest.append({"t": r["sampled_at"].astimezone(TZ).strftime("%Y-%m-%d %H:%M"), "purpose": r["purpose"],
                          "mmol": num(r["lactate_mmol"], 1), "site": r["sample_site"], "err": r["error_code"],
@@ -371,7 +374,120 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
             "before": {"lt1": thr(before, 1, is_run), "lt2": thr(before, 2, is_run), "v": before["v"], "source": before["source"]} if before else None,
             "files": [{"name": n, "path": f"/{folder}/{n}".replace(os.sep, "/")} for n in files],
         })
-    return {"tests": out, "rest": rest, "docs": load_lactate_docs(athlete_key, warnings)}
+    return {"tests": out, "rest": rest, "docs": load_lactate_docs(athlete_key, warnings),
+            "validations": build_validations(vals, athlete_key, passports, warnings),
+            "status": threshold_status(passports, athlete_key, warnings)}
+
+
+def load_validation_meta(athlete_key, warnings):
+    """Metadados das validações em carga constante: files/lactato/<atleta>/validacoes.json.
+    Chave = data + esporte; traz título, alvo, critério, veredito, decisão e trechos de carga para o gráfico.
+    Sem metadado, a sessão aparece só com as coletas e a variação calculada."""
+    path = os.path.join(FILES_DIR, "lactato", athlete_key, "validacoes.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            items = json.load(f)
+    except Exception as e:
+        warnings.append(f"{athlete_key}: validacoes.json ilegível ({e})")
+        return {}
+    return {(it.get("date"), it.get("sport")): it for it in items if isinstance(it, dict)}
+
+
+_MIN_RE = re.compile(r"min(?:uto)?\s*(\d+)", re.I)
+
+
+def build_validations(vals, athlete_key, passports, warnings):
+    """Sessões de carga constante (MLSS, validação de LT1, checagens em treino) agrupadas por dia + esporte.
+    Cada coleta vira um ponto no minuto do bloco (rótulo 'min N'); o basal é o 'pré-teste'/'repouso'.
+    Fitas duplicadas no mesmo minuto entram pela média; as leituras individuais ficam na tabela."""
+    meta = load_validation_meta(athlete_key, warnings)
+    out = []
+    for (day, sport), samples in sorted(vals.items()):
+        if any((s["notes"] or "").upper().startswith("INVALIDADO") for s in samples):
+            continue
+        samples.sort(key=lambda s: s["sampled_at"])
+        is_run = sport == "run"
+        rows, by_min, basal = [], {}, None
+        for s in samples:
+            lab = s["interval_label"] or ""
+            m = _MIN_RE.search(lab)
+            minute = int(m.group(1)) if m else None
+            low = lab.lower()
+            kind = "point" if minute is not None else ("basal" if "basal" in low and any(w in low for w in ("pré", "pre-", "repouso")) else "diag")
+            load = num(s["speed_kmh"], 2) if is_run else num(s["power_w"], 0)
+            row = {"t": s["sampled_at"].astimezone(TZ).strftime("%H:%M"), "label": lab, "min": minute, "kind": kind,
+                   "mmol": num(s["lactate_mmol"], 1), "load": load, "pace": s["pace_s_per_km"], "hr": num(s["hr_bpm"], 0),
+                   "rpe": num(s["rpe"], 0), "site": s["sample_site"], "err": s["error_code"], "notes": s["notes"]}
+            rows.append(row)
+            if row["mmol"] is None or row["err"]:
+                continue
+            if kind == "point":
+                by_min.setdefault(minute, []).append(row)
+            elif kind == "basal":
+                basal = (basal or []) + [row["mmol"]]
+        points = []
+        for mnt in sorted(by_min):
+            g = by_min[mnt]
+            loads = [x["load"] for x in g if x["load"] is not None]
+            hrs = [x["hr"] for x in g if x["hr"] is not None]
+            rpes = [x["rpe"] for x in g if x["rpe"] is not None]
+            points.append({"min": mnt, "mmol": round(sum(x["mmol"] for x in g) / len(g), 2), "n": len(g),
+                           "reads": [x["mmol"] for x in g], "load": loads[0] if loads else None,
+                           "pace": next((x["pace"] for x in g if x["pace"]), None),
+                           "hr": hrs[0] if hrs else None, "rpe": rpes[0] if rpes else None})
+        delta = round(points[-1]["mmol"] - points[0]["mmol"], 2) if len(points) >= 2 else None
+        mt = meta.get((day, sport), {})
+        wid = next((s["tp_workout_id"] for s in samples if s["tp_workout_id"]), None)
+        out.append({
+            "date": day, "sport": sport, "tp_workout_id": wid,
+            "basal": round(sum(basal) / len(basal), 2) if basal else None, "basal_reads": basal or [],
+            "points": points, "delta": delta,
+            "delta_span": [points[0]["min"], points[-1]["min"]] if len(points) >= 2 else None,
+            "rows": rows, "strips": len(rows),
+            "title": mt.get("title") or ("Checagem em treino" if any(s["purpose"] == "session_check" for s in samples) else "Carga constante"),
+            "kind": mt.get("kind"), "validates": mt.get("validates"), "target": mt.get("target"),
+            "criterion": mt.get("criterion"), "limit": mt.get("limit"), "verdict": mt.get("verdict"),
+            "verdict_label": mt.get("verdict_label"), "summary": mt.get("summary"), "decision": mt.get("decision"),
+            "issues": mt.get("issues") or [], "segments": mt.get("segments") or [], "hr_ref": mt.get("hr_ref"),
+            "doc": mt.get("doc"),
+        })
+    return out
+
+
+def threshold_status(passports, athlete_key, warnings):
+    """Situação de cada limiar (bike/corrida) no passaporte vigente: medido, validado em carga constante,
+    ajustado por carga constante ou estimado. A validação vem do validacoes.json (campo 'validates')."""
+    meta = load_validation_meta(athlete_key, warnings)
+    out = {}
+    for sport in ("bike", "run"):
+        pp = passports.get(sport) or []
+        if not pp:
+            continue
+        cur = pp[-1]
+        src = cur["source"] or ""
+        is_run = sport == "run"
+        res = {"v": cur["v"], "from": cur["from"], "source": src}
+        for n in (1, 2):
+            val = cur.get(f"lt{n}_pace") if is_run else cur.get(f"lt{n}_w")
+            vs = sorted([m for m in meta.values() if m.get("sport") == sport and f"lt{n}" in (m.get("validates") or [])],
+                        key=lambda m: m.get("date") or "")
+            last = vs[-1] if vs else None
+            if n == 1 and "lt1=ratio" in src:
+                st = "derived"
+            elif last and last.get("verdict") == "ok":
+                st = "validated"
+            elif last:
+                st = "adjusted"
+            elif "lactate" in src:
+                st = "measured"
+            else:
+                st = "estimated"
+            res[f"lt{n}"] = {"value": val, "hr": cur.get(f"lt{n}_hr"), "hr_est": "hr=estimated" in src, "state": st,
+                             "by": {"date": last.get("date"), "title": last.get("title"), "verdict_label": last.get("verdict_label")} if last else None}
+        out[sport] = res
+    return out
 
 
 def load_lactate_docs(athlete_key, warnings):
