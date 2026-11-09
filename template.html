@@ -234,6 +234,18 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
 .wv-items li{display:flex;gap:10px;align-items:baseline;font-size:13.5px;line-height:1.4}
 .wv-items .tg{flex:none;min-width:74px;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);text-align:center}
 .wv-txt{font-size:12.5px;color:var(--text2)}.wv-txt summary{cursor:pointer;color:#7ab8ff}.wv-txt .wa{margin:8px 0 0}
+/* ── Sessões de qualidade (calendário) ── */
+.kq{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px}
+.kq-t{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.03em;padding:1px 6px;border-radius:5px;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--c);white-space:nowrap}
+.kq .ks-bk i{width:6px;height:10px}.kq .ks-dl{font-size:10.5px}
+.kq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.kq-card{text-align:left;background:var(--bg3);border:1px solid var(--border2);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.kq-card:hover{border-color:var(--text3);border-top-color:var(--c)}
+.kq-h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.kq-title{font-weight:700;font-size:13.5px;line-height:1.3}
+.kq-big b{font-size:22px;font-weight:800}
+.kq-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--text2)}.kq-row b{color:var(--text)}
+.kq-met{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--text2);border-top:1px solid var(--border);padding-top:6px}.kq-met b{color:var(--text)}
 /* ── Sessões-chave ── */
 .ks-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
 .ks-types{display:flex;gap:6px;flex-wrap:wrap}
@@ -254,7 +266,6 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
   <nav class="tabs" id="tabs" role="tablist" aria-label="Seções">
     <button data-tab="geral">Visão geral</button>
     <button data-tab="cal">Calendário</button>
-    <button data-tab="sessoes">Sessões-chave</button>
     <button data-tab="macro">Plano macro</button>
     <button data-tab="lactato">Lactato</button>
     <button data-tab="limiares">Limiares e zonas</button>
@@ -341,7 +352,7 @@ function initNav(){
   const hash = location.hash.replace('#','');
   state.ath = KEYS.includes(path) ? path : KEYS[0];
   if (hash && document.querySelector(`[data-tab="${hash}"]`)) state.tab = hash;
-  const sm = hash.match(/^sessao-(\d+)$/); if (sm) { state.tab = 'sessoes'; state.openWid = sm[1]; }
+  const sm = hash.match(/^sessao-(\d+)$/); if (sm) { state.tab = 'cal'; state.openWid = sm[1]; const w0 = (DB.athletes[state.ath].workouts || []).find(x => String(x.id) === sm[1]); if (w0) state.calMonday = mondayOf(w0.date); }
   window.addEventListener('popstate', () => { const p = location.pathname.replace(/^\/|\/$/g,'').toLowerCase(); if (KEYS.includes(p)) { state.ath = p; render(); } });
   $('#modal').onclick = e => { if (e.target.id === 'modal' || e.target.closest('.x')) closeModal(); };
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
@@ -353,7 +364,7 @@ function render(){
   document.querySelectorAll('#ath-seg button').forEach(b => b.classList.toggle('on', b.dataset.ath === state.ath));
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
   Object.keys(charts).forEach(kill);
-  ({geral: vGeral, cal: vCal, sessoes: vSess, macro: vMacro, lactato: vLactato, limiares: vLimiares, hist: vHist, comp: vComp})[state.tab]();
+  ({geral: vGeral, cal: vCal, macro: vMacro, lactato: vLactato, limiares: vLimiares, hist: vHist, comp: vComp})[state.tab]();
   if (state.openWid) { const id = state.openWid; state.openWid = null; openWorkout(id); }
 }
 
@@ -565,6 +576,8 @@ function vCal(){
   const ws = a.weeks.find(x => x.mon === m) || {};
   const minM = a.weeks.length ? a.weeks[0].mon : m, maxM = a.weeks.length ? a.weeks[a.weeks.length-1].mon : m;
   const races = (a.events||[]).filter(e => e.date >= m && e.date <= days[6]);
+  const KS = Object.fromEntries(keySessions(a).filter(s => s.type !== 'z1' && s.wid).map(s => [String(s.wid), s]));
+  const wkQ = Object.values(KS).filter(s => s.d >= m && s.d <= days[6]).sort((x,y) => x.d.localeCompare(y.d));
   $('#view').innerHTML = `
   <div class="toolbar">
     <div class="seg"><button id="cal-prev" aria-label="Semana anterior">‹ Anterior</button><button id="cal-today">Hoje</button><button id="cal-next" aria-label="Próxima semana">Próxima ›</button></div>
@@ -577,7 +590,7 @@ function vCal(){
     const extra = pd && pd.tss - listT > 3 ? `<div class="small" style="color:var(--strength)" title="O PMC do TP soma ${fmtN(pd.tss)} TSS neste dia; ${fmtN(pd.tss-listT)} vêm de atividades que não aparecem na lista (ex.: força estruturada sincronizada pelo Garmin)">+${fmtN(pd.tss-listT)} TSS fora da lista</div>` : '';
     return `<div class="cal-day ${dd===TODAY?'today':''} ${!list.length && !rc.length && !extra ? 'emptyday':''}"><div class="dh"><span>${DOW[i]}</span><span>${pd && dd <= TODAY ? `<span class="muted" style="font-weight:600">${fmtN(pd.tss)} TSS · </span>` : ''}<b>${ddmm(dd)}</b></span></div>${extra}
       ${rc.map(e => `<div class="wk" style="--c:var(--race)"><div class="t">🏁 ${esc(e.name)}</div><div class="m"><span class="tag ${esc(e.priority)}">${esc(e.priority||'')}</span></div></div>`).join('')}
-      ${list.map(w => { const c = compliance(w); return `<button class="wk" data-wid="${w.id}" style="--c:${SPORT_COLOR[w.sport]}" title="${esc(COMP_LABEL[c])}"><i class="st st-${c}"></i><div class="t">${esc(w.title)}</div><div class="m">${w.done ? `<span>${fmtH(w.act.h)}</span><span>${fmtN(w.act.tss)} TSS</span>` : `<span>${fmtH(w.plan.h)}</span><span>${fmtN(w.plan.tss)} TSS plan.</span>`}</div></button>`; }).join('')}
+      ${list.map(w => { const c = compliance(w); return `<button class="wk" data-wid="${w.id}" style="--c:${SPORT_COLOR[w.sport]}" title="${esc(COMP_LABEL[c])}"><i class="st st-${c}"></i><div class="t">${esc(w.title)}</div><div class="m">${w.done ? `<span>${fmtH(w.act.h)}</span><span>${fmtN(w.act.tss)} TSS</span>` : `<span>${fmtH(w.plan.h)}</span><span>${fmtN(w.plan.tss)} TSS plan.</span>`}</div>${KS[String(w.id)] ? kqLine(KS[String(w.id)]) : ''}</button>`; }).join('')}
     </div>`; }).join('')}</div>
   <div class="grid g4 wsum">
     <div class="card kpi"><div class="l">TSS realizado (PMC)</div><div class="v">${fmtN(ws.tss)}</div><div class="s">inclui força que não aparece na lista do TP</div></div>
@@ -586,6 +599,7 @@ function vCal(){
     <div class="card kpi"><div class="l">Horas realizadas</div><div class="v">${fmtH(ws.h)}</div><div class="s">${Object.entries(ws.sport_h||{}).map(([k,v]) => `${SPORT_LABEL[k]||k} ${fmtH(v)}`).join(' · ') || '—'}</div></div>
   </div>
   <div class="legend">${Object.entries(COMP_LABEL).map(([k,v]) => `<span><i class="st st-${k}" style="position:static;display:inline-block;width:9px;height:9px;border-radius:50%"></i>${v}</span>`).join('')}</div>
+  ${wkQ.length ? qualityPanel(wkQ) : ''}
   ${calWeekly(a, m, days[6])}`;
   { const WA = a.weekly_an || {}; drawWeekly(WA[m] || WA[addDays(m,-7)], a, 'wv'); bindWorkoutRows(); }
   $('#cal-prev').onclick = () => { if (m > minM) { state.calMonday = addDays(m,-7); vCal(); } };
@@ -626,10 +640,12 @@ function showWorkout(w, day){
     </div>
     ${w.done ? percBlock(a) : ''}
     ${analysisBlock(w, day)}
+    ${w.done ? sessCompare(w) : ''}
     ${w.comments.length ? `<h3 class="small muted" style="margin:10px 0 6px">COMENTÁRIOS</h3>${w.comments.map(c => `<div class="note" style="margin-bottom:6px"><b>${esc(c.who)}</b><br>${esc(c.text)}</div>`).join('')}` : ''}
     ${w.desc ? `<h3 class="small muted" style="margin:10px 0 6px">DESCRIÇÃO DO TREINO</h3><pre class="desc">${esc(w.desc)}</pre>` : ''}`;
   $('#modal').classList.add('on');
   const it0 = day ? matchItem(w, day) : null; if (it0) drawLaps(it0, w.sport);
+  if (w.done) drawSessCompare(w);
   bindCopy();
 }
 const RPE_LABEL = ['Repouso','Muito, muito leve','Leve','Moderado','Um pouco difícil','Difícil','Difícil +','Muito difícil','Muito difícil +','Quase máximo','Máximo']; // CR-10 (Foster 2001)
@@ -790,6 +806,8 @@ function keySessions(a){
     const w = it.wid ? a.workouts.find(x => String(x.id) === String(it.wid)) : null;
     const work = (it.laps || []).filter(l => l.role === 'work' && l.value != null && l.dur_s);
     const title = (w && w.title) || it.title || '';
+    // atividade avulsa sem prescrição (título genérico do Garmin): os laps automáticos não são blocos de trabalho
+    if (/^(running|road cycling|cycling|indoor cycling|virtual ride|treadmill running|corrida|ciclismo)$/i.test(title.trim()) && !/mlss|valida|incremental|r1 lactato|limiar|z2b|z2c/i.test(it.title || '')) return;
     const type = sessType(`${it.title || ''} ${title}`, work.length); if (!type) return; // título da análise primeiro: ela reclassifica (ex.: longo Z1 que virou MLSS)
     const wm = k => { const ps = work.filter(l => l[k] != null); const t = ps.reduce((s, l) => s + l.dur_s, 0); return t ? ps.reduce((s, l) => s + l[k] * l.dur_s, 0) / t : null; };
     const tl = work.find(l => l.target_lo != null && l.target_hi != null);
@@ -816,64 +834,51 @@ function copyLink(btn, wid){
   try { navigator.clipboard.writeText(url).then(done, () => window.prompt('Copie o link:', url)); } catch(e) { window.prompt('Copie o link:', url); }
 }
 function bindCopy(){ document.querySelectorAll('[data-copy]').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); copyLink(b, b.dataset.copy); }); }
-function vSess(){
-  const a = A(), all = keySessions(a);
-  if (!state.sSport) state.sSport = all.some(s => s.sport === 'bike') ? 'bike' : 'run';
-  const sp = state.sSport, mine = all.filter(s => s.sport === sp);
-  const types = Object.keys(STYPE).filter(k => mine.some(s => s.type === k));
-  if (!state.sType || (state.sType !== 'q' && !types.includes(state.sType))) state.sType = 'q';
-  const list = mine.filter(s => state.sType === 'q' ? s.type !== 'z1' : s.type === state.sType);
-  const unit = sp === 'bike' ? 'W' : '/km', fv = v => v == null ? '—' : sp === 'bike' ? `${Math.round(v)} W` : fmtPace(v) + '/km';
-  const fr = s => s.lo == null ? '—' : sp === 'bike' ? `${Math.round(s.lo)}–${Math.round(s.hi)} W` : `${fmtPace(s.hi)}–${fmtPace(s.lo)}`;
-  const inT = list.filter(s => sessDelta(s)[1] === 'g').length;
-  const first = all.length ? all[all.length - 1].d : null;
-  $('#view').innerHTML = `
-  <div class="ks-bar">
-    <div class="seg" id="ks-sport">${['bike','run'].map(k => `<button data-sp="${k}" class="${k === sp ? 'on' : ''}">${SPORT_LABEL[k]} <span class="muted">${all.filter(s => s.sport === k && s.type !== 'z1').length}</span></button>`).join('')}</div>
-    <div class="ks-types" id="ks-types"><button class="chip ${state.sType === 'q' ? 'on' : ''}" data-ty="q" title="limiar, validações, testes e blocos — sem as rodagens Z1">Qualidade</button>${types.map(k => `<button class="chip ${state.sType === k ? 'on' : ''}" data-ty="${k}"><i style="background:${STYPE[k][1]}"></i>${STYPE[k][0]}</button>`).join('')}</div>
-  </div>
-  ${!list.length ? `<div class="card empty">Nenhuma sessão com blocos de trabalho analisada para ${esc(a.short)} neste filtro.<br><span class="small">A série começa nas análises diárias com blocos (desde ${first ? ddmmyy(first) : '31/10/26'}).</span></div>` : `
-  <div class="grid g3">
-    <div class="card kpi"><div class="l">Sessões no filtro</div><div class="v">${list.length}</div><div class="s">desde ${ddmmyy(list[list.length-1].d)}</div></div>
-    <div class="card kpi"><div class="l">Média dos blocos no alvo</div><div class="v">${fmtN(inT)}<span class="muted" style="font-size:16px"> / ${list.filter(s => s.lo != null).length}</span></div><div class="s">sessões com média dentro da faixa prescrita</div></div>
-    <div class="card kpi"><div class="l">Última sessão</div><div class="v" style="font-size:20px">${fv(list[0].val)}</div><div class="s">${ddmmyy(list[0].d)} · alvo ${fr(list[0])}${list[0].hr ? ` · FC ${Math.round(list[0].hr)}` : ''}</div></div>
-  </div>
-  <div class="card section"><h3>Alvo × executado <span class="sub">faixa = alvo prescrito · ponto = média dos blocos de trabalho · linha vermelha = FC média dos blocos</span></h3><div class="chart-box"><canvas id="ks-chart"></canvas></div>
-    <div class="legend">${types.map(k => `<span><i class="dot" style="background:${STYPE[k][1]}"></i>${STYPE[k][0]}</span>`).join('')}<span><i class="dot" style="background:#3fbf6f"></i>média no alvo</span><span><i class="dot" style="background:#e6b422"></i>perto</span><span><i class="dot" style="background:#ef4444"></i>fora</span></div></div>
-  <div class="card section"><h3>Sessões <span class="sub">toque numa linha para abrir blocos, gráfico e análise · 🔗 copia o link para compartilhar</span></h3>
-    <div class="tbl-wrap"><table class="ks-tbl"><thead><tr><th>Data</th><th>Sessão</th><th>Tipo</th><th>Blocos</th><th>Alvo</th><th class="n">Média dos blocos</th><th>Δ vs alvo</th><th class="n">FC blocos</th><th class="n">EF</th><th class="n">Decoup.</th><th class="n">Lactato</th><th class="n">RPE</th><th></th></tr></thead><tbody>
-    ${list.map(s => { const dl = sessDelta(s); return `<tr data-wid="${s.wid}">
-      <td style="white-space:nowrap">${DOW[(D(s.d).getDay()+6)%7]} ${ddmmyy(s.d)}</td>
-      <td style="min-width:200px"><b>${esc(s.title.split(' (Sem.')[0])}</b></td>
-      <td><span class="ks-type"><i style="background:${STYPE[s.type][1]}"></i>${STYPE[s.type][0]}</span></td>
-      <td><span class="ks-bk" title="cada barra = 1 bloco">${s.work.map(l => `<i class="${({ok:'g',warn:'y',bad:'r'})[l.status]||''}" title="${fv(l.value)}${l.hr ? ' · FC ' + l.hr : ''}"></i>`).join('')}</span> <span class="small muted">${s.n}× · ${fmtN(s.dur/60)}'</span></td>
-      <td style="white-space:nowrap">${fr(s)}</td>
-      <td class="n"><b>${fv(s.val)}</b></td>
-      <td><span class="ks-dl ${dl[1]}">${esc(dl[0])}</span></td>
-      <td class="n">${s.hr ? Math.round(s.hr) : '—'}</td>
-      <td class="n">${s.ef != null ? fmtN(s.ef, 2) : '—'}</td>
-      <td class="n">${s.dec != null ? fmtN(s.dec, 1) + '%' : '—'}</td>
-      <td class="n" style="white-space:nowrap" title="${esc(s.lac.map(v => fmtN(v, 1)).join(' → '))}">${!s.lac.length ? '—' : s.lac.length === 1 ? fmtN(s.lac[0], 1) : `${fmtN(s.lac[0], 1)} → ${fmtN(s.lac[s.lac.length-1], 1)}${s.lac.length > 2 ? ` <span class="muted small">(${s.lac.length})</span>` : ''}`}</td>
-      <td class="n">${s.rpe != null ? s.rpe : '—'}</td>
-      <td>${s.wid ? `<button class="lnk" data-copy="${s.wid}" title="Copiar link desta sessão">🔗</button>` : ''}</td></tr>`; }).join('')}
-    </tbody></table></div>
-    <div class="small muted" style="margin-top:8px">Média ponderada pela duração dos blocos de trabalho (aquecimento, recuperações e desaquecimento ficam fora). Compare EF só entre sessões do mesmo tipo e do mesmo local (velódromo × estrada × rolo).</div></div>`}`;
-  $('#ks-sport').onclick = e => { const b = e.target.closest('[data-sp]'); if (b) { state.sSport = b.dataset.sp; state.sType = 'q'; vSess(); } };
-  $('#ks-types').onclick = e => { const b = e.target.closest('[data-ty]'); if (b) { state.sType = b.dataset.ty; vSess(); } };
-  bindWorkoutRows(); bindCopy();
-  const el = $('#ks-chart'); if (!el || !list.length) return;
-  const L = list.slice().reverse(), isP = sp === 'run';
-  const vals = L.flatMap(s => [s.val, s.lo, s.hi]).filter(v => v != null), pad = isP ? 8 : 12;
-  kill('ks');
-  charts.ks = new Chart(el, {data:{labels: L.map(s => ddmm(s.d)), datasets:[
-    {type:'bar', label:'Alvo', data: L.map(s => s.lo != null ? [s.lo, s.hi] : null), backgroundColor: L.map(s => STYPE[s.type][1] + '40'), borderColor: L.map(s => STYPE[s.type][1]), borderWidth:1, borderSkipped:false, borderRadius:4, barPercentage:.55, yAxisID:'y', order:3},
-    {type:'line', label:'Média dos blocos', data: L.map(s => s.val), showLine:false, pointRadius:8, pointHoverRadius:10, pointBackgroundColor: L.map(s => ({g:'#3fbf6f', y:'#e6b422', r:'#ef4444'})[sessDelta(s)[1]] || '#e5e7eb'), pointBorderColor:'#0f1117', pointBorderWidth:2, yAxisID:'y', order:1},
-    {type:'line', label:'FC dos blocos', data: L.map(s => s.hr ? Math.round(s.hr) : null), borderColor:'rgba(248,113,113,.8)', borderWidth:1.5, pointRadius:3, spanGaps:true, yAxisID:'y1', order:2}]},
-    options:{interaction:{mode:'index', intersect:false}, onClick:(e, els) => { if (els.length) { const s = L[els[0].index]; if (s.wid) openWorkout(s.wid); } },
-      plugins:{legend:{display:false}, tooltip:{callbacks:{title: it => { const s = L[it[0].dataIndex]; return `${ddmmyy(s.d)} · ${STYPE[s.type][0]}`; },
-        label: c => { if (c.raw == null) return null; if (c.dataset.label === 'Alvo') return `Alvo: ${fr(L[c.dataIndex])}`; if (c.dataset.label === 'FC dos blocos') return `FC: ${c.raw}`; return `Executado: ${fv(c.raw)} (${sessDelta(L[c.dataIndex])[0]})`; }}}},
-      scales:{x:{grid:{display:false}}, y:{reverse:isP, min: Math.min(...vals) - pad, max: Math.max(...vals) + pad, title:{display:true, text: isP ? 'Pace (min/km)' : 'Potência (W)'}, ticks:{callback: v => isP ? fmtPace(v) : Math.round(v)}},
-        y1:{position:'right', grid:{display:false}, title:{display:true, text:'FC'}}}}});
+function sessFmt(sp){ return v => v == null ? '—' : sp === 'bike' ? `${Math.round(v)} W` : fmtPace(v) + '/km'; }
+function sessRange(s){ return s.lo == null ? '—' : s.sport === 'bike' ? `${Math.round(s.lo)}–${Math.round(s.hi)} W` : `${fmtPace(s.hi)}–${fmtPace(s.lo)}/km`; }
+function blkStrip(s){ return `<span class="ks-bk" title="cada barra = 1 bloco de trabalho">${s.work.map(l => `<i class="${({ok:'g',warn:'y',bad:'r'})[l.status]||''}"></i>`).join('')}</span>`; }
+// selo no cartão do dia (calendário)
+function kqLine(s){
+  const dl = sessDelta(s);
+  return `<div class="kq"><span class="kq-t" style="--c:${STYPE[s.type][1]}">${esc(STYPE[s.type][0])}</span>${blkStrip(s)}${dl[1] ? `<span class="ks-dl ${dl[1]}">${esc(dl[0])}</span>` : ''}</div>`;
+}
+// painel da semana: o que interessa de cada sessão de qualidade, lado a lado
+function qualityPanel(list){
+  return `<div class="card section"><h3>Sessões de qualidade da semana <span class="sub">limiar, MLSS, validações e testes · toque para abrir blocos e a evolução</span></h3>
+    <div class="kq-grid">${list.map(s => { const f = sessFmt(s.sport), dl = sessDelta(s);
+      return `<button class="kq-card" data-wid="${s.wid}" style="--c:${STYPE[s.type][1]}">
+        <div class="kq-h"><span class="kq-t" style="--c:${STYPE[s.type][1]}">${esc(STYPE[s.type][0])}</span><span class="muted small">${DOW[(D(s.d).getDay()+6)%7]} ${ddmm(s.d)} · ${esc(SPORT_LABEL[s.sport])}</span></div>
+        <div class="kq-title">${esc(s.title.split(' (Sem.')[0])}</div>
+        <div class="kq-big"><b>${f(s.val)}</b><span class="muted small"> média dos blocos</span></div>
+        <div class="kq-row"><span>alvo <b>${esc(sessRange(s))}</b></span>${dl[1] ? `<span class="ks-dl ${dl[1]}">${esc(dl[0])}</span>` : `<span class="muted small">${esc(dl[0])}</span>`}</div>
+        <div class="kq-row">${blkStrip(s)}<span class="small muted">${s.n}× · ${fmtN(s.dur/60)}'</span></div>
+        <div class="kq-met">${s.hr ? `<span>FC <b>${Math.round(s.hr)}</b></span>` : ''}${s.ef != null ? `<span>EF <b>${fmtN(s.ef,2)}</b></span>` : ''}${s.dec != null ? `<span>Decoup. <b>${fmtN(s.dec,1)}%</b></span>` : ''}${s.lac.length ? `<span>🩸 <b>${s.lac.length === 1 ? fmtN(s.lac[0],1) : fmtN(s.lac[0],1) + ' → ' + fmtN(s.lac[s.lac.length-1],1)}</b></span>` : ''}${s.rpe != null ? `<span>RPE <b>${s.rpe}</b></span>` : ''}</div>
+      </button>`; }).join('')}</div></div>`;
+}
+// janela do treino: evolução das sessões do mesmo tipo (até esta), com esta destacada
+function sessCompare(w){
+  const all = keySessions(A()), cur = all.find(s => String(s.wid) === String(w.id));
+  if (!cur || cur.type === 'z1' || cur.type === 'test') return '';
+  const same = all.filter(s => s.sport === cur.sport && s.type === cur.type && s.d <= cur.d).sort((x,y) => x.d.localeCompare(y.d)).slice(-8);
+  const f = sessFmt(cur.sport);
+  return `<h3 class="small muted" style="margin:14px 0 6px">EVOLUÇÃO — ${esc(STYPE[cur.type][0].toUpperCase())} · ${esc(SPORT_LABEL[cur.sport].toUpperCase())}</h3>
+    ${same.length < 2 ? `<div class="note">Primeira sessão deste tipo analisada — a comparação começa na próxima.</div>` : `<div class="chart-box sm" style="height:190px"><canvas id="an-cmp"></canvas></div>
+    <div class="tbl-wrap" style="margin-top:6px"><table class="small"><thead><tr><th>Data</th><th>Alvo</th><th class="n">Média</th><th>Δ</th><th class="n">FC</th><th class="n">EF</th><th class="n">Lactato</th><th class="n">RPE</th></tr></thead><tbody>
+    ${same.slice().reverse().map(s => { const dl = sessDelta(s); return `<tr${String(s.wid) === String(w.id) ? ' style="background:rgba(255,124,58,.10)"' : ''}><td>${ddmmyy(s.d)}</td><td>${esc(sessRange(s))}</td><td class="n"><b>${f(s.val)}</b></td><td><span class="ks-dl ${dl[1]}">${esc(dl[0])}</span></td><td class="n">${s.hr ? Math.round(s.hr) : '—'}</td><td class="n">${s.ef != null ? fmtN(s.ef,2) : '—'}</td><td class="n">${s.lac.length ? fmtN(s.lac[s.lac.length-1],1) : '—'}</td><td class="n">${s.rpe ?? '—'}</td></tr>`; }).join('')}
+    </tbody></table></div>`}`;
+}
+function drawSessCompare(w){
+  const el = $('#an-cmp'); if (!el) return;
+  const all = keySessions(A()), cur = all.find(s => String(s.wid) === String(w.id));
+  const L = all.filter(s => s.sport === cur.sport && s.type === cur.type && s.d <= cur.d).sort((x,y) => x.d.localeCompare(y.d)).slice(-8);
+  const isP = cur.sport === 'run', f = sessFmt(cur.sport), vals = L.flatMap(s => [s.val, s.lo, s.hi]).filter(v => v != null), pad = isP ? 8 : 12;
+  if (charts.anCmp) charts.anCmp.destroy();
+  charts.anCmp = new Chart(el, {data:{labels: L.map(s => ddmm(s.d)), datasets:[
+    {type:'bar', label:'Alvo', data: L.map(s => s.lo != null ? [s.lo, s.hi] : null), backgroundColor:'rgba(34,197,94,.14)', borderColor:'rgba(34,197,94,.5)', borderWidth:1, borderSkipped:false, borderRadius:4, barPercentage:.5, yAxisID:'y', order:3},
+    {type:'line', label:'Média dos blocos', data: L.map(s => s.val), showLine:true, borderColor:'rgba(229,231,235,.35)', borderWidth:1, pointRadius: L.map(s => String(s.wid) === String(w.id) ? 9 : 6), pointBackgroundColor: L.map(s => ({g:'#3fbf6f', y:'#e6b422', r:'#ef4444'})[sessDelta(s)[1]] || '#e5e7eb'), pointBorderColor: L.map(s => String(s.wid) === String(w.id) ? '#ff7c3a' : '#0f1117'), pointBorderWidth: L.map(s => String(s.wid) === String(w.id) ? 3 : 2), yAxisID:'y', order:1},
+    {type:'line', label:'FC', data: L.map(s => s.hr ? Math.round(s.hr) : null), borderColor:'rgba(248,113,113,.8)', borderWidth:1.5, pointRadius:2, spanGaps:true, yAxisID:'y1', order:2}]},
+    options:{interaction:{mode:'index', intersect:false}, plugins:{legend:{display:false}, tooltip:{callbacks:{title: it => ddmmyy(L[it[0].dataIndex].d), label: c => c.raw == null ? null : c.dataset.label === 'Alvo' ? `Alvo: ${sessRange(L[c.dataIndex])}` : c.dataset.label === 'FC' ? `FC: ${c.raw}` : `Média: ${f(c.raw)} (${sessDelta(L[c.dataIndex])[0]})`}}},
+      scales:{x:{grid:{display:false}}, y:{reverse:isP, min: Math.min(...vals) - pad, max: Math.max(...vals) + pad, ticks:{callback: v => isP ? fmtPace(v) : Math.round(v)}}, y1:{position:'right', grid:{display:false}}}}});
 }
 
 // ── HISTÓRICO (ciclos encerrados) ────────────────────────────────────
