@@ -222,7 +222,7 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
   </nav>
   <div id="warn"></div>
   <main id="view"></main>
-  <footer>Gerado em 09/11/2026 08:35 (Brasília) · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
+  <footer>Gerado em 09/11/2026 08:40 (Brasília) · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
 </div>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box" id="modal-box"></div></div>
 
@@ -542,11 +542,21 @@ function vCal(){
     <div class="card kpi"><div class="l">Alvo do macro</div><div class="v">${fmtN(ws.target_tss)}</div><div class="s">${ws.target_h ? fmtH(ws.target_h) + ' alvo' : 'sem semana do macro'}${ws.tss!=null && ws.target_tss ? ` · ${fmtN(ws.tss/ws.target_tss*100)}% cumprido` : ''}</div></div>
     <div class="card kpi"><div class="l">Horas realizadas</div><div class="v">${fmtH(ws.h)}</div><div class="s">${Object.entries(ws.sport_h||{}).map(([k,v]) => `${SPORT_LABEL[k]||k} ${fmtH(v)}`).join(' · ') || '—'}</div></div>
   </div>
-  <div class="legend">${Object.entries(COMP_LABEL).map(([k,v]) => `<span><i class="st st-${k}" style="position:static;display:inline-block;width:9px;height:9px;border-radius:50%"></i>${v}</span>`).join('')}</div>`;
+  <div class="legend">${Object.entries(COMP_LABEL).map(([k,v]) => `<span><i class="st st-${k}" style="position:static;display:inline-block;width:9px;height:9px;border-radius:50%"></i>${v}</span>`).join('')}</div>
+  ${calWeekly(a, m, days[6])}`;
   $('#cal-prev').onclick = () => { if (m > minM) { state.calMonday = addDays(m,-7); vCal(); } };
   $('#cal-next').onclick = () => { if (m < maxM) { state.calMonday = addDays(m,7); vCal(); } };
   $('#cal-today').onclick = () => { state.calMonday = mondayOf(TODAY); vCal(); };
   bindWorkoutRows();
+}
+// Análise semanal da semana exibida (weekly_analyses). Sem análise ainda: aviso de quando sai
+// e, recolhida, a análise da semana anterior — que é a base da prescrição desta semana.
+function calWeekly(a, m, sun){
+  const WA = a.weekly_an || {}, cur = WA[m], prev = WA[addDays(m,-7)];
+  if (cur) return `<div class="card section"><h3>Análise semanal</h3>${weeklyCard(cur)}</div>`;
+  const msg = sun < TODAY ? 'Nenhuma análise semanal registrada para esta semana.'
+    : `A análise desta semana sai no domingo, ${ddmm(sun)}, por volta das 14h45.`;
+  return `<div class="card section"><h3>Análise semanal</h3><div class="small muted">${msg}</div>${prev ? `<details style="margin-top:10px"><summary>Análise da semana anterior (${ddmm(prev.mon)}–${ddmm(addDays(prev.mon,6))}) — base da prescrição desta semana</summary>${weeklyCard(prev)}</details>` : ''}</div>`;
 }
 function openWorkout(id){
   const w = A().workouts.find(x => String(x.id) === String(id));
