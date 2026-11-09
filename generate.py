@@ -487,8 +487,9 @@ def threshold_status(passports, athlete_key, warnings):
             else:
                 st = "estimated"
             hr_tag = src.split("hr=", 1)[1] if "hr=" in src else ""
-            hr_est = "estimated" in hr_tag or f"lt{n}_ratio" in hr_tag
-            hr_cl = (not hr_est) and "constant_load" in hr_tag
+            segs = [g for g in re.split(r"[,+]", hr_tag) if f"lt{n}" in g.lower()]
+            hr_est = "estimated" in hr_tag or any("ratio" in g for g in segs)
+            hr_cl = (not hr_est) and any("constant_load" in g for g in segs)
             res[f"lt{n}"] = {"value": val, "hr": cur.get(f"lt{n}_hr"), "hr_est": hr_est, "hr_cl": hr_cl, "state": st,
                              "by": {"date": last.get("date"), "title": last.get("title"), "verdict_label": last.get("verdict_label")} if last else None}
         out[sport] = res
