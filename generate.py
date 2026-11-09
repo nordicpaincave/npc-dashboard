@@ -309,10 +309,11 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
             rest.append({"t": r["sampled_at"].astimezone(TZ).strftime("%Y-%m-%d %H:%M"), "purpose": r["purpose"],
                          "mmol": num(r["lactate_mmol"], 1), "site": r["sample_site"], "err": r["error_code"],
                          "notes": r["notes"]})
-    out = []
+    out, discarded = [], []
     for (day, sport, rnd), samples in sorted(tests.items()):
         if any((s["notes"] or "").upper().startswith("INVALIDADO") for s in samples):
-            print(f"    lactato {day}-{sport}-{rnd}: teste INVALIDADO — fora do dashboard")
+            print(f"    lactato {day}-{sport}-{rnd}: teste INVALIDADO — listado como descartado")
+            discarded.append({"date": day, "sport": sport, "round": rnd, "strips": len(samples)})
             continue
         samples.sort(key=lambda s: (s["step_index"] if s["step_index"] is not None else -1))
         is_run = sport == "run"
@@ -374,7 +375,7 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
             "before": {"lt1": thr(before, 1, is_run), "lt2": thr(before, 2, is_run), "v": before["v"], "source": before["source"]} if before else None,
             "files": [{"name": n, "path": f"/{folder}/{n}".replace(os.sep, "/")} for n in files],
         })
-    return {"tests": out, "rest": rest, "docs": load_lactate_docs(athlete_key, warnings),
+    return {"tests": out, "discarded": discarded, "rest": rest, "docs": load_lactate_docs(athlete_key, warnings),
             "validations": build_validations(vals, athlete_key, passports, warnings),
             "status": threshold_status(passports, athlete_key, warnings)}
 
@@ -420,8 +421,9 @@ def build_validations(vals, athlete_key, passports, warnings):
             row = {"t": s["sampled_at"].astimezone(TZ).strftime("%H:%M"), "label": lab, "min": minute, "kind": kind,
                    "mmol": num(s["lactate_mmol"], 1), "load": load, "pace": s["pace_s_per_km"], "hr": num(s["hr_bpm"], 0),
                    "rpe": num(s["rpe"], 0), "site": s["sample_site"], "err": s["error_code"], "notes": s["notes"]}
+            row["excluded"] = "não entra no critério" in (s["notes"] or "").lower()
             rows.append(row)
-            if row["mmol"] is None or row["err"]:
+            if row["mmol"] is None or row["err"] or row["excluded"]:
                 continue
             if kind == "point":
                 by_min.setdefault(minute, []).append(row)
@@ -484,7 +486,10 @@ def threshold_status(passports, athlete_key, warnings):
                 st = "measured"
             else:
                 st = "estimated"
-            res[f"lt{n}"] = {"value": val, "hr": cur.get(f"lt{n}_hr"), "hr_est": "hr=estimated" in src, "state": st,
+            hr_tag = src.split("hr=", 1)[1] if "hr=" in src else ""
+            hr_est = "estimated" in hr_tag or f"lt{n}_ratio" in hr_tag
+            hr_cl = (not hr_est) and "constant_load" in hr_tag
+            res[f"lt{n}"] = {"value": val, "hr": cur.get(f"lt{n}_hr"), "hr_est": hr_est, "hr_cl": hr_cl, "state": st,
                              "by": {"date": last.get("date"), "title": last.get("title"), "verdict_label": last.get("verdict_label")} if last else None}
         out[sport] = res
     return out

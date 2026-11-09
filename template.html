@@ -775,7 +775,7 @@ function vLactato(){
   const chip = i => `<button class="chip ${i.id===state.lacSel?'on':''}" data-lsel="${esc(i.id)}">${i.type === 'test' ? `${i.obj.round ? esc(i.obj.round)+' · ' : ''}${SPORT_LABEL[i.obj.sport]||i.obj.sport} · ${ddmmyy(i.date)}` : `${esc(valShort(i.obj))} · ${ddmmyy(i.date)}`}</button>`;
   let html = lactateStatus(L.status);
   html += `<div class="toolbar" style="flex-direction:column;align-items:flex-start;gap:8px">
-    ${tests.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted" style="min-width:150px">Testes incrementais</span>${items.filter(i=>i.type==='test').map(chip).join('')}</div>` : ''}
+    ${(tests.length || (L.discarded||[]).length) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted" style="min-width:150px">Testes incrementais</span>${items.filter(i=>i.type==='test').map(chip).join('')}${(L.discarded||[]).map(d => `<span class="chip" style="opacity:.55;cursor:default;text-decoration:line-through" title="Teste descartado: as fitas seguem no banco, mas a curva não entra nas zonas">${d.round ? esc(d.round)+' · ' : ''}${SPORT_LABEL[d.sport]||d.sport} · ${ddmmyy(d.date)} · descartado</span>`).join('')}</div>` : ''}
     ${vals.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted" style="min-width:150px">Validações em carga constante</span>${items.filter(i=>i.type==='val').map(chip).join('')}</div>` : ''}
   </div>`;
   if (!sel) {
@@ -811,7 +811,7 @@ function lactateStatus(st){
   const fmtV = (sp, x) => x.value == null ? '—' : sp === 'run' ? `${fmtPace(x.value)}/km` : `${fmtN(x.value)} W`;
   const cell = (sp, n) => { const x = st[sp] && st[sp]['lt'+n]; if (!x) return '<div></div>'; const s = LT_STATE[x.state] || {c:'',t:x.state};
     const go = x.by ? ` · <a href="#" data-lgo="${esc(`v:${x.by.date}-${sp}`)}">${esc(x.by.verdict_label || x.by.title || 'ver validação')} (${ddmmyy(x.by.date)})</a>` : '';
-    return `<div class="lts-cell"><div class="small muted">LT${n} · ${n===1?'limiar aeróbio':'limiar anaeróbio'}</div><div class="lts-v">${fmtV(sp, x)}${x.hr ? ` <span class="small muted">· ${x.hr_est ? 'FC estimada ' : ''}${x.hr} bpm</span>` : ''}</div><div class="small"><span class="pill ${s.c}">${esc(s.t)}</span>${go}</div></div>`; };
+    return `<div class="lts-cell"><div class="small muted">LT${n} · ${n===1?'limiar aeróbio':'limiar anaeróbio'}</div><div class="lts-v">${fmtV(sp, x)}${x.hr ? ` <span class="small muted">· ${x.hr_est ? 'FC estimada ' : ''}${x.hr} bpm${x.hr_cl ? ' (medida em carga constante)' : ''}</span>` : ''}</div><div class="small"><span class="pill ${s.c}">${esc(s.t)}</span>${go}</div></div>`; };
   return `<div class="card section" style="margin-top:0"><h3>Situação dos limiares <span class="sub">passaporte vigente · o que já foi medido e o que já foi validado</span></h3>
     <div class="lts">${['bike','run'].filter(sp => st[sp]).map(sp => `<div class="lts-row"><div class="lts-sport"><b>${SPORT_LABEL[sp]}</b><div class="small muted">passaporte v${st[sp].v}${st[sp].from ? ' · desde '+ddmmyy(st[sp].from) : ''}</div></div>${cell(sp,1)}${cell(sp,2)}</div>`).join('')}</div>
     <div class="small muted section">Medido = saiu da curva do teste incremental. Validado = confirmado depois em carga constante (o lactato ficou estável na carga do limiar). Ajustado = a carga constante mostrou que o valor do incremental estava alto e ele foi corrigido.</div></div>`;
