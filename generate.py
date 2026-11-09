@@ -576,7 +576,8 @@ def norm_weekly(r):
             "alertas": list(r["alertas"] or []), "descarga": r["semana_descarga"], "taper": r["antecipar_taper"],
             "rev_zonas": r["revisar_zonas"], "red_vol": r["reduzir_volume_pct"], "prescricao": r["observacoes_prescricao"],
             "bike_flags": list(r["bike_key_session_flags"] or []), "run_flags": list(r["run_key_session_flags"] or []),
-            "sessoes": r["session_analysis_summary"]}
+            "sessoes": r["session_analysis_summary"],
+            "visual": r.get("visual") if isinstance(r.get("visual"), dict) else None}
 
 
 def slug(s):

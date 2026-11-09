@@ -73,7 +73,7 @@ def fetch(conn, athlete_tp_ids):
     weekly = q("""select athlete_id, week_start, week_number, analyzed_at, ctl_snapshot, atl_snapshot, tsb_snapshot,
                          hrv_last, hrv_baseline, sleep_avg, tss_planned, tss_actual, adherence_pct, status_geral, resumo,
                          destaques, alertas, semana_descarga, antecipar_taper, revisar_zonas, reduzir_volume_pct,
-                         observacoes_prescricao, bike_key_session_flags, run_key_session_flags, session_analysis_summary
+                         observacoes_prescricao, bike_key_session_flags, run_key_session_flags, session_analysis_summary, visual
                   from weekly_analyses where athlete_id = any(%s) order by week_start""", ids)
     return {"athletes": ath, "sports": sports, "plans": plans, "phases": phases, "weeks": weeks,
             "events": events, "passports": passports, "lactate": lactate, "zones": zones,
