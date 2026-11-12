@@ -348,6 +348,7 @@ function initNav(){
   $('#ath-seg').innerHTML = KEYS.map(k => `<button data-ath="${k}">${esc(DB.athletes[k].short)}</button>`).join('');
   $('#ath-seg').onclick = e => { const b = e.target.closest('button'); if (b) setAth(b.dataset.ath); };
   $('#tabs').onclick = e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); };
+  if (KEYS.length < 2) { const cb = document.querySelector('[data-tab="comp"]'); if (cb) cb.remove(); $('#ath-seg').style.display = 'none'; }
   const path = location.pathname.replace(/^\/|\/$/g,'').toLowerCase();
   const hash = location.hash.replace('#','');
   state.ath = KEYS.includes(path) ? path : KEYS[0];

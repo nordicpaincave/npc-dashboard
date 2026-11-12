@@ -1,9 +1,9 @@
 # NPC Endurance — Dashboard de Treinos
 
-Dashboard de Bruno e Jean: uma "cópia" do TrainingPeaks com mais dados — plano macro até as
+Dashboard do Bruno (Jean saiu da NPC em nov/2026; dados dele seguem no Supabase): uma "cópia" do TrainingPeaks com mais dados — plano macro até as
 provas, limiares e zonas, e os testes de lactato com curva, métodos e arquivos.
 
-Site: https://npc-dashboard-seven.vercel.app (também `/bruno` e `/jean`).
+Site: https://npc-dashboard-seven.vercel.app (também `/bruno`).
 Atualizado automaticamente a cada 2 dias pela GitHub Action **Atualizar Dashboard NPC**.
 
 ## De onde vem cada dado

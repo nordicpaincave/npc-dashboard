@@ -67,7 +67,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 const COACH_PIN='0000';
 const mode = new URLSearchParams(location.search).get('mode') || 'atleta';
 document.getElementById('page-sub').textContent = mode === 'treinador' ? 'Área do Treinador' : 'Área do Atleta';
-const PINS={'3060':'bruno','1590':'jean','5056':'gabriel','6470':'rafael','5861':'simony','1606':'clara'};
+const PINS={'3060':'bruno','5056':'gabriel','6470':'rafael','5861':'simony','1606':'clara'};
 let pin='';
 function press(d){if(pin.length>=4)return;pin+=d;document.getElementById('d'+(pin.length-1)).classList.add('on');if(pin.length===4)setTimeout(check,130)}
 function del(){if(!pin.length)return;document.getElementById('d'+(pin.length-1)).classList.remove('on');pin=pin.slice(0,-1);document.getElementById('err').textContent=''}

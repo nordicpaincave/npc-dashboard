@@ -35,7 +35,7 @@ FILES_DIR = "files"
 # Atletas exibidos (chave da URL → id no TrainingPeaks)
 ATHLETES = {
     "bruno": {"tp_id": 6285028, "name": "Bruno Trevisan Romero", "short": "Bruno"},
-    "jean":  {"tp_id": 6286348, "name": "Jean Romano",           "short": "Jean"},
+    # Jean saiu da NPC em 12/11/2026 (dados preservados no Supabase, fora do dashboard)
 }
 
 # IDs de tipo de treino do TP (tp_get_workout_types)

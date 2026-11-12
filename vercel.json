@@ -12,10 +12,6 @@
     {
       "src": "/bruno",
       "dest": "/index.html"
-    },
-    {
-      "src": "/jean",
-      "dest": "/index.html"
     }
   ]
 }
