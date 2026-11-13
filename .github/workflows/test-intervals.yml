@@ -1,0 +1,39 @@
+name: Testar fonte Intervals (sem publicar)
+
+# Só manual. Gera o dashboard a partir do Intervals.icu e NÃO commita nada:
+# serve para validar a troca de fonte antes/depois do corte de 16/11/2026.
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests "psycopg[binary]"
+      - name: Gerar dashboard pelo Intervals (dry run)
+        env:
+          NPC_DATA_SOURCE: intervals
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          SUPABASE_READER_PASSWORD: ${{ secrets.SUPABASE_READER_PASSWORD }}
+        run: |
+          python generate.py
+          python - <<'PY'
+          import json, re
+          html = open("index.html", encoding="utf-8").read()
+          m = re.search(r"const DB = (\{.*?\});\n", html, re.S)
+          db = json.loads(m.group(1))
+          a = db["athletes"]["bruno"]
+          done = [w for w in a["workouts"] if w["done"]]
+          plan = [w for w in a["workouts"] if not w["done"]]
+          print("treinos feitos:", len(done), "| planejados:", len(plan))
+          print("PMC último:", a["pmc"][-2:])
+          print("wellness último:", a.get("wellness", [])[-2:])
+          for w in sorted(a["workouts"], key=lambda w: w["date"])[-12:]:
+              print(w["date"], w["sport"], "done" if w["done"] else "plan", "|", w["title"][:60],
+                    "| tss", (w["act"] or {}).get("tss"), "plan", w["plan"]["tss"], "| rpe", (w["act"] or {}).get("rpe"))
+          PY
