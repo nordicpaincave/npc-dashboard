@@ -635,7 +635,7 @@ def build_history(key, tp_id, a_uuid, sb):
 # ── Montagem por atleta ───────────────────────────────────────────────
 def build_athlete(key, cfg, sb, warnings):
     tp_id = cfg["tp_id"]
-    api_id = cfg.get("icu_id") or tp_id   # id do atleta na fonte de dados (Intervals)
+    api_id = (cfg.get("icu_id") if DATA_SOURCE == "intervals" else None) or tp_id   # id na fonte de dados
     a_uuid = next((a["id"] for a in sb["athletes"] if str(a["tp_athlete_id"]) == str(tp_id)), None)
     plan = build_plan(sb, a_uuid) if a_uuid else None
     start = min(TODAY - timedelta(days=63), d(plan["start"]) if plan else TODAY)
