@@ -34,8 +34,11 @@ jobs:
       # Se o TP ou o Supabase falhar, o generate.py sai com código 1:
       # o job fica vermelho, o GitHub avisa por e-mail e o passo de publicação
       # abaixo NÃO roda (o site mantém a última versão boa).
-      - name: Gerar dashboard (TrainingPeaks + Supabase)
+      - name: Gerar dashboard (Intervals.icu + Supabase)
         env:
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          # TrainingPeaks: só até 15/11/2026 (o generate.py troca sozinho na data do corte).
+          # Depois do corte pode apagar o secret TP_COOKIE; para voltar ao TP, restaure-o.
           TP_COOKIE: ${{ secrets.TP_COOKIE }}
           SUPABASE_READER_PASSWORD: ${{ secrets.SUPABASE_READER_PASSWORD }}
         run: python generate.py

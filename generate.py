@@ -25,7 +25,17 @@ import csv, io, json, math, os, re, sys
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from npc import tp
+# Fonte de treinos/PMC/wellness: Intervals.icu a partir de 16/11/2026 (TrainingPeaks desligado).
+# Troca automática na data do corte; NPC_DATA_SOURCE=intervals|trainingpeaks força uma das duas.
+# Para voltar ao TP de vez: NPC_DATA_SOURCE=trainingpeaks e o secret TP_COOKIE.
+INTERVALS_CUTOVER = "2026-11-16"
+DATA_SOURCE = os.environ.get("NPC_DATA_SOURCE") or (
+    "intervals" if datetime.now(ZoneInfo("America/Sao_Paulo")).date().isoformat() >= INTERVALS_CUTOVER
+    else "trainingpeaks")
+if DATA_SOURCE == "intervals":
+    from npc import intervals as tp
+else:
+    from npc import tp
 from npc.lactate import analyze
 
 TZ = ZoneInfo("America/Sao_Paulo")
@@ -34,7 +44,8 @@ FILES_DIR = "files"
 
 # Atletas exibidos (chave da URL → id no TrainingPeaks)
 ATHLETES = {
-    "bruno": {"tp_id": 6285028, "name": "Bruno Trevisan Romero", "short": "Bruno"},
+    # tp_id: só para achar o atleta no Supabase (athletes.tp_athlete_id); icu_id: id no Intervals
+    "bruno": {"tp_id": 6285028, "icu_id": "i793767", "name": "Bruno Trevisan Romero", "short": "Bruno"},
     # Jean saiu da NPC em 12/11/2026 (dados preservados no Supabase, fora do dashboard)
 }
 
@@ -591,6 +602,15 @@ def build_history(key, tp_id, a_uuid, sb):
     out = []
     for c in [c for c in sb["cycles"] if c["athlete_id"] == a_uuid]:
         s, e = c["start_date"], c["end_date"]
+        rel = f"{FILES_DIR}/historico/{key}/{slug(c['name'])}.json"
+        if os.path.exists(rel):
+            # Ciclo encerrado já arquivado (veio do TP): não refaz — o Intervals não tem os planejados antigos.
+            with open(rel, encoding="utf-8") as f:
+                old = json.load(f)
+            out.append({"name": old["name"], "start": old["start"], "end": old["end"], "file": "/" + rel,
+                        "n_done": sum(1 for w in old["workouts"] if w["done"]),
+                        "n_daily": len(old["daily"]), "n_weekly": len(old["weekly"])})
+            continue
         ws = sorted((norm_workout(w) for w in tp.workouts(tp_id, s, e)), key=lambda w: (w["date"], w["id"] or 0))
         ws = [w for w in ws if w["sport"] != "dayoff"]
         daily = [norm_daily(r) for r in sb["daily"] if r["athlete_id"] == a_uuid and s <= r["log_date"] <= e]
@@ -615,16 +635,17 @@ def build_history(key, tp_id, a_uuid, sb):
 # ── Montagem por atleta ───────────────────────────────────────────────
 def build_athlete(key, cfg, sb, warnings):
     tp_id = cfg["tp_id"]
+    api_id = cfg.get("icu_id") or tp_id   # id do atleta na fonte de dados (Intervals)
     a_uuid = next((a["id"] for a in sb["athletes"] if str(a["tp_athlete_id"]) == str(tp_id)), None)
     plan = build_plan(sb, a_uuid) if a_uuid else None
     start = min(TODAY - timedelta(days=63), d(plan["start"]) if plan else TODAY)
     end = TODAY + timedelta(days=35)
     print(f"    treinos {start} → {end}")
-    workouts = sorted((norm_workout(w) for w in tp.workouts(tp_id, start, end)), key=lambda w: (w["date"], w["id"] or 0))
-    pmc = norm_pmc(tp.performance(tp_id, TODAY - timedelta(days=400), TODAY), workouts)
+    workouts = sorted((norm_workout(w) for w in tp.workouts(api_id, start, end)), key=lambda w: (w["date"], w["id"] or 0))
+    pmc = norm_pmc(tp.performance(api_id, TODAY - timedelta(days=400), TODAY), workouts)
     if not pmc:
-        raise RuntimeError("PMC vazio no TP")
-    wellness = norm_wellness(tp.metrics(tp_id, TODAY - timedelta(days=60), TODAY))
+        raise RuntimeError("PMC vazio no Intervals")
+    wellness = norm_wellness(tp.metrics(api_id, TODAY - timedelta(days=60), TODAY))
     print(f"    {len(workouts)} treinos · PMC {len(pmc)} dias (CTL {pmc[-1]['ctl']}) · wellness {len(wellness)} dias")
     passports = build_passports(sb, a_uuid) if a_uuid else {}
     events = [{"date": str(e["event_date"]), "name": e["name"], "type": e["event_type"], "priority": e["priority"],
@@ -635,8 +656,8 @@ def build_athlete(key, cfg, sb, warnings):
     first_m = monday(min(d(plan["start"]) if plan else TODAY, TODAY - timedelta(days=56)))
     last_m = monday(max(d(plan["end"]) if plan else TODAY, end))
     weeks = week_rows(pmc, workouts, plan, first_m, last_m)
-    lactate = build_lactate(sb, a_uuid, key, tp_id, passports, warnings) if a_uuid else {"tests": [], "rest": []}
-    history = build_history(key, tp_id, a_uuid, sb) if a_uuid else []
+    lactate = build_lactate(sb, a_uuid, key, api_id, passports, warnings) if a_uuid else {"tests": [], "rest": []}
+    history = build_history(key, api_id, a_uuid, sb) if a_uuid else []
     daily = {r["log_date"].isoformat(): norm_daily(r) for r in sb["daily"]
              if r["athlete_id"] == a_uuid and r["log_date"] >= start}
     weekly = {str(r["week_start"]): norm_weekly(r) for r in sb["weekly"]
@@ -674,13 +695,13 @@ def main():
         print(f"  {len(sb['plans'])} planos · {len(sb['weeks'])} semanas · {len(sb['events'])} provas · "
               f"{len(sb['passports'])} passaportes · {len(sb['lactate'])} amostras de lactato · "
               f"{len(sb['daily'])} análises diárias · {len(sb['weekly'])} semanais · {len(sb['cycles'])} ciclos encerrados")
-        print("\n[2/3] TrainingPeaks...")
+        print("\n[2/3] Intervals.icu...")
         db = {"today": TODAY.isoformat(), "athletes": {}}
         for key, cfg in ATHLETES.items():
             print(f"\n  [{key.upper()}] TP {cfg['tp_id']}")
             db["athletes"][key] = build_athlete(key, cfg, sb, warnings)
     except tp.TPAuthError as e:
-        print(f"\n::error title=TrainingPeaks — autenticação::{e}")
+        print(f"\n::error title=Intervals.icu — autenticação::{e}")
         print("index.html NÃO foi alterado.")
         sys.exit(1)
     except supa.SupaError as e:
