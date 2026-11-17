@@ -260,7 +260,7 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
 <body>
 <div class="page">
   <header class="hdr">
-    <div class="logo"><span class="logo-badge">NPC</span><div><h1>NPC Endurance</h1><small>Treinos · plano · limiares — dados do TrainingPeaks e do Supabase</small></div></div>
+    <div class="logo"><span class="logo-badge">NPC</span><div><h1>NPC Endurance</h1><small>Treinos · plano · limiares — dados do Intervals.icu e do Supabase</small></div></div>
     <div class="seg" id="ath-seg" role="group" aria-label="Atleta"></div>
   </header>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Seções">
@@ -274,7 +274,7 @@ footer{margin-top:28px;color:var(--text3);font-size:12px;border-top:1px solid va
   </nav>
   <div id="warn"></div>
   <main id="view"></main>
-  <footer>Gerado em __GENERATED__ · PMC, treinos e wellness: TrainingPeaks · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
+  <footer>Gerado em __GENERATED__ · PMC, treinos e wellness: Intervals.icu · plano macro, provas, passaportes e lactato: Supabase NPC · Atualização automática 2× por dia (GitHub Actions).</footer>
 </div>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box" id="modal-box"></div></div>
 
@@ -428,14 +428,14 @@ function vGeral(){
     <div class="card kpi"><div class="l">Fitness · CTL</div><div class="v" style="color:var(--ctl)">${fmtN(last.ctl,1)}</div><div class="s">${sign(wk ? last.ctl-wk.ctl : null)} em 7 dias${a.plan && a.plan.ctl_peak ? ` · pico-alvo ${a.plan.ctl_peak}` : ''}</div></div>
     <div class="card kpi"><div class="l">Fadiga · ATL</div><div class="v" style="color:var(--atl)">${fmtN(last.atl,1)}</div><div class="s">${sign(wk ? last.atl-wk.atl : null)} em 7 dias</div></div>
     <div class="card kpi"><div class="l">Forma · TSB</div><div class="v" style="color:var(--tsb)">${sign(last.tsb)}</div><div class="s">${formTxt}</div></div>
-    <div class="card kpi"><div class="l">Semana atual · TSS</div><div class="v">${fmtN(cw.tss)}</div><div class="s">planejado no TP ${fmtN(cw.planned_tss)}${cw.target_tss ? ` · alvo do macro ${fmtN(cw.target_tss)}` : ''}${cw.week ? ` · sem. ${cw.week} (${WEEK_TYPE[cw.type]||cw.type})` : ''}</div></div>
+    <div class="card kpi"><div class="l">Semana atual · TSS</div><div class="v">${fmtN(cw.tss)}</div><div class="s">planejado ${fmtN(cw.planned_tss)}${cw.target_tss ? ` · alvo do macro ${fmtN(cw.target_tss)}` : ''}${cw.week ? ` · sem. ${cw.week} (${WEEK_TYPE[cw.type]||cw.type})` : ''}</div></div>
   </div>
   <div class="grid g3 section">${races.slice(0,3).map(raceCard).join('') || '<div class="card muted">Nenhuma prova futura cadastrada no Supabase.</div>'}</div>
   <div class="card section">
-    <h3>Gráfico de performance (PMC) <span class="sub">valores do próprio TrainingPeaks</span></h3>
+    <h3>Gráfico de performance (PMC) <span class="sub">valores do Intervals.icu</span></h3>
     <div class="toolbar"><div class="seg" id="pmc-range">${[90,180,365].map(n=>`<button data-n="${n}" class="${state.pmcRange===n?'on':''}">${n} dias</button>`).join('')}<button data-n="plan" class="${state.pmcRange==='plan'?'on':''}">Até a prova</button></div></div>
     <div class="chart-box lg"><canvas id="pmc"></canvas></div>
-    <div class="legend"><span><i class="dot" style="background:var(--ctl)"></i>CTL (fitness)</span><span><i class="dot" style="background:var(--atl)"></i>ATL (fadiga)</span><span><i class="dot" style="background:var(--tsb)"></i>TSB (forma)</span><span><i class="dot" style="background:var(--tss)"></i>TSS diário</span><span>- - - projeção pelo planejado no TP e pelos alvos do macro</span></div>
+    <div class="legend"><span><i class="dot" style="background:var(--ctl)"></i>CTL (fitness)</span><span><i class="dot" style="background:var(--atl)"></i>ATL (fadiga)</span><span><i class="dot" style="background:var(--tsb)"></i>TSB (forma)</span><span><i class="dot" style="background:var(--tss)"></i>TSS diário</span><span>- - - projeção pelo planejado no Intervals e pelos alvos do macro</span></div>
   </div>
   <div class="grid g4 section">
     ${['hrv','rhr','sleep','bb'].map(k => `<div class="card"><h3>${({hrv:'HRV',rhr:'FC de repouso',sleep:'Sono',bb:'Body Battery'})[k]} <span class="sub" id="wl-${k}-v"></span></h3><div class="chart-box sm"><canvas id="wl-${k}"></canvas></div></div>`).join('')}
@@ -551,7 +551,7 @@ function drawWellness(a){
   for (const k of Object.keys(conf)) {
     const pts = w.filter(x => x[k] != null);
     const el = $('#wl-' + k); if (!el) continue;
-    if (!pts.length) { el.parentElement.innerHTML = '<div class="empty small">Sem dados no TP</div>'; continue; }
+    if (!pts.length) { el.parentElement.innerHTML = '<div class="empty small">Sem dados</div>'; continue; }
     const vals = pts.map(x => x[k]);
     const last7 = vals.slice(-7), avg7 = last7.reduce((s,v)=>s+v,0)/last7.length;
     $('#wl-'+k+'-v').textContent = `${fmtN(vals[vals.length-1], conf[k].d)}${conf[k].u} · média 7d ${fmtN(avg7, conf[k].d)}`;
@@ -588,14 +588,14 @@ function vCal(){
     const list = wks.filter(w => w.date === dd);
     const rc = races.filter(e => e.date === dd);
     const pd = a.pmc.find(x => x.d === dd); const listT = list.reduce((s2,w) => s2 + (w.done ? (w.act.tss||0) : 0), 0);
-    const extra = pd && pd.tss - listT > 3 ? `<div class="small" style="color:var(--strength)" title="O PMC do TP soma ${fmtN(pd.tss)} TSS neste dia; ${fmtN(pd.tss-listT)} vêm de atividades que não aparecem na lista (ex.: força estruturada sincronizada pelo Garmin)">+${fmtN(pd.tss-listT)} TSS fora da lista</div>` : '';
+    const extra = pd && pd.tss - listT > 3 ? `<div class="small" style="color:var(--strength)" title="O PMC soma ${fmtN(pd.tss)} TSS neste dia; ${fmtN(pd.tss-listT)} vêm de atividades que não aparecem na lista (ex.: força estruturada sincronizada pelo Garmin)">+${fmtN(pd.tss-listT)} TSS fora da lista</div>` : '';
     return `<div class="cal-day ${dd===TODAY?'today':''} ${!list.length && !rc.length && !extra ? 'emptyday':''}"><div class="dh"><span>${DOW[i]}</span><span>${pd && dd <= TODAY ? `<span class="muted" style="font-weight:600">${fmtN(pd.tss)} TSS · </span>` : ''}<b>${ddmm(dd)}</b></span></div>${extra}
       ${rc.map(e => `<div class="wk" style="--c:var(--race)"><div class="t">🏁 ${esc(e.name)}</div><div class="m"><span class="tag ${esc(e.priority)}">${esc(e.priority||'')}</span></div></div>`).join('')}
       ${list.map(w => { const c = compliance(w); return `<button class="wk" data-wid="${w.id}" style="--c:${SPORT_COLOR[w.sport]}" title="${esc(COMP_LABEL[c])}"><i class="st st-${c}"></i><div class="t">${esc(w.title)}</div><div class="m">${w.done ? `<span>${fmtH(w.act.h)}</span><span>${fmtN(w.act.tss)} TSS</span>` : `<span>${fmtH(w.plan.h)}</span><span>${fmtN(w.plan.tss)} TSS plan.</span>`}</div>${KS[String(w.id)] ? kqLine(KS[String(w.id)]) : ''}</button>`; }).join('')}
     </div>`; }).join('')}</div>
   <div class="grid g4 wsum">
-    <div class="card kpi"><div class="l">TSS realizado (PMC)</div><div class="v">${fmtN(ws.tss)}</div><div class="s">inclui força que não aparece na lista do TP</div></div>
-    <div class="card kpi"><div class="l">TSS planejado no TP</div><div class="v">${fmtN(ws.planned_tss)}</div><div class="s">${ws.n_done||0} feitos de ${ws.n_planned||0} planejados</div></div>
+    <div class="card kpi"><div class="l">TSS realizado (PMC)</div><div class="v">${fmtN(ws.tss)}</div><div class="s">inclui força e atividades fora da lista</div></div>
+    <div class="card kpi"><div class="l">TSS planejado</div><div class="v">${fmtN(ws.planned_tss)}</div><div class="s">${ws.n_done||0} feitos de ${ws.n_planned||0} planejados</div></div>
     <div class="card kpi"><div class="l">Alvo do macro</div><div class="v">${fmtN(ws.target_tss)}</div><div class="s">${ws.target_h ? fmtH(ws.target_h) + ' alvo' : 'sem semana do macro'}${ws.tss!=null && ws.target_tss ? ` · ${fmtN(ws.tss/ws.target_tss*100)}% cumprido` : ''}</div></div>
     <div class="card kpi"><div class="l">Horas realizadas</div><div class="v">${fmtH(ws.h)}</div><div class="s">${Object.entries(ws.sport_h||{}).map(([k,v]) => `${SPORT_LABEL[k]||k} ${fmtH(v)}`).join(' · ') || '—'}</div></div>
   </div>
@@ -964,10 +964,10 @@ function vMacro(){
       <div class="kpi"><div class="l">CTL de pico projetado</div><div class="v">${projPeak(a) ? fmtN(projPeak(a).ctl,0) : '—'}</div><div class="s">${projPeak(a) ? `em ${ddmmyy(projPeak(a).d)} · ` : ''}se cumprir o plano${p.ctl_peak ? ` · alvo ${p.ctl_peak}` : ''}${races.filter(e => e.priority === 'A').map(e => { const x = (a.projection||[]).find(q => q.d === e.date); return x ? `<br>${esc(e.name)}: CTL ${fmtN(x.ctl,0)} · TSB ${sign(x.tsb)}` : ''; }).join('')}</div></div>
     </div>
   </div>
-  <div class="card section"><h3>TSS semanal — alvo × realizado <span class="sub">realizado = TSS do PMC do TP</span></h3><div class="chart-box"><canvas id="macro-chart"></canvas></div>
+  <div class="card section"><h3>TSS semanal — alvo × realizado <span class="sub">realizado = carga do Intervals.icu</span></h3><div class="chart-box"><canvas id="macro-chart"></canvas></div>
     <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.25)"></i>Alvo do macro</span><span><i class="dot" style="background:var(--ok)"></i>Realizado (≥90% do alvo)</span><span><i class="dot" style="background:var(--warn)"></i>Realizado (abaixo de 90% ou acima de 115%)</span><span><i class="dot" style="background:#9aa0b2"></i>Semana em andamento</span><span><i class="dot" style="background:var(--ctl)"></i>CTL no fim da semana (real e projetado)</span></div></div>
   <div class="card section"><h3>Semanas do plano</h3><div class="tbl-wrap"><table>
-    <thead><tr><th>Sem.</th><th>Segunda</th><th>Tipo</th><th>Fase</th><th class="n">Alvo TSS</th><th class="n">Alvo h</th><th class="n">Plan. TP</th><th class="n">Feito TSS</th><th class="n">%</th><th class="n">Feito h</th><th class="n">Z1/Z2/Z3 alvo</th><th>Resumo da semana</th></tr></thead>
+    <thead><tr><th>Sem.</th><th>Segunda</th><th>Tipo</th><th>Fase</th><th class="n">Alvo TSS</th><th class="n">Alvo h</th><th class="n">Planejado</th><th class="n">Feito TSS</th><th class="n">%</th><th class="n">Feito h</th><th class="n">Z1/Z2/Z3 alvo</th><th>Resumo da semana</th></tr></thead>
     <tbody>${p.weeks.map(w => { const r = byMon[w.mon] || {}; const pct = r.tss != null && w.tss ? r.tss/w.tss*100 : null; const ph = phaseOf(w.w) || {};
       const n = parseNote(w.notes);
       return `<tr class="wkrow ${w.mon===curM?'cur open':w.mon<curM?'past':''}" data-wk="${w.w}"><td><b>${w.w}</b></td><td>${ddmm(w.mon)}</td><td>${WEEK_TYPE[w.type]||w.type}</td><td><span class="dot" style="background:${PHASE_COLOR[ph.type]||'#888'}"></span> ${esc(ph.name||'')}</td><td class="n">${fmtN(w.tss)}</td><td class="n">${fmtH(w.h)}</td><td class="n">${r.n_planned ? fmtN(r.planned_tss) : '—'}</td><td class="n">${fmtN(r.tss)}</td><td class="n" style="color:${pct==null||w.mon===curM?'':pct>=90&&pct<=115?'var(--ok)':'var(--warn)'}">${pct==null?'—':fmtN(pct)+'%'}${w.mon===curM?' <span class="muted small">em andamento</span>':''}</td><td class="n">${fmtH(r.h)}</td><td class="n">${w.z.join('/')}</td><td>${noteSummary(n)}</td></tr><tr class="wk-detail" data-wkd="${w.w}" ${w.mon===curM ? '' : 'hidden'}><td colspan="12">${noteDetail(n)}</td></tr>`; }).join('')}</tbody></table></div><div class="small muted section">Clique numa semana para abrir ou fechar os detalhes.</div></div>`;
@@ -1059,7 +1059,7 @@ function lactateVal(v){
   kpis.push({label:'Fitas usadas', value: String(v.strips)});
   return `
   <div class="card">
-    <h3>${esc(v.title)} · ${SPORT_LABEL[v.sport]||v.sport} · ${ddmmyy(v.date)} ${vd ? `<span class="pill ${vd.c}" style="margin-left:6px">${esc(v.verdict_label || vd.t)}</span>` : ''}<span class="sub">${v.tp_workout_id ? 'treino TP ' + v.tp_workout_id : ''}</span></h3>
+    <h3>${esc(v.title)} · ${SPORT_LABEL[v.sport]||v.sport} · ${ddmmyy(v.date)} ${vd ? `<span class="pill ${vd.c}" style="margin-left:6px">${esc(v.verdict_label || vd.t)}</span>` : ''}<span class="sub">${v.tp_workout_id ? 'treino #' + v.tp_workout_id : ''}</span></h3>
     ${v.summary ? `<div style="font-size:14px;line-height:1.55;margin:4px 0 12px">${esc(v.summary)}</div>` : ''}
     ${kpiGrid(kpis)}
     ${v.decision ? `<div class="note section"><b>Decisão:</b> ${esc(v.decision)}</div>` : ''}
@@ -1126,7 +1126,7 @@ function lactateTest(t, a){
   return `
   <div class="grid g2">
     <div class="card">
-      <h3>${t.round ? esc(t.round)+' — ' : ''}${run ? 'Corrida' : 'Bike'} · ${ddmmyy(t.date)} <span class="sub">${t.tp_workout_id ? 'treino TP ' + t.tp_workout_id : ''}</span></h3>
+      <h3>${t.round ? esc(t.round)+' — ' : ''}${run ? 'Corrida' : 'Bike'} · ${ddmmyy(t.date)} <span class="sub">${t.tp_workout_id ? 'treino #' + t.tp_workout_id : ''}</span></h3>
       <div class="big-lt">
         <div class="lt1"><span class="small muted">LT1 · limiar aeróbio</span><b>${off.lt1 != null ? fmtL(off.lt1) : r1 ? fmtL((r1[0]+r1[1])/2) : '—'}</b><span class="small muted">${off.lt1 != null ? 'valor oficial do passaporte v'+off.v : 'estimativa (sem passaporte ligado)'}${r1 ? ` · métodos ${fmtR(r1)}` : ''}${off.hr1 ? ` · FC ≈ ${off.hr1} bpm` : ''}</span></div>
         <div class="lt2"><span class="small muted">LT2 · limiar anaeróbio (≈ MLSS)</span><b>${off.lt2 != null ? fmtL(off.lt2) : r2 ? fmtL((r2[0]+r2[1])/2) : '—'}</b><span class="small muted">${off.lt2 != null ? 'valor oficial do passaporte v'+off.v : 'estimativa (sem passaporte ligado)'}${r2 ? ` · métodos ${fmtR(r2)}` : ''}${off.hr2 ? ` · FC ≈ ${off.hr2} bpm` : ''}</span></div>
@@ -1259,7 +1259,7 @@ function vLimiares(){
         ${swimLt1 ? `<div><span>LT1 ritmo${cur.lt1_pace ? '' : ' (estimado)'}</span><b>${fmtPace(swimLt1)}/100m</b></div><div><span>LT2 ritmo ≈ CSS</span><b>${fmtPace(cur.css)}/100m</b></div>` : ''}
       </div>
       </div><div>
-      ${Z[k] && Z[k].length ? `<h4 style="margin:0 0 6px">Zonas de treino <span class="sub">${({lactate:'medidas por lactato', field_test:'pelo teste de campo (CSS)', ventilatory:'pela ergoespirometria'})[Z[k][0].source] || 'estimadas'} · as mesmas do TrainingPeaks</span></h4>${zonesTable(k, Z[k])}`
+      ${Z[k] && Z[k].length ? `<h4 style="margin:0 0 6px">Zonas de treino <span class="sub">${({lactate:'medidas por lactato', field_test:'pelo teste de campo (CSS)', ventilatory:'pela ergoespirometria'})[Z[k][0].source] || 'estimadas'} · as mesmas do Intervals.icu</span></h4>${zonesTable(k, Z[k])}`
         : z.length ? `<h4 style="margin:0 0 6px">Zonas de treino <span class="sub">calculadas do passaporte (estimadas)</span></h4><div class="tbl-wrap"><table><thead><tr><th></th><th>Z1 · base</th><th>Z2 · limiar</th><th>Z3 · acima do LT2</th></tr></thead><tbody>${z.map(r => `<tr><td class="muted">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table></div>
           <div class="small muted section"><b>Z1 · base</b> — volume, técnica e educativos (mais de 80% do volume). <b>Z2 · limiar</b> — séries do duplo limiar, firmes e controladas, sem passar do CSS. <b>Z3</b> — mais rápido que o CSS, só em séries curtas planejadas.</div>` : ''}
       </div></div>
@@ -1270,7 +1270,7 @@ function vLimiares(){
       <div><b>3 domínios, 2 limiares</b><br><span class="muted">LT1 é onde o lactato começa a subir acima do repouso; LT2 é onde ele passa a acumular sem parar. Z1 fica abaixo do LT1, Z2 entre os dois e Z3 acima do LT2.</span></div>
       <div><b>O limiar norueguês fica ABAIXO do LT2</b><br><span class="muted">A Z2 é dividida: zona cinzenta (não usada), limiar controlado (sessão longa) e limiar alto (sessão curta). Os dois treinos de limiar miram o "Alvo do treino"; o LT2 é o teto, nunca o alvo.</span></div>
       <div><b>Escala norueguesa (Olympiatoppen)</b><br><span class="muted">A etiqueta ao lado de cada zona mostra a equivalência: Z1 = I-1/I-2 (leve) · Z2a/Z2b/Z2c = I-3 (limiar — onde mora o método norueguês: manhã ~2,5 e tarde ~3,5 mmol) · Z3 = I-4 · Z4 = I-5. As I-1 e I-2 ficam juntas porque a fita não separa com segurança ~1 de ~2 mmol.</span></div>
-      <div><b>Mesmos números do TrainingPeaks</b><br><span class="muted">As faixas vêm da mesma tabela que monta os treinos no TP. "Medido" = teste de lactato; "estimado" = % do FTP, CSS ou outro teste. FC é sempre validador — o controle é por pace (corrida), watts (bike) e ritmo (natação).</span></div>
+      <div><b>Mesmos números do Intervals.icu</b><br><span class="muted">As faixas vêm da mesma tabela que monta os treinos no Intervals.icu. "Medido" = teste de lactato; "estimado" = % do FTP, CSS ou outro teste. FC é sempre validador — o controle é por pace (corrida), watts (bike) e ritmo (natação).</span></div>
     </div></div>`;
 }
 

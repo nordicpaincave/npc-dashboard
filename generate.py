@@ -2,8 +2,8 @@
 NPC Endurance — Dashboard Generator v6
 Monta o dashboard a partir de DUAS fontes oficiais:
 
-  TrainingPeaks (cookie → token, secret TP_COOKIE)
-    · PMC do próprio TP (CTL/ATL/TSB e TSS diário — inclui a força que não sai na lista)
+  Intervals.icu (secret INTERVALS_API_KEY) — FONTE ÚNICA desde 16/11/2026 (TP = legado)
+    · PMC (CTL/ATL/TSB e carga diária — inclui a força que não sai na lista)
     · treinos planejados e realizados, com as métricas de cada um
     · wellness (HRV, FC de repouso, sono, body battery)
     · arquivo .fit dos testes de lactato
@@ -597,16 +597,60 @@ def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-") or "ciclo"
 
 
-def build_history(key, tp_id, a_uuid, sb):
-    """Ciclos encerrados: grava um JSON por ciclo (treinos do TP + análises) e devolve só o índice."""
+def refresh_archive_loads(old, api_id, a_uuid, sb):
+    """Ciclo arquivado que veio do TP → troca as CARGAS pelas do Intervals (fonte única desde 17/11/2026),
+    mantendo planejados, descrições e comentários do arquivo. Casa cada treino feito com a atividade do
+    Intervals de mesmo dia + esporte e duração mais próxima (tolerância 25% ou 10 min). O TSS antigo do TP
+    fica em act.tss_tp. Semanas: refeitas do Supabase (weekly_analyses já na escala do Intervals).
+    Roda uma vez só: depois o arquivo fica marcado com source=intervals."""
+    if DATA_SOURCE != "intervals" or old.get("source") == "intervals":
+        return False
+    s, e = d(old["start"]), d(old["end"])
+    pool = {}
+    for a in tp._activities(api_id, s, e):
+        day = (a.get("start_date_local") or "")[:10]
+        sp = SPORT.get(tp._TYPE_ID.get(a.get("type"), 100), "other")
+        pool.setdefault((day, sp), []).append(a)
+    matched = 0
+    for w in old["workouts"]:
+        act = w.get("act")
+        if not w.get("done") or not act:
+            continue
+        cands = [a for a in pool.get((w["date"], w["sport"]), []) if not a.get("_used")]
+        if not cands:
+            continue
+        h = (act.get("h") or 0) * 3600
+        a = min(cands, key=lambda a: abs((a.get("moving_time") or 0) - h))
+        if h and abs((a.get("moving_time") or 0) - h) > max(600, 0.25 * h):
+            continue
+        a["_used"] = True
+        act["tss_tp"] = act.get("tss")
+        act["tss"] = num(a.get("icu_training_load"), 1)
+        act["if"] = num((a.get("icu_intensity") or 0) / 100, 2) or act.get("if")
+        if a.get("total_elevation_gain") is not None:
+            act["elev"] = num(a.get("total_elevation_gain"), 0)
+        matched += 1
+    old["weekly"] = [norm_weekly(r) for r in sb["weekly"]
+                     if r["athlete_id"] == a_uuid and s - timedelta(days=6) <= r["week_start"] <= e]
+    old["source"] = "intervals"
+    print(f"    histórico {old['name']}: cargas trocadas pelas do Intervals em {matched} treinos")
+    return True
+
+
+def build_history(key, tp_id, a_uuid, sb, api_id=None):
+    """Ciclos encerrados: grava um JSON por ciclo (treinos + análises) e devolve só o índice."""
     out = []
     for c in [c for c in sb["cycles"] if c["athlete_id"] == a_uuid]:
         s, e = c["start_date"], c["end_date"]
         rel = f"{FILES_DIR}/historico/{key}/{slug(c['name'])}.json"
         if os.path.exists(rel):
             # Ciclo encerrado já arquivado (veio do TP): não refaz — o Intervals não tem os planejados antigos.
+            # Só troca as cargas pelas do Intervals (uma vez).
             with open(rel, encoding="utf-8") as f:
                 old = json.load(f)
+            if api_id and refresh_archive_loads(old, api_id, a_uuid, sb):
+                with open(rel, "w", encoding="utf-8") as f:
+                    json.dump(old, f, ensure_ascii=False, default=jsonable, separators=(",", ":"))
             out.append({"name": old["name"], "start": old["start"], "end": old["end"], "file": "/" + rel,
                         "n_done": sum(1 for w in old["workouts"] if w["done"]),
                         "n_daily": len(old["daily"]), "n_weekly": len(old["weekly"])})
@@ -657,7 +701,7 @@ def build_athlete(key, cfg, sb, warnings):
     last_m = monday(max(d(plan["end"]) if plan else TODAY, end))
     weeks = week_rows(pmc, workouts, plan, first_m, last_m)
     lactate = build_lactate(sb, a_uuid, key, api_id, passports, warnings) if a_uuid else {"tests": [], "rest": []}
-    history = build_history(key, api_id, a_uuid, sb) if a_uuid else []
+    history = build_history(key, api_id, a_uuid, sb, api_id if DATA_SOURCE == "intervals" else None) if a_uuid else []
     daily = {r["log_date"].isoformat(): norm_daily(r) for r in sb["daily"]
              if r["athlete_id"] == a_uuid and r["log_date"] >= start}
     weekly = {str(r["week_start"]): norm_weekly(r) for r in sb["weekly"]
