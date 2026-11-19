@@ -1,6 +1,6 @@
 ﻿degrau,rotulo,lactato_mmol,km_h,fc_bpm,cadencia,rpe,erro,observacoes
 ,basal repouso,1.4,,,,,,5min parado antes do aquecimento · café 06:40
-,pós-aquecimento,1.7,,124,,1,,15min aquec ~5:40/km
+,pós-aquecimento,1.7,10.59,124,,1,,15min aquec ~5:40/km
 1,D1,1.2,11.1,130,170,2,,"alvo 11 km/h · FC méd 128 / final 130 · NADIR da curva · cadência 170 ppm (média dos laps do degrau no .fit, ×2)"
 2,D2,1.3,12.0,143,170,3,,"alvo 12 · FC méd 132 / final 143 · cadência 170 ppm (média dos laps do degrau no .fit, ×2)"
 3,D3,1.7,13.0,155,172,5,,"alvo 13 · FC méd 143 / final 155 · cadência 172 ppm (média dos laps do degrau no .fit, ×2)"
