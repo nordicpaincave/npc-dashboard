@@ -330,7 +330,7 @@ def build_lactate(sb, athlete_uuid, athlete_key, tp_id, passports, warnings):
         is_run = sport == "run"
         steps, base = [], None
         for s in samples:
-            load = num(s["speed_kmh"], 2) if is_run else num(s["power_w"], 0)
+            load = (num(s["speed_kmh"], 2) or (round(3600 / float(s["pace_s_per_km"]), 2) if s["pace_s_per_km"] else None)) if is_run else num(s["power_w"], 0)
             row = {"i": s["step_index"], "label": s["interval_label"], "mmol": num(s["lactate_mmol"], 1),
                    "load": load, "pace": s["pace_s_per_km"], "hr": num(s["hr_bpm"], 0), "cad": num(s["cadence"], 0),
                    "rpe": num(s["rpe"], 0), "err": s["error_code"], "notes": s["notes"]}
@@ -428,7 +428,7 @@ def build_validations(vals, athlete_key, passports, warnings):
             minute = int(m.group(1)) if m else None
             low = lab.lower()
             kind = "point" if minute is not None else ("basal" if "basal" in low and any(w in low for w in ("pré", "pre-", "repouso")) else "diag")
-            load = num(s["speed_kmh"], 2) if is_run else num(s["power_w"], 0)
+            load = (num(s["speed_kmh"], 2) or (round(3600 / float(s["pace_s_per_km"]), 2) if s["pace_s_per_km"] else None)) if is_run else num(s["power_w"], 0)
             row = {"t": s["sampled_at"].astimezone(TZ).strftime("%H:%M"), "label": lab, "min": minute, "kind": kind,
                    "mmol": num(s["lactate_mmol"], 1), "load": load, "pace": s["pace_s_per_km"], "hr": num(s["hr_bpm"], 0),
                    "rpe": num(s["rpe"], 0), "site": s["sample_site"], "err": s["error_code"], "notes": s["notes"]}

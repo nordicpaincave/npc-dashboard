@@ -1114,7 +1114,7 @@ function lactateCheck(v, a){
   const run = v.sport === 'run';
   const rows = (v.rows || []).filter(r => r.mmol != null && !r.err);
   const r = rows[rows.length - 1] || {};
-  const zm = /(Z\d[a-c]?)/i.exec(r.label || '');
+  const zm = /\b(Z\d[a-c]?)\b/i.exec(r.label || '') || /\b(Z\d[a-c]?)\b/i.exec(r.notes || '');
   const zone = zm ? ((a.zones || {})[v.sport] || []).find(z => (z.name || '').toUpperCase().startsWith(zm[1].toUpperCase())) : null;
   const lo = zone && zone.lac ? zone.lac[0] : null, hi = zone && zone.lac ? zone.lac[1] : null;
   const tol = 0.5, x = r.mmol;
@@ -1152,6 +1152,7 @@ function lactateCheck(v, a){
   }
   return `
   <div class="card">
+    ${!zone ? `<div class="note" style="margin-bottom:10px">⚠️ Zona da coleta não identificada (falta o código Z2b/Z2c na coleta) — sem faixa esperada para comparar.</div>` : ''}
     <h3>Checagem em treino · ${SPORT_LABEL[v.sport]||v.sport} · ${ddmmyy(v.date)} ${vd ? `<span class="pill ${vd.c}" style="margin-left:6px">${esc(vd.t)}</span>` : ''}<span class="sub">${v.tp_workout_id ? 'treino #' + v.tp_workout_id : ''}</span></h3>
     <div style="font-size:14px;line-height:1.55;margin:4px 0 12px">${esc(r.label ? r.label.charAt(0).toUpperCase() + r.label.slice(1) : 'Coleta no treino')}${vd ? ` — <b>${esc(vd.d)}</b>` : ''}</div>
     ${kpiGrid(kpis)}
