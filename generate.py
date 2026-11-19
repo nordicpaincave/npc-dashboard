@@ -465,6 +465,7 @@ def build_validations(vals, athlete_key, passports, warnings):
             "verdict_label": mt.get("verdict_label"), "summary": mt.get("summary"), "decision": mt.get("decision"),
             "issues": mt.get("issues") or [], "segments": mt.get("segments") or [], "hr_ref": mt.get("hr_ref"),
             "doc": mt.get("doc"),
+            "check": all(s["purpose"] == "session_check" for s in samples),
         })
     return out
 
