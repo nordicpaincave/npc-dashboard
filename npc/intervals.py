@@ -130,9 +130,9 @@ def workouts(athlete_id, start, end):
             "cadenceAverage": a.get("average_cadence"), "velocityAverage": a.get("average_speed"),
             "elevationGain": a.get("total_elevation_gain"),
             "rpe": a.get("icu_rpe") or a.get("perceived_exertion"),
-            # feel do Intervals 1 (forte) … 5 (fraco) → escala crua do TP 1–9 ímpar (1 = muito forte),
+            # feel do Intervals 1 (forte) … 5 (fraco) → escala 1–9 ímpar do template (feelIdx: 1 = muito fraca … 9 = muito forte), invertendo: 11 − 2·feel
             # que é a que o template (feelIdx) entende
-            "feeling": (2 * int(a["feel"]) - 1) if isinstance(a.get("feel"), (int, float)) and 1 <= a["feel"] <= 5 else None,
+            "feeling": (11 - 2 * int(a["feel"])) if isinstance(a.get("feel"), (int, float)) and 1 <= a["feel"] <= 5 else None,
             "workoutComments": comments,
         }
         item.update({k: v for k, v in _plan_fields(ev).items() if v not in (None, "")})
