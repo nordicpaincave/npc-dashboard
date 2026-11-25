@@ -5,7 +5,7 @@ download_file, access_token, TPAuthError) e devolve dicionários com as MESMAS c
 do TrainingPeaks — assim o generate.py não muda a lógica, só a fonte.
 
 Autenticação: Basic "API_KEY:<chave>" com a chave da conta NPC (treinadora do atleta),
-no secret INTERVALS_API_KEY. O id do atleta (ex.: i793767) vem do ATHLETES do generate.py.
+no secret INTERVALS_API_KEY. O id do atleta (ex.: i793767) vem de athletes.intervals_athlete_id no Supabase (generate.roster).
 """
 import os
 from datetime import date, timedelta

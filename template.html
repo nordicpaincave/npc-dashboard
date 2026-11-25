@@ -288,7 +288,9 @@ const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força
 const SPORT_COLOR = {swim:'#4a9eff',bike:'#f5a623',run:'#4db87a',strength:'#9b8fff',brick:'#ff7c3a',race:'#ff5252',other:'#8b90a0',dayoff:'#555'};
 const WEEK_TYPE = {load:'Carga',recovery:'Descarga',peak:'Pico',taper:'Polimento',race:'Prova',test:'Teste'};
 const PHASE_COLOR = {base:'#4a9eff',build:'#3fbf6f',peak:'#f5a623',taper:'#f472b6',recovery:'#9aa0b2',transition:'#9b8fff'};
-const ATH_COLOR = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#3ddc97'};
+// cor por posição do atleta (lista vem do Supabase; nada fixo por nome)
+const ATH_PALETTE = ['#4a9eff','#3ddc97','#ff7c3a','#c792ea','#ffd166','#ff5c8a'];
+const ATH_COLOR = Object.fromEntries(KEYS.map((k, i) => [k, ATH_PALETTE[i % ATH_PALETTE.length]]));
 const DOW = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 const charts = {};
 let state = {ath: null, tab: 'geral', calMonday: null, pmcRange: 180, lacTest: null};

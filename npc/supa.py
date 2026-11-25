@@ -27,10 +27,12 @@ def connect():
     raise SupaError(f"Não conectou no Supabase: {last}")
 
 
-def fetch(conn, athlete_tp_ids):
+def fetch(conn, source="intervals"):
+    """source = fonte de dados do dashboard. Atletas = athletes.ativo com ID nessa fonte."""
     q = lambda sql, *a: conn.execute(sql, a).fetchall()
-    ath = q("select id, nome, apelido, tp_athlete_id from athletes where tp_athlete_id = any(%s)",
-            [str(x) for x in athlete_tp_ids])
+    id_col = "intervals_athlete_id" if source == "intervals" else "tp_athlete_id"
+    ath = q(f"""select id, nome, apelido, tp_athlete_id, intervals_athlete_id from athletes
+                where ativo and {id_col} is not null and {id_col} <> '' order by nome""")
     ids = [a["id"] for a in ath]
     sports = {r["id"]: r for r in q("select id, name, slug from sports")}
     plans = q("""select id, athlete_id, name, start_date, end_date, total_weeks, target_ctl_peak

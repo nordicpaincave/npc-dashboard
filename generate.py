@@ -42,14 +42,11 @@ TZ = ZoneInfo("America/Sao_Paulo")
 TODAY = datetime.now(TZ).date()
 FILES_DIR = "files"
 
-# Atletas exibidos (chave da URL → id no TrainingPeaks)
-ATHLETES = {
-    # tp_id: só para achar o atleta no Supabase (athletes.tp_athlete_id); icu_id: id no Intervals
-    "bruno": {"tp_id": 6285028, "icu_id": "i793767", "name": "Bruno Trevisan Romero", "short": "Bruno"},
-    # Jean saiu da NPC em 12/11/2026 (dados preservados no Supabase, fora do dashboard)
-    # Gabriel voltou em 25/11/2026: Hyrox na academia; NPC prescreve corrida + bike por FC
-    "gabriel": {"tp_id": 5775491, "icu_id": "i816266", "name": "Gabriel Antunes", "short": "Gabriel"},
-}
+# Atletas exibidos: vêm do SUPABASE (25/11/2026), sem lista no código — ver roster().
+# Regra: athletes.ativo = true e com ID na fonte de dados (intervals_athlete_id no Intervals,
+# tp_athlete_id no TP legado). Atleta novo = cadastrar no Supabase; atleta que sai = ativo = false.
+# A chave da URL / pasta de arquivos (files/lactato/<chave>, files/historico/<chave>) é o
+# apelido em minúsculas sem acento (bruno, gabriel).
 
 # IDs de tipo de treino do TP (tp_get_workout_types)
 SPORT = {1: "swim", 2: "bike", 8: "bike", 3: "run", 4: "brick", 6: "race",
@@ -680,10 +677,25 @@ def build_history(key, tp_id, a_uuid, sb, api_id=None):
 
 
 # ── Montagem por atleta ───────────────────────────────────────────────
+def roster(sb):
+    """Atletas do dashboard a partir de sb["athletes"] (já filtrados por supa.fetch:
+    ativo + ID na fonte). Ordem: nome. Chave = slug do apelido (ou do 1º nome)."""
+    out = {}
+    for a in sorted(sb["athletes"], key=lambda r: (r["nome"] or "")):
+        short = (a.get("apelido") or (a.get("nome") or "").split(" ")[0] or "atleta").strip()
+        key = base = slug(short)
+        n = 2
+        while key in out:                      # dois atletas com o mesmo apelido
+            key, n = f"{base}-{n}", n + 1
+        out[key] = {"uuid": a["id"], "tp_id": a.get("tp_athlete_id"), "icu_id": a.get("intervals_athlete_id"),
+                    "name": a.get("nome") or short, "short": short}
+    return out
+
+
 def build_athlete(key, cfg, sb, warnings):
     tp_id = cfg["tp_id"]
     api_id = (cfg.get("icu_id") if DATA_SOURCE == "intervals" else None) or tp_id   # id na fonte de dados
-    a_uuid = next((a["id"] for a in sb["athletes"] if str(a["tp_athlete_id"]) == str(tp_id)), None)
+    a_uuid = cfg["uuid"]
     plan = build_plan(sb, a_uuid) if a_uuid else None
     start = min(TODAY - timedelta(days=63), d(plan["start"]) if plan else TODAY)
     end = TODAY + timedelta(days=35)
@@ -738,14 +750,18 @@ def main():
         tp.access_token()
         print("\n[1/3] Supabase (só-leitura)...")
         with supa.connect() as conn:
-            sb = supa.fetch(conn, [c["tp_id"] for c in ATHLETES.values()])
+            sb = supa.fetch(conn, DATA_SOURCE)
+        athletes = roster(sb)
+        if not athletes:
+            raise supa.SupaError("nenhum atleta ativo com ID na fonte de dados — dashboard não gerado")
+        print(f"  atletas: {', '.join(c['short'] for c in athletes.values())}")
         print(f"  {len(sb['plans'])} planos · {len(sb['weeks'])} semanas · {len(sb['events'])} provas · "
               f"{len(sb['passports'])} passaportes · {len(sb['lactate'])} amostras de lactato · "
               f"{len(sb['daily'])} análises diárias · {len(sb['weekly'])} semanais · {len(sb['cycles'])} ciclos encerrados")
         print("\n[2/3] Intervals.icu...")
         db = {"today": TODAY.isoformat(), "athletes": {}}
-        for key, cfg in ATHLETES.items():
-            print(f"\n  [{key.upper()}] TP {cfg['tp_id']}")
+        for key, cfg in athletes.items():
+            print(f"\n  [{key.upper()}] {cfg['icu_id'] if DATA_SOURCE == 'intervals' else 'TP ' + str(cfg['tp_id'])}")
             db["athletes"][key] = build_athlete(key, cfg, sb, warnings)
     except tp.TPAuthError as e:
         print(f"\n::error title=Intervals.icu — autenticação::{e}")
