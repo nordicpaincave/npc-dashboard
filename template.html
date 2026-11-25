@@ -288,7 +288,7 @@ const SPORT_LABEL = {swim:'Natação',bike:'Bike',run:'Corrida',strength:'Força
 const SPORT_COLOR = {swim:'#4a9eff',bike:'#f5a623',run:'#4db87a',strength:'#9b8fff',brick:'#ff7c3a',race:'#ff5252',other:'#8b90a0',dayoff:'#555'};
 const WEEK_TYPE = {load:'Carga',recovery:'Descarga',peak:'Pico',taper:'Polimento',race:'Prova',test:'Teste'};
 const PHASE_COLOR = {base:'#4a9eff',build:'#3fbf6f',peak:'#f5a623',taper:'#f472b6',recovery:'#9aa0b2',transition:'#9b8fff'};
-const ATH_COLOR = {bruno:'#4a9eff',jean:'#ff7c3a'};
+const ATH_COLOR = {bruno:'#4a9eff',jean:'#ff7c3a',gabriel:'#3ddc97'};
 const DOW = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 const charts = {};
 let state = {ath: null, tab: 'geral', calMonday: null, pmcRange: 180, lacTest: null};
@@ -1326,7 +1326,7 @@ function vLimiares(){
       <div><b>3 domínios, 2 limiares</b><br><span class="muted">LT1 é onde o lactato começa a subir acima do repouso; LT2 é onde ele passa a acumular sem parar. Z1 fica abaixo do LT1, Z2 entre os dois e Z3 acima do LT2.</span></div>
       <div><b>O limiar norueguês fica ABAIXO do LT2</b><br><span class="muted">A Z2 é dividida: zona cinzenta (não usada), limiar controlado (sessão longa) e limiar alto (sessão curta). Os dois treinos de limiar miram o "Alvo do treino"; o LT2 é o teto, nunca o alvo.</span></div>
       <div><b>Escala norueguesa (Olympiatoppen)</b><br><span class="muted">A etiqueta ao lado de cada zona mostra a equivalência: Z1 = I-1/I-2 (leve) · Z2a/Z2b/Z2c = I-3 (limiar — onde mora o método norueguês: manhã ~2,5 e tarde ~3,5 mmol) · Z3 = I-4 · Z4 = I-5. As I-1 e I-2 ficam juntas porque a fita não separa com segurança ~1 de ~2 mmol.</span></div>
-      <div><b>Mesmos números do Intervals.icu</b><br><span class="muted">As faixas vêm da mesma tabela que monta os treinos no Intervals.icu. "Medido" = teste de lactato; "estimado" = % do FTP, CSS ou outro teste. FC é sempre validador — o controle é por pace (corrida), watts (bike) e ritmo (natação).</span></div>
+      <div><b>Mesmos números do Intervals.icu</b><br><span class="muted">As faixas vêm da mesma tabela que monta os treinos no Intervals.icu. "Medido" = teste de lactato; "estimado" = % do FTP, CSS ou outro teste. FC é validador quando há pace (corrida), watts (bike) e ritmo (natação); para quem não tem medidor de potência nem pace validado, a FC é o controle.</span></div>
     </div></div>`;
 }
 

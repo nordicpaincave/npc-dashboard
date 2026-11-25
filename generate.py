@@ -47,6 +47,8 @@ ATHLETES = {
     # tp_id: só para achar o atleta no Supabase (athletes.tp_athlete_id); icu_id: id no Intervals
     "bruno": {"tp_id": 6285028, "icu_id": "i793767", "name": "Bruno Trevisan Romero", "short": "Bruno"},
     # Jean saiu da NPC em 12/11/2026 (dados preservados no Supabase, fora do dashboard)
+    # Gabriel voltou em 25/11/2026: Hyrox na academia; NPC prescreve corrida + bike por FC
+    "gabriel": {"tp_id": 5775491, "icu_id": "i816266", "name": "Gabriel Antunes", "short": "Gabriel"},
 }
 
 # IDs de tipo de treino do TP (tp_get_workout_types)
