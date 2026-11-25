@@ -168,7 +168,7 @@ def performance(athlete_id, start, end):
 
 
 def metrics(athlete_id, start, end):
-    """Wellness no formato consolidatedtimedmetrics do TP (60 = VFC, 5 = FC repouso, 6 = sono h)."""
+    """Wellness no formato consolidatedtimedmetrics do TP (60 = VFC, 5 = FC repouso, 6 = sono h, 64 = Body Battery)."""
     well = _get(f"/athlete/{athlete_id}/wellness", {"oldest": f"{start:%Y-%m-%d}", "newest": f"{end:%Y-%m-%d}"}) or []
     out = []
     for w in well:
@@ -179,6 +179,10 @@ def metrics(athlete_id, start, end):
             det.append({"type": 5, "value": w["restingHR"]})
         if w.get("sleepSecs"):
             det.append({"type": 6, "value": round(w["sleepSecs"] / 3600, 2)})
+        # Body Battery: campo personalizado BodyBatteryMax do Intervals (Garmin). Mostra o MAX
+        # (carga após a noite). A série antiga do TP era a média do dia — não comparar.
+        if w.get("BodyBatteryMax") is not None:
+            det.append({"type": 64, "value": [w.get("BodyBatteryMin"), w["BodyBatteryMax"], w["BodyBatteryMax"]]})
         if det:
             out.append({"timeStamp": str(w.get("id"))[:10], "details": det})
     return out
