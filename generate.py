@@ -5,7 +5,7 @@ Monta o dashboard a partir de DUAS fontes oficiais:
   Intervals.icu (secret INTERVALS_API_KEY) — FONTE ÚNICA desde 16/11/2026 (TP = legado)
     · PMC (CTL/ATL/TSB e carga diária — inclui a força que não sai na lista)
     · treinos planejados e realizados, com as métricas de cada um
-    · wellness (HRV, FC de repouso, sono, body battery)
+    · wellness (HRV, FC de repouso, sono, body battery, SpO2 como sinalizador)
     · arquivo .fit dos testes de lactato
 
   Supabase (usuário SÓ-LEITURA dashboard_reader, secret SUPABASE_READER_PASSWORD)
@@ -137,6 +137,8 @@ def norm_wellness(raw):
             elif t == 6:  e["sleep"] = num(v, 2)
             elif t == 64 and isinstance(v, list) and len(v) >= 3 and v[2] is not None:
                 e["bb"] = num(v[2], 0)
+            elif t == "spo2" and 50 < float(v) <= 100:
+                e["spo2"] = num(v, 1)
     return [out[k] for k in sorted(out)]
 
 

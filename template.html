@@ -442,6 +442,7 @@ function vGeral(){
   <div class="grid g4 section">
     ${['hrv','rhr','sleep','bb'].map(k => `<div class="card"><h3>${({hrv:'HRV',rhr:'FC de repouso',sleep:'Sono',bb:'Body Battery'})[k]} <span class="sub" id="wl-${k}-v"></span></h3><div class="chart-box sm"><canvas id="wl-${k}"></canvas></div></div>`).join('')}
   </div>
+  ${spo2Flag(a)}
   ${lastDailyCard(a)}
   <div class="card section"><h3>Últimos 7 dias <span class="sub">${recent.length} treinos</span></h3>${workoutTable(recent)}</div>`;
   $('#pmc-range').onclick = e => { const b = e.target.closest('button'); if (!b) return; state.pmcRange = b.dataset.n === 'plan' ? 'plan' : +b.dataset.n; vGeral(); };
@@ -560,6 +561,37 @@ function drawWellness(a){
     charts['wl'+k] = new Chart(el, {type:'line', data:{labels: pts.map(x=>x.d), datasets:[{data: vals, borderColor: conf[k].c, backgroundColor: conf[k].c+'22', fill:true, pointRadius:1.5, borderWidth:1.5, tension:.25}]},
       options:{plugins:{tooltip:{callbacks:{title: it => ddmmyy(it[0].label)}}}, scales:{x:{ticks:{maxTicksLimit:5, callback(v){return ddmm(this.getLabelForValue(v));}}, grid:{display:false}}, y:{ticks:{maxTicksLimit:4}}}}});
   }
+}
+// SpO2 noturna: só sinalizador de doença respiratória (não é métrica de recuperação).
+// Alerta = 2 últimas noites seguidas <= média − 2 DP das noites anteriores (mín. 20)
+//          E FC de repouso da última noite >= média dos 7 dias anteriores + 5 bpm.
+// SpO2 baixa sem FC alta = provável posição de dormir (sensor de pulso) → só "atenção".
+function spo2Eval(a){
+  const w = (a.wellness||[]).filter(x => x.spo2 != null).sort((x,y) => x.d < y.d ? -1 : 1);
+  if (w.length < 22) return null;
+  const last = w[w.length-1], prev = w[w.length-2];
+  if (last.d < addDays(TODAY,-2)) return null;
+  const base = w.slice(0,-2).map(x => x.spo2);
+  const mean = base.reduce((s,v)=>s+v,0)/base.length;
+  const sd = Math.sqrt(base.reduce((s,v)=>s+(v-mean)**2,0)/(base.length-1));
+  const lim = mean - 2*sd;
+  const consec = (new Date(last.d) - new Date(prev.d)) / 864e5 === 1;
+  const low2 = consec && last.spo2 <= lim && prev.spo2 <= lim;
+  const rh = (a.wellness||[]).filter(x => x.rhr != null && x.d < last.d && x.d >= addDays(last.d,-7)).map(x => x.rhr);
+  const rhrBase = rh.length >= 3 ? rh.reduce((s,v)=>s+v,0)/rh.length : null;
+  const rhrNow = ((a.wellness||[]).find(x => x.d === last.d) || {}).rhr;
+  const rhrUp = rhrBase != null && rhrNow != null && rhrNow >= rhrBase + 5;
+  const st = low2 && rhrUp ? 'alert' : low2 || last.spo2 <= lim ? 'watch' : 'ok';
+  return {st, last, lim, mean, rhrNow, rhrBase};
+}
+function spo2Flag(a){
+  const r = spo2Eval(a); if (!r) return '';
+  const ST = {ok:['var(--ok)','✓ normal'], watch:['var(--warn)','atenção — provável posição de dormir; ver próxima noite'], alert:['var(--miss)','⚠ alerta respiratório — SpO2 baixa 2 noites + FC de repouso alta: treino do dia em Z1 curto ou descanso']};
+  const [c, txt] = ST[r.st];
+  return `<div class="small section" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:6px 10px;border-left:3px solid ${c};background:var(--bg2);border-radius:6px">
+    <b>SpO2 noturna</b><span>${fmtN(r.last.spo2,1)}% <span class="muted">(${ddmm(r.last.d)} · média ${fmtN(r.mean,1)}% · limite ${fmtN(r.lim,1)}%)</span></span>
+    ${r.rhrNow != null && r.rhrBase != null ? `<span class="muted">FC repouso ${r.rhrNow} vs ${fmtN(r.rhrBase,0)} (7d)</span>` : ''}
+    <span style="color:${c};font-weight:600">${txt}</span></div>`;
 }
 function workoutTable(list){
   if (!list.length) return '<div class="empty">Nenhum treino no período.</div>';

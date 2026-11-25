@@ -183,6 +183,10 @@ def metrics(athlete_id, start, end):
         # (carga após a noite). A série antiga do TP era a média do dia — não comparar.
         if w.get("BodyBatteryMax") is not None:
             det.append({"type": 64, "value": [w.get("BodyBatteryMin"), w["BodyBatteryMax"], w["BodyBatteryMax"]]})
+        # SpO2 noturna (Garmin Pulse Ox): só sinalizador de doença respiratória, junto com a FC de repouso.
+        spo2 = w.get("spO2", w.get("spo2"))
+        if spo2 is not None:
+            det.append({"type": "spo2", "value": spo2})
         if det:
             out.append({"timeStamp": str(w.get("id"))[:10], "details": det})
     return out
