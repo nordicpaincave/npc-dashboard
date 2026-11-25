@@ -1,17 +1,9 @@
 {
   "ignoreCommand": "bash scripts/vercel-ignore.sh",
   "routes": [
-    {
-      "src": "/treinador",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/atleta",
-      "dest": "/atleta.html"
-    },
-    {
-      "src": "/bruno",
-      "dest": "/index.html"
-    }
+    { "src": "/treinador", "dest": "/index.html" },
+    { "src": "/atleta", "dest": "/atleta.html" },
+    { "handle": "filesystem" },
+    { "src": "/[a-z0-9-]+/?", "dest": "/index.html" }
   ]
 }
