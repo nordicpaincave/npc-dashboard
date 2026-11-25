@@ -706,7 +706,7 @@ def build_athlete(key, cfg, sb, warnings):
     pmc = norm_pmc(tp.performance(api_id, TODAY - timedelta(days=400), TODAY), workouts)
     if not pmc:
         raise RuntimeError("PMC vazio no Intervals")
-    wellness = norm_wellness(tp.metrics(api_id, TODAY - timedelta(days=60), TODAY))
+    wellness = norm_wellness(tp.metrics(api_id, TODAY - timedelta(days=62), TODAY))  # 62 = base de 60 noites da SpO2 + folga se a última noite for de ontem/anteontem
     print(f"    {len(workouts)} treinos · PMC {len(pmc)} dias (CTL {pmc[-1]['ctl']}) · wellness {len(wellness)} dias")
     passports = build_passports(sb, a_uuid) if a_uuid else {}
     events = [{"date": str(e["event_date"]), "name": e["name"], "type": e["event_type"], "priority": e["priority"],

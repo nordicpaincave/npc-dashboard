@@ -563,15 +563,17 @@ function drawWellness(a){
   }
 }
 // SpO2 noturna: só sinalizador de doença respiratória (não é métrica de recuperação).
-// Alerta = 2 últimas noites seguidas <= média − 2 DP das noites anteriores (mín. 20)
-//          E FC de repouso da última noite >= média dos 7 dias anteriores + 5 bpm.
+// MESMA regra da skill npc-daily-analysis (seção 2.1), com as mesmas janelas:
+//  base   = noites de [D−60, D−2] (D = última noite com SpO2), n >= 20; limite = média − 2 DP (amostral)
+//  alerta = noites D e D−1 (seguidas) <= limite E FC de repouso de D >= média de [D−7, D−1] + 5 bpm (mín. 3 dias)
 // SpO2 baixa sem FC alta = provável posição de dormir (sensor de pulso) → só "atenção".
 function spo2Eval(a){
   const w = (a.wellness||[]).filter(x => x.spo2 != null).sort((x,y) => x.d < y.d ? -1 : 1);
-  if (w.length < 22) return null;
+  if (w.length < 2) return null;
   const last = w[w.length-1], prev = w[w.length-2];
   if (last.d < addDays(TODAY,-2)) return null;
-  const base = w.slice(0,-2).map(x => x.spo2);
+  const base = w.filter(x => x.d >= addDays(last.d,-60) && x.d <= addDays(last.d,-2)).map(x => x.spo2);
+  if (base.length < 20) return null;
   const mean = base.reduce((s,v)=>s+v,0)/base.length;
   const sd = Math.sqrt(base.reduce((s,v)=>s+(v-mean)**2,0)/(base.length-1));
   const lim = mean - 2*sd;
