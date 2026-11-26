@@ -40,3 +40,25 @@ jobs:
                   print(w["date"], w["sport"], "done" if w["done"] else "plan", "|", w["title"][:60],
                         "| tss", (w["act"] or {}).get("tss"), "plan", w["plan"]["tss"], "| rpe", (w["act"] or {}).get("rpe"))
           PY
+
+      - name: Diagnóstico — campos brutos de wellness no Intervals (últimos 10 dias)
+        env:
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          SUPABASE_READER_PASSWORD: ${{ secrets.SUPABASE_READER_PASSWORD }}
+        run: |
+          python - <<'PY'
+          from datetime import date, timedelta
+          from npc import intervals as icu, supa
+          import generate
+          sb = supa.fetch(supa.connect(), source="intervals")
+          ros = generate.roster(sb)
+          end = date.today(); start = end - timedelta(days=10)
+          for key, cfg in ros.items():
+              aid = cfg["icu_id"]
+              rows = icu._get(f"/athlete/{aid}/wellness", {"oldest": start.isoformat(), "newest": end.isoformat()})
+              print(f"\n===== {key.upper()} ({aid}) — {len(rows)} dias =====")
+              keys = sorted({k for r in rows for k, v in r.items() if v not in (None, [], {}, "") and k not in ("id", "updated")})
+              print("campos com valor:", keys)
+              for r in rows[-4:]:
+                  print(r.get("id"), {k: r.get(k) for k in ("hrv", "hrvSDNN", "restingHR", "sleepSecs", "spO2", "BodyBatteryMin", "BodyBatteryMax", "steps") if r.get(k) is not None})
+          PY
